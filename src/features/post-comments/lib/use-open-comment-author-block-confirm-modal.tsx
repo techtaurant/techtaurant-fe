@@ -5,11 +5,7 @@ import { overlay } from 'overlay-kit';
 import type { CommentItem } from '@/entities/comment';
 import { PostDetailCommentAuthorBlockConfirmModal } from '@/features/post-comments/ui/post-detail-comment-author-block-confirm-modal';
 
-type Params = {
-  postId: string;
-};
-
-export const useOpenCommentAuthorBlockConfirmModal = ({ postId }: Params) => {
+export const useOpenCommentAuthorBlockConfirmModal = () => {
   const openCommentAuthorBlockConfirmModal = (comment: CommentItem) => {
     overlay.open(({ overlayId, isOpen, unmount }) => (
       <PostDetailCommentAuthorBlockConfirmModal
@@ -17,7 +13,6 @@ export const useOpenCommentAuthorBlockConfirmModal = ({ postId }: Params) => {
         overlayId={overlayId}
         isOpen={isOpen}
         onClose={unmount}
-        postId={postId}
         targetUserId={comment.authorId}
       />
     ));

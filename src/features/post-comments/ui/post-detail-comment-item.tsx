@@ -39,7 +39,7 @@ export function PostDetailCommentItem({
   const [isEditing, setIsEditing] = useState(false);
   const { data: me } = useGetMe();
   const commentReaction = useCommentReaction({ comment, onRequireLogin });
-  const openCommentAuthorBlockConfirmModal = useOpenCommentAuthorBlockConfirmModal({ postId: comment.postId });
+  const openCommentAuthorBlockConfirmModal = useOpenCommentAuthorBlockConfirmModal();
   const openCommentDeleteConfirmModal = useOpenCommentDeleteConfirmModal({ postId: comment.postId });
   const currentUserId = me?.id;
   const isBanned = comment.isBanned;

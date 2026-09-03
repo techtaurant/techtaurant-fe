@@ -64,7 +64,9 @@ export const customFetch = async <T>(url: string, init: CustomFetchInit = {}): P
   }
 
   if (!response.ok) {
-    throw new Error(`API Error: ${response.status}`);
+    throw new Error(`API Error: ${response.status}`, {
+      cause: response.status,
+    });
   }
 
   return parseBody(response) as Promise<T>;

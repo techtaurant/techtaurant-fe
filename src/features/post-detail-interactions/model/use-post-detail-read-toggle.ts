@@ -2,11 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 
-import {
-  getPostDetailMetadataQueryKey,
-  getPostDetailViewerStateQueryKey,
-  useUpdatePostReadStatus,
-} from '@/entities/post-detail';
+import { getPostDetailQueryKey, useUpdatePostReadStatus } from '@/entities/post-detail';
 import { getPostListQueryKey } from '@/entities/post-list';
 import { useGetMe } from '@/entities/user';
 
@@ -45,8 +41,7 @@ export const usePostDetailReadToggle = ({ postId, isRead, onError, onRequireLogi
       {
         onSuccess: async () => {
           await Promise.all([
-            queryClient.invalidateQueries({ queryKey: getPostDetailMetadataQueryKey(postId) }),
-            queryClient.invalidateQueries({ queryKey: getPostDetailViewerStateQueryKey(postId) }),
+            queryClient.invalidateQueries({ queryKey: getPostDetailQueryKey(postId) }),
             queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
           ]);
           onSuccess?.(nextReadState);
