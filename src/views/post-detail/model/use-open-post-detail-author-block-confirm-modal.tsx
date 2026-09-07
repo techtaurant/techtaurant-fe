@@ -5,8 +5,8 @@ import { overlay } from 'overlay-kit';
 import { PostDetailAuthorBlockConfirmModal } from '@/views/post-detail/ui/post-detail-author-block-confirm-modal';
 
 type Params = {
-  authorId?: string;
-  authorName?: string;
+  authorId: string;
+  authorName: string;
   postId: string;
 };
 

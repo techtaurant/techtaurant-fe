@@ -5,7 +5,7 @@ export { useFollowUser } from '@/entities/user/api/use-follow-user';
 export { getMeQueryKey, useGetMe } from '@/entities/user/api/use-get-me';
 export { getMyBannedUsersQueryKey, useGetMyBannedUsers } from '@/entities/user/api/use-get-my-banned-users';
 export { getUserFollowingsQueryKey, useGetUserFollowings } from '@/entities/user/api/use-get-user-followings';
-export { prefetchGetUserProfileImage, useGetUserProfileImage } from '@/entities/user/api/use-get-user-profile-image';
+export { useGetUserProfileImage } from '@/entities/user/api/use-get-user-profile-image';
 export { useSearchUsers } from '@/entities/user/api/use-search-users';
 export { useUnfollowUser } from '@/entities/user/api/use-unfollow-user';
 export { UserAvatar } from '@/entities/user/ui/user-avatar';

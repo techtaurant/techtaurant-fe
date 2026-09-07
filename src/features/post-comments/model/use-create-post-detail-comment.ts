@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { getCommentRepliesQueryKey, getPostCommentsQueryKey, useCreateComment } from '@/entities/comment';
-import { getPostDetailMetadataQueryKey } from '@/entities/post-detail';
+import { getPostDetailQueryKey } from '@/entities/post-detail';
 import { getPostListQueryKey } from '@/entities/post-list';
 import { useGetMe } from '@/entities/user';
 import type { CreateCommentRequest } from '@/shared/api/generated';
@@ -26,7 +26,7 @@ export const useCreatePostDetailComment = ({ onRequireLogin }: Params) => {
     onSuccess: async ({ parentId, postId }) => {
       const invalidateQueries = [
         queryClient.invalidateQueries({ queryKey: getPostCommentsQueryKey(postId) }),
-        queryClient.invalidateQueries({ queryKey: getPostDetailMetadataQueryKey(postId) }),
+        queryClient.invalidateQueries({ queryKey: getPostDetailQueryKey(postId) }),
         queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
       ];
 

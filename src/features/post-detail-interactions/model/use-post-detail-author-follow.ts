@@ -11,7 +11,7 @@ import {
 } from '@/entities/user';
 
 type Params = {
-  authorId?: string;
+  authorId: string;
   onError?: (nextFollowingState: boolean) => void;
   onRequireLogin: () => void;
   onSuccess?: (nextFollowingState: boolean) => void;
@@ -25,14 +25,12 @@ export const usePostDetailAuthorFollow = ({ authorId, onError, onRequireLogin, o
   const currentUserId = me?.id;
   const isLoggedIn = !!me;
   const followingsQuery = useGetUserFollowings({
-    enabled: Boolean(currentUserId && authorId),
+    enabled: Boolean(currentUserId),
     userId: currentUserId,
   });
 
-  const isOwnAuthor = Boolean(currentUserId && authorId && currentUserId === authorId);
-  const isFollowingAuthor = Boolean(
-    authorId && followingsQuery.data?.some((followingUser) => followingUser.userId === authorId),
-  );
+  const isOwnAuthor = Boolean(currentUserId && currentUserId === authorId);
+  const isFollowingAuthor = Boolean(followingsQuery.data?.some((followingUser) => followingUser.userId === authorId));
   const isFollowingUpdating = followMutation.isPending || unfollowMutation.isPending || followingsQuery.isFetching;
 
   const invalidateFollowingQueries = async () => {
@@ -42,7 +40,7 @@ export const usePostDetailAuthorFollow = ({ authorId, onError, onRequireLogin, o
 
   const toggleAuthorFollow = () => {
     if (isAuthPending) return;
-    if (!authorId || isOwnAuthor) return;
+    if (isOwnAuthor) return;
 
     if (!isLoggedIn || !currentUserId) {
       onRequireLogin();

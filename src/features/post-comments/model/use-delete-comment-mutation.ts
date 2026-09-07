@@ -3,7 +3,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getCommentsQueryKey, useDeleteComment } from '@/entities/comment';
-import { getPostDetailMetadataQueryKey } from '@/entities/post-detail';
+import { getPostDetailQueryKey } from '@/entities/post-detail';
 import { getPostListQueryKey } from '@/entities/post-list';
 
 type Params = {
@@ -23,7 +23,7 @@ export const useDeleteCommentMutation = ({ postId }: Params) => {
   const invalidateCommentDeleteQueries = async () => {
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: getCommentsQueryKey() }),
-      queryClient.invalidateQueries({ queryKey: getPostDetailMetadataQueryKey(postId) }),
+      queryClient.invalidateQueries({ queryKey: getPostDetailQueryKey(postId) }),
       queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
     ]);
   };

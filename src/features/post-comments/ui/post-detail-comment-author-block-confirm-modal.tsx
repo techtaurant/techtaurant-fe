@@ -9,7 +9,6 @@ type Props = {
   isOpen: boolean;
   onClose: () => void;
   overlayId: string;
-  postId: string;
   targetUserId: string;
 };
 
@@ -22,10 +21,9 @@ export function PostDetailCommentAuthorBlockConfirmModal({
   isOpen,
   onClose,
   overlayId,
-  postId,
   targetUserId,
 }: Props) {
-  const { blockCommentAuthor, isCommentAuthorBlocking } = useCommentAuthorBlock({ postId });
+  const { blockCommentAuthor, isCommentAuthorBlocking } = useCommentAuthorBlock();
 
   const handleConfirmButtonClick = () => {
     if (isCommentAuthorBlocking) return;

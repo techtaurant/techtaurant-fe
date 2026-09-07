@@ -15,18 +15,17 @@ import { useOpenPostDetailAuthorBlockConfirmModal } from '@/views/post-detail/mo
 import { PostDetailHeaderActions } from '@/views/post-detail/ui/post-detail-header-actions';
 
 type Props = {
-  authorId?: string;
-  authorName?: string;
+  authorId: string;
+  authorName: string;
   categoryName?: string;
   createdAt: string;
   postId: string;
-  profileImageUrl?: string;
+  profileImageUrl: string;
   tags: PostListTagResponse[];
   title: string;
   updatedAt: string;
 };
 
-const UNKNOWN_AUTHOR_NAME = '알 수 없음';
 const FOLLOW_ERROR_MESSAGE = '팔로우에 실패했어요';
 const UNFOLLOW_ERROR_MESSAGE = '팔로우 취소에 실패했어요';
 
@@ -42,7 +41,6 @@ export function PostDetailArticleHeader({
   updatedAt,
 }: Props) {
   const { data: me, isPending: isAuthPending } = useGetMe();
-  const displayAuthorName = authorName ?? UNKNOWN_AUTHOR_NAME;
   const isLoggedIn = !!me;
   const { isFollowingAuthor, isFollowingUpdating, isOwnAuthor, toggleAuthorFollow } = usePostDetailAuthorFollow({
     authorId,
@@ -51,9 +49,7 @@ export function PostDetailArticleHeader({
     },
     onRequireLogin: startGoogleLogin,
     onSuccess: (nextFollowingState) => {
-      toast.success(
-        nextFollowingState ? `${displayAuthorName}님을 팔로우했어요` : `${displayAuthorName}님 팔로우를 해제했어요`,
-      );
+      toast.success(nextFollowingState ? `${authorName}님을 팔로우했어요` : `${authorName}님 팔로우를 해제했어요`);
     },
   });
   const openPostDetailAuthorBlockConfirmModal = useOpenPostDetailAuthorBlockConfirmModal({
@@ -94,9 +90,9 @@ export function PostDetailArticleHeader({
       </h1>
       <div className="mb-1 flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <UserAvatar name={displayAuthorName} profileImageUrl={profileImageUrl ?? ''} className="h-6 w-6 shrink-0" />
+          <UserAvatar name={authorName} profileImageUrl={profileImageUrl} className="h-6 w-6 shrink-0" />
           <div className="text-muted-foreground flex min-w-0 flex-wrap items-center gap-2 text-sm">
-            <span className="text-foreground truncate font-medium">{displayAuthorName}</span>
+            <span className="text-foreground truncate font-medium">{authorName}</span>
             <span>•</span>
             <time className="shrink-0" dateTime={createdAt}>
               {formatAbsoluteDate(createdAt)}

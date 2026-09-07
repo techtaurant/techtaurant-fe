@@ -6,8 +6,8 @@ import { Modal } from '@/shared/ui/modal';
 import { toast } from '@/shared/ui/toast';
 
 type Props = {
-  authorId?: string;
-  authorName?: string;
+  authorId: string;
+  authorName: string;
   overlayId: string;
   isOpen: boolean;
   onClose: () => void;
@@ -23,10 +23,10 @@ export function PostDetailAuthorBlockConfirmModal({ authorId, authorName, overla
   const { blockAuthor, isAuthorBlockPending } = usePostDetailAuthorBlock({
     authorId,
     onError: () => {
-      toast.error(authorName ? `${authorName}님을 차단하지 못했어요` : '사용자를 차단하지 못했어요');
+      toast.error(`${authorName}님을 차단하지 못했어요`);
     },
     onSuccess: () => {
-      toast.blocked(authorName ? `${authorName}님을 차단했어요` : '사용자를 차단했어요');
+      toast.blocked(`${authorName}님을 차단했어요`);
       onClose();
     },
     postId,

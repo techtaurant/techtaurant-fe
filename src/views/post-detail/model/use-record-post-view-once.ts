@@ -3,7 +3,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
-import { getPostDetailMetadataQueryKey, useRecordPostView } from '@/entities/post-detail';
+import { getPostDetailQueryKey, useRecordPostView } from '@/entities/post-detail';
 import { getPostListQueryKey } from '@/entities/post-list';
 
 type Params = {
@@ -12,24 +12,21 @@ type Params = {
 };
 
 export const useRecordPostViewOnce = ({ enabled, postId }: Params) => {
-  const didRecordRef = useRef(false);
+  const recordedPostIdRef = useRef<string | null>(null);
   const queryClient = useQueryClient();
   const { mutate } = useRecordPostView();
 
   useEffect(() => {
-    if (!enabled || didRecordRef.current) return;
+    if (!enabled || recordedPostIdRef.current === postId) return;
 
-    didRecordRef.current = true;
+    recordedPostIdRef.current = postId;
 
     mutate(
       { postId },
       {
-        onError: () => {
-          didRecordRef.current = false;
-        },
         onSuccess: () => {
           void Promise.all([
-            queryClient.invalidateQueries({ queryKey: getPostDetailMetadataQueryKey(postId) }),
+            queryClient.invalidateQueries({ queryKey: getPostDetailQueryKey(postId) }),
             queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
           ]);
         },

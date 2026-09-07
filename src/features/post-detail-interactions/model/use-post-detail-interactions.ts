@@ -3,12 +3,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 import type { PostLikeStatus } from '@/entities/post-detail';
-import {
-  getPostDetailMetadataQueryKey,
-  getPostDetailViewerStateQueryKey,
-  POST_LIKE_STATUS,
-  useUpdatePostLikeStatus,
-} from '@/entities/post-detail';
+import { getPostDetailQueryKey, POST_LIKE_STATUS, useUpdatePostLikeStatus } from '@/entities/post-detail';
 import { getPostListQueryKey } from '@/entities/post-list';
 import { useGetMe } from '@/entities/user';
 
@@ -47,8 +42,7 @@ export const usePostDetailInteractions = ({ postId, likeStatus, onRequireLogin }
       {
         onSuccess: async () => {
           await Promise.all([
-            queryClient.invalidateQueries({ queryKey: getPostDetailMetadataQueryKey(postId) }),
-            queryClient.invalidateQueries({ queryKey: getPostDetailViewerStateQueryKey(postId) }),
+            queryClient.invalidateQueries({ queryKey: getPostDetailQueryKey(postId) }),
             queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
           ]);
         },
