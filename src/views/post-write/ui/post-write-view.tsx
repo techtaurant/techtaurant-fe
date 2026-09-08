@@ -9,6 +9,8 @@ import { cn } from '@/shared/lib/cn';
 import { renderPostMarkdown } from '@/shared/lib/markdown/render-post-markdown';
 import { usePostWriteForm } from '@/views/post-write/model/use-post-write-form';
 import { PostWriteActions } from '@/views/post-write/ui/post-write-actions';
+import { PostWriteCategoryField } from '@/views/post-write/ui/post-write-category-field';
+import { PostWriteTagField } from '@/views/post-write/ui/post-write-tag-field';
 
 const TITLE_MAX_LENGTH = 200;
 
@@ -16,11 +18,20 @@ export function PostWriteView() {
   const router = useRouter();
 
   const { data: me, isPending: isAuthPending } = useGetMe();
-  const { content, handleContentChange, handleDraftSaveClick, handleTitleChange, isDraftSaving, title } =
-    usePostWriteForm();
+  const {
+    categoryPath,
+    content,
+    handleCategoryPathChange,
+    handleContentChange,
+    handleDraftSaveClick,
+    handleTagsChange,
+    handleTitleChange,
+    isDraftSaving,
+    tags,
+    title,
+  } = usePostWriteForm();
 
   const isLoggedIn = !!me;
-  // 본문 첨부 이미지는 업로드 작업(#45)에서 붙일 예정입니다. 지금은 참조를 치환할 presigned URL이 없습니다.
   const previewHtml = renderPostMarkdown(content, []);
 
   const handleExitClick = () => {
@@ -58,6 +69,13 @@ export function PostWriteView() {
             type="text"
             value={title}
           />
+
+          <div className="bg-foreground/80 mt-4 h-1.5 w-16" />
+
+          <div className="mt-6 flex flex-col gap-5">
+            <PostWriteCategoryField categoryPath={categoryPath} onCategoryPathChange={handleCategoryPathChange} />
+            <PostWriteTagField onTagsChange={handleTagsChange} tags={tags} />
+          </div>
 
           <textarea
             className={cn(

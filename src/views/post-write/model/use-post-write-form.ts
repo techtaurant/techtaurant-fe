@@ -1,82 +1,62 @@
 'use client';
 
-import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import { getPostListQueryKey } from '@/entities/post-list';
-import { getDraftDetailQueryKey, useGetDraftDetail, useSaveDraft } from '@/entities/post-write';
-import { CreatePostRequestStatus } from '@/shared/api/generated';
-import { toast } from '@/shared/ui/toast';
+import { useGetDraftDetail } from '@/entities/post-write';
+import type { PostDraft } from '@/views/post-write/model/post-draft';
+import { EMPTY_DRAFT } from '@/views/post-write/model/post-draft';
 import { useDraftIdSearchParam } from '@/views/post-write/model/use-draft-id-search-param';
-
-const DRAFT_SAVE_SUCCESS_MESSAGE = '임시저장했어요.';
-const DRAFT_SAVE_FAILED_MESSAGE = '임시저장하지 못했어요. 잠시 후 다시 시도해주세요.';
-const DRAFT_EMPTY_MESSAGE = '제목이나 본문을 입력해주세요.';
-
-type PostDraft = {
-  content: string;
-  title: string;
-};
-
-const EMPTY_DRAFT = { content: '', title: '' } satisfies PostDraft;
+import { useSaveDraftAction } from '@/views/post-write/model/use-save-draft-action';
 
 export const usePostWriteForm = () => {
   const [editedDraft, setEditedDraft] = useState<PostDraft | null>(null);
-  const queryClient = useQueryClient();
 
-  const { draftId, replaceDraftId } = useDraftIdSearchParam();
+  const { draftId } = useDraftIdSearchParam();
   const { data: savedDraft } = useGetDraftDetail({ postId: draftId });
-  const saveDraftMutation = useSaveDraft();
+  const { isDraftSaving, saveDraft } = useSaveDraftAction();
 
-  // 편집을 시작하면 편집본이, 그전에는 불러온 임시저장 글이 화면을 담당합니다.
-  const { content, title } = editedDraft ?? savedDraft ?? EMPTY_DRAFT;
-  const isDraftSaving = saveDraftMutation.isPending;
+  const restoredDraft = savedDraft && {
+    categoryPath: savedDraft.category?.path ?? '',
+    content: savedDraft.content,
+    tags: savedDraft.tags.map(({ name }) => name),
+    title: savedDraft.title,
+  };
+  const { categoryPath, content, tags, title } = editedDraft ?? restoredDraft ?? EMPTY_DRAFT;
+
+  const updateDraft = (changes: Partial<PostDraft>) => {
+    setEditedDraft({ categoryPath, content, tags, title, ...changes });
+  };
 
   const handleTitleChange = (nextTitle: string) => {
-    setEditedDraft({ content, title: nextTitle });
+    updateDraft({ title: nextTitle });
   };
 
   const handleContentChange = (nextContent: string) => {
-    setEditedDraft({ content: nextContent, title });
+    updateDraft({ content: nextContent });
   };
 
-  const applyDraftSaveResult = async (savedDraftId?: string) => {
-    if (savedDraftId && !draftId) {
-      replaceDraftId(savedDraftId);
-    }
+  const handleTagsChange = (nextTags: string[]) => {
+    updateDraft({ tags: nextTags });
+  };
 
-    const invalidateQueries = [queryClient.invalidateQueries({ queryKey: getPostListQueryKey() })];
-
-    if (savedDraftId) {
-      invalidateQueries.push(queryClient.invalidateQueries({ queryKey: getDraftDetailQueryKey(savedDraftId) }));
-    }
-
-    await Promise.all(invalidateQueries);
-
-    toast.success(DRAFT_SAVE_SUCCESS_MESSAGE);
+  const handleCategoryPathChange = (nextCategoryPath: string) => {
+    updateDraft({ categoryPath: nextCategoryPath });
   };
 
   const handleDraftSaveClick = () => {
-    if (!title.trim() && !content.trim()) {
-      toast.error(DRAFT_EMPTY_MESSAGE);
-      return;
-    }
-
-    saveDraftMutation.mutate(
-      { data: { content, status: CreatePostRequestStatus.DRAFT, title }, draftId },
-      {
-        onSuccess: applyDraftSaveResult,
-        onError: () => toast.error(DRAFT_SAVE_FAILED_MESSAGE),
-      },
-    );
+    saveDraft({ categoryPath, content, tags, title });
   };
 
   return {
+    categoryPath,
     content,
+    handleCategoryPathChange,
     handleContentChange,
     handleDraftSaveClick,
+    handleTagsChange,
     handleTitleChange,
     isDraftSaving,
+    tags,
     title,
   };
 };
