@@ -51,7 +51,10 @@ export function PostWriteCategoryField({ categoryPath, onCategoryPathChange }: P
   const isDepthLimitReached = getCategoryDepth(categoryPath) >= MAX_CATEGORY_DEPTH;
 
   const handleInputChange = (nextCategoryPath: string) => {
-    if (getCategoryDepth(nextCategoryPath) > MAX_CATEGORY_DEPTH) return;
+    const isOverLimit = getCategoryDepth(nextCategoryPath) > MAX_CATEGORY_DEPTH;
+    const isShortening = nextCategoryPath.length < categoryPath.length;
+
+    if (isOverLimit && !isShortening) return;
 
     onCategoryPathChange(nextCategoryPath);
     openSuggestions();
@@ -116,4 +119,4 @@ export function PostWriteCategoryField({ categoryPath, onCategoryPathChange }: P
   );
 }
 
-const getCategoryDepth = (path: string) => path.split('/').filter(Boolean).length;
+const getCategoryDepth = (path: string) => path.split('/').length;
