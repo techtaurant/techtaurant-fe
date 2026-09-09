@@ -48,7 +48,14 @@ export function PostWriteCategoryField({ categoryPath, onCategoryPathChange }: P
     query: trimmedCategoryPath,
     suggestions: suggestedPaths,
   });
-  const isDepthExceeded = categoryPath.split('/').filter(Boolean).length > MAX_CATEGORY_DEPTH;
+  const isDepthLimitReached = getCategoryDepth(categoryPath) >= MAX_CATEGORY_DEPTH;
+
+  const handleInputChange = (nextCategoryPath: string) => {
+    if (getCategoryDepth(nextCategoryPath) > MAX_CATEGORY_DEPTH) return;
+
+    onCategoryPathChange(nextCategoryPath);
+    openSuggestions();
+  };
 
   const applySuggestion = (path: string) => {
     onCategoryPathChange(path);
@@ -84,10 +91,7 @@ export function PostWriteCategoryField({ categoryPath, onCategoryPathChange }: P
         )}
         id={inputId}
         onBlur={closeSuggestions}
-        onChange={(event) => {
-          onCategoryPathChange(event.target.value);
-          openSuggestions();
-        }}
+        onChange={(event) => handleInputChange(event.target.value)}
         onFocus={openSuggestions}
         onKeyDown={handleInputKeyDown}
         placeholder="카테고리를 입력해주세요 (예: frontend/typescript)"
@@ -95,8 +99,8 @@ export function PostWriteCategoryField({ categoryPath, onCategoryPathChange }: P
         value={categoryPath}
       />
 
-      {isDepthExceeded && (
-        <p className="text-form-error-foreground mt-2 text-sm font-medium">
+      {isDepthLimitReached && (
+        <p className="text-suggestion-active-foreground mt-2 text-sm font-medium">
           카테고리는 최대 {MAX_CATEGORY_DEPTH}단계까지 지정할 수 있어요.
         </p>
       )}
@@ -111,3 +115,5 @@ export function PostWriteCategoryField({ categoryPath, onCategoryPathChange }: P
     </div>
   );
 }
+
+const getCategoryDepth = (path: string) => path.split('/').filter(Boolean).length;

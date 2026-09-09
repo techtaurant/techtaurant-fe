@@ -130,7 +130,7 @@ export function PostWriteTagField({ onTagsChange, tags }: Props) {
       </div>
 
       {isTagLimitReached && (
-        <p className="text-muted-foreground mt-2 text-sm font-medium">
+        <p className="text-suggestion-active-foreground mt-2 text-sm font-medium">
           태그는 최대 {MAX_TAG_COUNT}개까지 추가할 수 있어요.
         </p>
       )}
