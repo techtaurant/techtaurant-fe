@@ -1,6 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
-
-import { getSearchCategoriesApiQueryKey, searchCategoriesApi } from '@/shared/api/generated';
+import { useSearchCategoriesApi } from '@/shared/api/generated';
 
 type Params = {
   enabled?: boolean;
@@ -9,10 +7,14 @@ type Params = {
 };
 
 export const useSearchCategories = ({ enabled = true, path, userId = '' }: Params) => {
-  return useQuery({
-    queryKey: getSearchCategoriesApiQueryKey(userId, { path }),
-    queryFn: () => searchCategoriesApi(userId, { path }),
-    enabled: enabled && !!userId,
-    select: (response) => response.data ?? [],
-  });
+  return useSearchCategoriesApi(
+    userId,
+    { path },
+    {
+      query: {
+        enabled: enabled && !!userId,
+        select: (response) => response.data ?? [],
+      },
+    },
+  );
 };
