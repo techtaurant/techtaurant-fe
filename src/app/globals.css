@@ -28,6 +28,7 @@
   --color-following-button-foreground: var(--following-button-foreground);
   --color-form-error-border: var(--form-error-border);
   --color-form-error-foreground: var(--form-error-foreground);
+  --color-suggestion-active-foreground: var(--suggestion-active-foreground);
   --color-comment-submit-button: var(--comment-submit-button);
   --color-comment-submit-button-hover: var(--comment-submit-button-hover);
   --color-comment-input-hover: var(--comment-input-hover);
@@ -65,6 +66,7 @@
   --button-danger-surface: #f04452;
   --button-danger-surface-hover: #d92d3a;
   --save-button: #2879f0;
+  --suggestion-active-foreground: #2879f0;
   --save-button-hover: #2273eb;
   --follow-button-surface: #e8f2ff;
   --follow-button-surface-hover: #d8e9ff;
@@ -106,6 +108,7 @@
   --button-neutral-surface: #454545;
   --button-neutral-surface-hover: #4f4f4f;
   --save-button: #3585fa;
+  --suggestion-active-foreground: #61b0ff;
   --save-button-hover: #3b8ffd;
   --follow-button-surface: #1e2d49;
   --follow-button-surface-hover: #203455;
