@@ -3,10 +3,9 @@
 import { useGetMyNotifications, useMarkNotificationsRead } from '@/entities/notification';
 import type { NotificationListItemResponse } from '@/shared/api/generated';
 import { cn } from '@/shared/lib/cn';
-import { formatDisplayTime } from '@/shared/lib/format-date';
-import { sanitizeHtmlPayload } from '@/shared/lib/sanitize-html-payload';
 import { DropdownContent } from '@/shared/ui/dropdown';
 import { useDropdownContext } from '@/shared/ui/dropdown/providers/dropdown-provider';
+import { NotificationDropdownItem } from '@/widgets/header/ui/notification-dropdown-item';
 
 type Props = {
   unreadCount: number;
@@ -40,7 +39,7 @@ export function NotificationDropdownContent({ unreadCount }: Props) {
   return (
     <DropdownContent
       align="end"
-      className="border-border/80 text-foreground w-[338px] max-w-[calc(100vw-1.5rem)] rounded-[28px] p-0 shadow-[0_24px_70px_rgba(15,23,42,0.16)]"
+      className="border-border/80 text-foreground w-84.5 max-w-[calc(100vw-1.5rem)] rounded-[28px] p-0 shadow-[0_24px_70px_rgba(15,23,42,0.16)]"
     >
       <div className="border-border/70 flex items-center justify-between border-b px-4 pt-4 pb-3">
         <div className="flex items-center gap-2">
@@ -61,7 +60,7 @@ export function NotificationDropdownContent({ unreadCount }: Props) {
           모두 읽음
         </button>
       </div>
-      <div className="max-h-[372px] overflow-y-auto px-2 pt-2 pb-3">
+      <div className="max-h-93 overflow-y-auto px-2 pt-2 pb-3">
         {isPending && <p className="text-muted-foreground px-3 py-8 text-center text-sm">불러오는 중...</p>}
         {isError && <p className="text-muted-foreground px-4 py-12 text-center text-sm">알림을 불러오지 못했습니다.</p>}
         {!isPending && !isError && notifications.length === 0 && (
@@ -69,47 +68,12 @@ export function NotificationDropdownContent({ unreadCount }: Props) {
         )}
         <div className="divide-border/60 divide-y">
           {notifications.map((notification) => (
-            <button
+            <NotificationDropdownItem
               key={notification.id}
-              type="button"
-              disabled={isMarkingRead}
-              onClick={() => handleNotificationClick(notification)}
-              className={cn(
-                'group block w-full rounded-[18px] px-0 py-1 text-left transition-colors focus-visible:outline-none',
-                'disabled:cursor-wait',
-              )}
-            >
-              <div
-                className={cn(
-                  'flex items-start gap-3 rounded-[16px] px-3 py-2 transition-colors',
-                  'group-hover:bg-muted/50 group-focus-visible:bg-muted/60',
-                  !notification.isRead && 'bg-muted/25',
-                )}
-              >
-                <div className="relative min-w-0 flex-1">
-                  {!notification.isRead && (
-                    <span className="absolute top-1.5 -left-3 block h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                  )}
-                  <div className="flex max-h-[72px] items-start gap-2 overflow-hidden text-[12.5px] leading-[1.5]">
-                    {notification.thumbnailUrl && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={notification.thumbnailUrl}
-                        alt=""
-                        className="bg-muted h-[42px] w-[42px] shrink-0 rounded-full object-cover"
-                      />
-                    )}
-                    <p className="line-clamp-3 min-w-0 flex-1">{sanitizeHtmlPayload(notification.payloadHtml)}</p>
-                  </div>
-                  <time
-                    className="text-muted-foreground mt-2 block text-[11px] font-medium"
-                    dateTime={notification.createdAt}
-                  >
-                    {formatDisplayTime(notification.createdAt)}
-                  </time>
-                </div>
-              </div>
-            </button>
+              notification={notification}
+              isMarkingRead={isMarkingRead}
+              onClick={handleNotificationClick}
+            />
           ))}
         </div>
       </div>
