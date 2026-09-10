@@ -3,6 +3,7 @@
 import { useGetMyNotifications, useMarkNotificationsRead } from '@/entities/notification';
 import type { NotificationListItemResponse } from '@/shared/api/generated';
 import { cn } from '@/shared/lib/cn';
+import { formatDisplayTime } from '@/shared/lib/format-date';
 import { sanitizeHtmlPayload } from '@/shared/lib/sanitize-html-payload';
 import { DropdownContent } from '@/shared/ui/dropdown';
 import { useDropdownContext } from '@/shared/ui/dropdown/providers/dropdown-provider';
@@ -39,11 +40,11 @@ export function NotificationDropdownContent({ unreadCount }: Props) {
   return (
     <DropdownContent
       align="end"
-      className="border-border/80 w-84.5 max-w-[calc(100vw-1.5rem)] rounded-[28px] p-0 shadow-[0_24px_70px_rgba(15,23,42,0.16)]"
+      className="border-border/80 text-foreground w-[338px] max-w-[calc(100vw-1.5rem)] rounded-[28px] p-0 shadow-[0_24px_70px_rgba(15,23,42,0.16)]"
     >
       <div className="border-border/70 flex items-center justify-between border-b px-4 pt-4 pb-3">
         <div className="flex items-center gap-2">
-          <p className="text-[15px] font-semibold">알림</p>
+          <p className="text-[15px] font-semibold tracking-[-0.01em]">알림</p>
           <span className="bg-primary text-primary-foreground inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-semibold">
             {unreadCount}
           </span>
@@ -54,33 +55,63 @@ export function NotificationDropdownContent({ unreadCount }: Props) {
           onClick={handleMarkAllAsRead}
           className={cn(
             'text-muted-foreground rounded-full px-2 py-1 text-[11px] font-semibold transition-colors',
-            'hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40',
+            'hover:bg-muted/70 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40',
           )}
         >
           모두 읽음
         </button>
       </div>
-      <div className="max-h-93 overflow-y-auto px-2 pt-2 pb-3">
+      <div className="max-h-[372px] overflow-y-auto px-2 pt-2 pb-3">
         {isPending && <p className="text-muted-foreground px-3 py-8 text-center text-sm">불러오는 중...</p>}
         {isError && <p className="text-muted-foreground px-4 py-12 text-center text-sm">알림을 불러오지 못했습니다.</p>}
         {!isPending && !isError && notifications.length === 0 && (
           <p className="text-muted-foreground px-4 py-12 text-center text-sm">새 알림이 없습니다.</p>
         )}
-        {notifications.map((notification) => (
-          <button
-            key={notification.id}
-            type="button"
-            disabled={isMarkingRead}
-            onClick={() => handleNotificationClick(notification)}
-            className={cn(
-              'w-full rounded-2xl px-3 py-2 text-left text-sm transition-colors',
-              'hover:bg-muted/50 disabled:cursor-wait',
-              !notification.isRead && 'bg-muted/25',
-            )}
-          >
-            <p className="line-clamp-2">{sanitizeHtmlPayload(notification.payloadHtml)}</p>
-          </button>
-        ))}
+        <div className="divide-border/60 divide-y">
+          {notifications.map((notification) => (
+            <button
+              key={notification.id}
+              type="button"
+              disabled={isMarkingRead}
+              onClick={() => handleNotificationClick(notification)}
+              className={cn(
+                'group block w-full rounded-[18px] px-0 py-1 text-left transition-colors focus-visible:outline-none',
+                'disabled:cursor-wait',
+              )}
+            >
+              <div
+                className={cn(
+                  'flex items-start gap-3 rounded-[16px] px-3 py-2 transition-colors',
+                  'group-hover:bg-muted/50 group-focus-visible:bg-muted/60',
+                  !notification.isRead && 'bg-muted/25',
+                )}
+              >
+                <div className="relative min-w-0 flex-1">
+                  {!notification.isRead && (
+                    <span className="absolute top-1.5 -left-3 block h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                  )}
+                  <div className="flex max-h-[72px] items-start gap-2 overflow-hidden text-[12.5px] leading-[1.5]">
+                    {notification.thumbnailUrl && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={notification.thumbnailUrl}
+                        alt=""
+                        className="bg-muted h-[42px] w-[42px] shrink-0 rounded-full object-cover"
+                      />
+                    )}
+                    <p className="line-clamp-3 min-w-0 flex-1">{sanitizeHtmlPayload(notification.payloadHtml)}</p>
+                  </div>
+                  <time
+                    className="text-muted-foreground mt-2 block text-[11px] font-medium"
+                    dateTime={notification.createdAt}
+                  >
+                    {formatDisplayTime(notification.createdAt)}
+                  </time>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
     </DropdownContent>
   );
