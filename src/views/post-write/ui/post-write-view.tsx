@@ -1,21 +1,24 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { useGetMe } from '@/entities/user';
 import { startGoogleLogin } from '@/features/auth';
 import { cn } from '@/shared/lib/cn';
 import { renderPostMarkdown } from '@/shared/lib/markdown/render-post-markdown';
+import { usePostImageUpload } from '@/views/post-write/model/use-post-image-upload';
 import { usePostWriteForm } from '@/views/post-write/model/use-post-write-form';
 import { PostWriteActions } from '@/views/post-write/ui/post-write-actions';
 import { PostWriteCategoryField } from '@/views/post-write/ui/post-write-category-field';
+import { PostWriteImageButton } from '@/views/post-write/ui/post-write-image-button';
 import { PostWriteTagField } from '@/views/post-write/ui/post-write-tag-field';
 
 const TITLE_MAX_LENGTH = 200;
 
 export function PostWriteView() {
   const router = useRouter();
+  const contentRef = useRef<HTMLTextAreaElement>(null);
 
   const { data: me, isPending: isAuthPending } = useGetMe();
   const {
@@ -30,6 +33,12 @@ export function PostWriteView() {
     tags,
     title,
   } = usePostWriteForm();
+
+  const { handleImageSelect, isUploading } = usePostImageUpload({
+    content,
+    contentRef,
+    onContentChange: handleContentChange,
+  });
 
   const isLoggedIn = !!me;
   const previewHtml = renderPostMarkdown(content, []);
@@ -75,9 +84,13 @@ export function PostWriteView() {
           <div className="mt-6 flex flex-col gap-5">
             <PostWriteCategoryField categoryPath={categoryPath} onCategoryPathChange={handleCategoryPathChange} />
             <PostWriteTagField onTagsChange={handleTagsChange} tags={tags} />
+            <div className="flex flex-wrap items-center gap-3">
+              <PostWriteImageButton isUploading={isUploading} onImageSelect={handleImageSelect} />
+            </div>
           </div>
 
           <textarea
+            ref={contentRef}
             className={cn(
               'text-foreground mt-6 field-sizing-content min-h-100 w-full resize-none overflow-hidden border-0 bg-transparent px-0 pt-2 font-mono text-base leading-8',
               'placeholder:text-muted-foreground focus:outline-none',
