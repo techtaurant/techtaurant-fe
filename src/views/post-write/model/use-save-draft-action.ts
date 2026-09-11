@@ -3,7 +3,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getPostListQueryKey } from '@/entities/post-list';
-import { getDraftDetailQueryKey, useSaveDraft } from '@/entities/post-write';
+import { extractAttachmentIds, getDraftDetailQueryKey, useSaveDraft } from '@/entities/post-write';
 import { CreatePostRequestStatus } from '@/shared/api/generated';
 import { toast } from '@/shared/ui/toast';
 import type { PostDraft } from '@/views/post-write/model/post-draft';
@@ -45,7 +45,14 @@ export const useSaveDraftAction = () => {
 
     saveDraftMutation.mutate(
       {
-        data: { categoryPath, content, status: CreatePostRequestStatus.DRAFT, tags, title },
+        data: {
+          attachmentIds: extractAttachmentIds(content),
+          categoryPath,
+          content,
+          status: CreatePostRequestStatus.DRAFT,
+          tags,
+          title,
+        },
         draftId,
       },
       {
