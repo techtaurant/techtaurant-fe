@@ -1,0 +1,7 @@
+const BYTES_PER_KILOBYTE = 1024;
+const BYTES_PER_MEGABYTE = BYTES_PER_KILOBYTE * BYTES_PER_KILOBYTE;
+
+export const ATTACHMENT_MAX_SIZE_MEGABYTES = 30;
+export const ATTACHMENT_MAX_SIZE_BYTES = ATTACHMENT_MAX_SIZE_MEGABYTES * BYTES_PER_MEGABYTE;
+
+export const ATTACHMENT_ACCEPTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif'];

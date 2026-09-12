@@ -1,21 +1,26 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { useGetMe } from '@/entities/user';
 import { startGoogleLogin } from '@/features/auth';
 import { cn } from '@/shared/lib/cn';
-import { renderPostMarkdown } from '@/shared/lib/markdown/render-post-markdown';
+import { usePostAttachmentPreviews } from '@/views/post-write/model/use-post-attachment-previews';
+import { usePostImageUpload } from '@/views/post-write/model/use-post-image-upload';
 import { usePostWriteForm } from '@/views/post-write/model/use-post-write-form';
 import { PostWriteActions } from '@/views/post-write/ui/post-write-actions';
 import { PostWriteCategoryField } from '@/views/post-write/ui/post-write-category-field';
+import { PostWriteImageButton } from '@/views/post-write/ui/post-write-image-button';
+import { PostWritePreview } from '@/views/post-write/ui/post-write-preview';
 import { PostWriteTagField } from '@/views/post-write/ui/post-write-tag-field';
+import { PostWriteThumbnailField } from '@/views/post-write/ui/post-write-thumbnail-field';
 
 const TITLE_MAX_LENGTH = 200;
 
 export function PostWriteView() {
   const router = useRouter();
+  const contentRef = useRef<HTMLTextAreaElement>(null);
 
   const { data: me, isPending: isAuthPending } = useGetMe();
   const {
@@ -25,14 +30,22 @@ export function PostWriteView() {
     handleContentChange,
     handleDraftSaveClick,
     handleTagsChange,
+    handleThumbnailChange,
     handleTitleChange,
     isDraftSaving,
     tags,
+    thumbnailAttachmentId,
     title,
   } = usePostWriteForm();
 
+  const { attachmentPreviewUrls, thumbnailUrl } = usePostAttachmentPreviews({ content, thumbnailAttachmentId });
+  const { handleImageSelect, isUploading } = usePostImageUpload({
+    content,
+    contentRef,
+    onContentChange: handleContentChange,
+  });
+
   const isLoggedIn = !!me;
-  const previewHtml = renderPostMarkdown(content, []);
 
   const handleExitClick = () => {
     router.push('/');
@@ -75,9 +88,14 @@ export function PostWriteView() {
           <div className="mt-6 flex flex-col gap-5">
             <PostWriteCategoryField categoryPath={categoryPath} onCategoryPathChange={handleCategoryPathChange} />
             <PostWriteTagField onTagsChange={handleTagsChange} tags={tags} />
+            <div className="flex flex-wrap items-center gap-3">
+              <PostWriteImageButton isUploading={isUploading} onImageSelect={handleImageSelect} />
+              <PostWriteThumbnailField onThumbnailChange={handleThumbnailChange} thumbnailUrl={thumbnailUrl} />
+            </div>
           </div>
 
           <textarea
+            ref={contentRef}
             className={cn(
               'text-foreground mt-6 field-sizing-content min-h-100 w-full resize-none overflow-hidden border-0 bg-transparent px-0 pt-2 font-mono text-base leading-8',
               'placeholder:text-muted-foreground focus:outline-none',
@@ -95,13 +113,7 @@ export function PostWriteView() {
             'xl:col-start-2 xl:row-span-2 xl:row-start-1 xl:min-h-0 xl:overflow-y-auto',
           )}
         >
-          <div
-            className={cn(
-              'text-foreground text-base leading-8 wrap-break-word whitespace-pre-wrap',
-              '[&_pre]:whitespace-pre-wrap',
-            )}
-            dangerouslySetInnerHTML={{ __html: previewHtml }}
-          />
+          <PostWritePreview attachmentPresignedUrls={attachmentPreviewUrls} content={content} />
         </div>
       </div>
 

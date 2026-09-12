@@ -19,12 +19,13 @@ export const usePostWriteForm = () => {
     categoryPath: savedDraft.category?.path ?? '',
     content: savedDraft.content,
     tags: savedDraft.tags.map(({ name }) => name),
+    thumbnailAttachmentId: savedDraft.thumbnailAttachmentId ?? '',
     title: savedDraft.title,
   };
-  const { categoryPath, content, tags, title } = editedDraft ?? restoredDraft ?? EMPTY_DRAFT;
+  const { categoryPath, content, tags, thumbnailAttachmentId, title } = editedDraft ?? restoredDraft ?? EMPTY_DRAFT;
 
   const updateDraft = (changes: Partial<PostDraft>) => {
-    setEditedDraft({ categoryPath, content, tags, title, ...changes });
+    setEditedDraft({ categoryPath, content, tags, thumbnailAttachmentId, title, ...changes });
   };
 
   const handleTitleChange = (nextTitle: string) => {
@@ -43,8 +44,12 @@ export const usePostWriteForm = () => {
     updateDraft({ categoryPath: nextCategoryPath });
   };
 
+  const handleThumbnailChange = (nextThumbnailAttachmentId: string) => {
+    updateDraft({ thumbnailAttachmentId: nextThumbnailAttachmentId });
+  };
+
   const handleDraftSaveClick = () => {
-    saveDraft({ categoryPath, content, tags, title });
+    saveDraft({ categoryPath, content, tags, thumbnailAttachmentId, title });
   };
 
   return {
@@ -54,9 +59,11 @@ export const usePostWriteForm = () => {
     handleContentChange,
     handleDraftSaveClick,
     handleTagsChange,
+    handleThumbnailChange,
     handleTitleChange,
     isDraftSaving,
     tags,
+    thumbnailAttachmentId,
     title,
   };
 };
