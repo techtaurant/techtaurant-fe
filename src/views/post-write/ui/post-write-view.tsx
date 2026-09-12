@@ -6,12 +6,13 @@ import { useEffect, useRef } from 'react';
 import { useGetMe } from '@/entities/user';
 import { startGoogleLogin } from '@/features/auth';
 import { cn } from '@/shared/lib/cn';
-import { renderPostMarkdown } from '@/shared/lib/markdown/render-post-markdown';
+import { usePostAttachmentPreviews } from '@/views/post-write/model/use-post-attachment-previews';
 import { usePostImageUpload } from '@/views/post-write/model/use-post-image-upload';
 import { usePostWriteForm } from '@/views/post-write/model/use-post-write-form';
 import { PostWriteActions } from '@/views/post-write/ui/post-write-actions';
 import { PostWriteCategoryField } from '@/views/post-write/ui/post-write-category-field';
 import { PostWriteImageButton } from '@/views/post-write/ui/post-write-image-button';
+import { PostWritePreview } from '@/views/post-write/ui/post-write-preview';
 import { PostWriteTagField } from '@/views/post-write/ui/post-write-tag-field';
 
 const TITLE_MAX_LENGTH = 200;
@@ -34,6 +35,7 @@ export function PostWriteView() {
     title,
   } = usePostWriteForm();
 
+  const { attachmentPreviewUrls } = usePostAttachmentPreviews({ content });
   const { handleImageSelect, isUploading } = usePostImageUpload({
     content,
     contentRef,
@@ -41,7 +43,6 @@ export function PostWriteView() {
   });
 
   const isLoggedIn = !!me;
-  const previewHtml = renderPostMarkdown(content, []);
 
   const handleExitClick = () => {
     router.push('/');
@@ -108,13 +109,7 @@ export function PostWriteView() {
             'xl:col-start-2 xl:row-span-2 xl:row-start-1 xl:min-h-0 xl:overflow-y-auto',
           )}
         >
-          <div
-            className={cn(
-              'text-foreground text-base leading-8 wrap-break-word whitespace-pre-wrap',
-              '[&_pre]:whitespace-pre-wrap',
-            )}
-            dangerouslySetInnerHTML={{ __html: previewHtml }}
-          />
+          <PostWritePreview attachmentPresignedUrls={attachmentPreviewUrls} content={content} />
         </div>
       </div>
 
