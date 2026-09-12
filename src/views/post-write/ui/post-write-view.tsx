@@ -14,6 +14,7 @@ import { PostWriteCategoryField } from '@/views/post-write/ui/post-write-categor
 import { PostWriteImageButton } from '@/views/post-write/ui/post-write-image-button';
 import { PostWritePreview } from '@/views/post-write/ui/post-write-preview';
 import { PostWriteTagField } from '@/views/post-write/ui/post-write-tag-field';
+import { PostWriteThumbnailField } from '@/views/post-write/ui/post-write-thumbnail-field';
 
 const TITLE_MAX_LENGTH = 200;
 
@@ -29,13 +30,15 @@ export function PostWriteView() {
     handleContentChange,
     handleDraftSaveClick,
     handleTagsChange,
+    handleThumbnailChange,
     handleTitleChange,
     isDraftSaving,
     tags,
+    thumbnailAttachmentId,
     title,
   } = usePostWriteForm();
 
-  const { attachmentPreviewUrls } = usePostAttachmentPreviews({ content });
+  const { attachmentPreviewUrls, thumbnailUrl } = usePostAttachmentPreviews({ content, thumbnailAttachmentId });
   const { handleImageSelect, isUploading } = usePostImageUpload({
     content,
     contentRef,
@@ -87,6 +90,7 @@ export function PostWriteView() {
             <PostWriteTagField onTagsChange={handleTagsChange} tags={tags} />
             <div className="flex flex-wrap items-center gap-3">
               <PostWriteImageButton isUploading={isUploading} onImageSelect={handleImageSelect} />
+              <PostWriteThumbnailField onThumbnailChange={handleThumbnailChange} thumbnailUrl={thumbnailUrl} />
             </div>
           </div>
 

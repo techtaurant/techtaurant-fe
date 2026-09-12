@@ -4,10 +4,23 @@ import { extractAttachmentIds, useGetTmpPreviewUrls } from '@/entities/post-writ
 
 type Params = {
   content: string;
+  thumbnailAttachmentId: string;
 };
 
-export const usePostAttachmentPreviews = ({ content }: Params) => {
-  const { data: attachmentPreviewUrls } = useGetTmpPreviewUrls({ attachmentIds: extractAttachmentIds(content) });
+export const usePostAttachmentPreviews = ({ content, thumbnailAttachmentId }: Params) => {
+  const contentAttachmentIds = extractAttachmentIds(content);
+  const requestedAttachmentIds = thumbnailAttachmentId
+    ? [...new Set([thumbnailAttachmentId, ...contentAttachmentIds])]
+    : contentAttachmentIds;
 
-  return { attachmentPreviewUrls: attachmentPreviewUrls ?? [] };
+  const { data: attachmentPreviewUrls } = useGetTmpPreviewUrls({ attachmentIds: requestedAttachmentIds });
+
+  const presignedUrlByAttachmentId = new Map(
+    (attachmentPreviewUrls ?? []).map(({ attachmentId, presignedUrl }) => [attachmentId, presignedUrl]),
+  );
+
+  return {
+    attachmentPreviewUrls: attachmentPreviewUrls ?? [],
+    thumbnailUrl: presignedUrlByAttachmentId.get(thumbnailAttachmentId),
+  };
 };

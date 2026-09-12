@@ -37,7 +37,7 @@ export const useSaveDraftAction = () => {
     await Promise.all(invalidateQueries);
   };
 
-  const saveDraft = ({ categoryPath, content, tags, title }: PostDraft) => {
+  const saveDraft = ({ categoryPath, content, tags, thumbnailAttachmentId, title }: PostDraft) => {
     if (!title.trim() && !content.trim()) {
       toast.error(DRAFT_EMPTY_MESSAGE);
       return;
@@ -52,6 +52,7 @@ export const useSaveDraftAction = () => {
           status: CreatePostRequestStatus.DRAFT,
           tags,
           title,
+          ...(thumbnailAttachmentId && { thumbnailAttachmentId }),
         },
         draftId,
       },
