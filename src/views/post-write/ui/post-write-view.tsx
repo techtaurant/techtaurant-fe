@@ -35,12 +35,11 @@ export function PostWriteView() {
     handleTagsChange,
     handleThumbnailChange,
     handleTitleChange,
-    invalidPublishField,
     isDraftSaving,
     tags,
     thumbnailAttachmentId,
     title,
-  } = usePostWriteForm();
+  } = usePostWriteForm({ categoryRef, contentRef, titleRef });
 
   const { attachmentPreviewUrls, thumbnailUrl } = usePostAttachmentPreviews({ content, thumbnailAttachmentId });
   const { handleImageSelect, isUploading } = usePostImageUpload({
@@ -60,16 +59,6 @@ export function PostWriteView() {
 
     startGoogleLogin();
   }, [isAuthPending, isLoggedIn]);
-
-  useEffect(() => {
-    if (invalidPublishField === 'title') {
-      titleRef.current?.focus();
-    } else if (invalidPublishField === 'categoryPath') {
-      categoryRef.current?.focus();
-    } else if (invalidPublishField === 'content') {
-      contentRef.current?.focus();
-    }
-  }, [invalidPublishField]);
 
   if (!isLoggedIn) {
     return null;

@@ -8,12 +8,6 @@ import { getDraftDetailQueryKey, useSaveDraft } from '@/entities/post-write';
 import { CreatePostRequestStatus } from '@/shared/api/generated';
 import { toast } from '@/shared/ui/toast';
 import { buildCreatePostRequest } from '@/views/post-write/lib/build-create-post-request';
-import {
-  CATEGORY_REQUIRED_MESSAGE,
-  CONTENT_REQUIRED_MESSAGE,
-  getPublishInvalidField,
-  TITLE_REQUIRED_MESSAGE,
-} from '@/views/post-write/lib/get-publish-invalid-field';
 import type { PostDraft } from '@/views/post-write/model/post-draft';
 import { useDraftIdSearchParam } from '@/views/post-write/model/use-draft-id-search-param';
 
@@ -43,23 +37,6 @@ export const usePublishAction = () => {
   };
 
   const publish = (draft: PostDraft, { onSuccess }: { onSuccess?: () => void } = {}) => {
-    const invalidField = getPublishInvalidField(draft);
-
-    if (invalidField === 'title') {
-      toast.error(TITLE_REQUIRED_MESSAGE);
-      return;
-    }
-
-    if (invalidField === 'categoryPath') {
-      toast.error(CATEGORY_REQUIRED_MESSAGE);
-      return;
-    }
-
-    if (invalidField === 'content') {
-      toast.error(CONTENT_REQUIRED_MESSAGE);
-      return;
-    }
-
     publishMutation.mutate(
       {
         data: buildCreatePostRequest(draft, CreatePostRequestStatus.PUBLISHED),

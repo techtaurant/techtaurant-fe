@@ -1,5 +1,6 @@
 'use client';
 
+import type { RefObject } from 'react';
 import { useState } from 'react';
 
 import { useGetDraftDetail } from '@/entities/post-write';
@@ -8,7 +9,6 @@ import {
   CATEGORY_REQUIRED_MESSAGE,
   CONTENT_REQUIRED_MESSAGE,
   getPublishInvalidField,
-  type PublishInvalidField,
   TITLE_REQUIRED_MESSAGE,
 } from '@/views/post-write/lib/get-publish-invalid-field';
 import type { PostDraft } from '@/views/post-write/model/post-draft';
@@ -17,9 +17,14 @@ import { useDraftIdSearchParam } from '@/views/post-write/model/use-draft-id-sea
 import { useOpenPostWritePublishConfirmModal } from '@/views/post-write/model/use-open-post-write-publish-confirm-modal';
 import { useSaveDraftAction } from '@/views/post-write/model/use-save-draft-action';
 
-export const usePostWriteForm = () => {
+type PostWriteFormRefs = {
+  categoryRef: RefObject<HTMLInputElement | null>;
+  contentRef: RefObject<HTMLTextAreaElement | null>;
+  titleRef: RefObject<HTMLInputElement | null>;
+};
+
+export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWriteFormRefs) => {
   const [editedDraft, setEditedDraft] = useState<PostDraft | null>(null);
-  const [invalidPublishField, setInvalidPublishField] = useState<PublishInvalidField>(null);
 
   const { draftId } = useDraftIdSearchParam();
   const { data: savedDraft } = useGetDraftDetail({ postId: draftId });
@@ -40,12 +45,10 @@ export const usePostWriteForm = () => {
   };
 
   const handleTitleChange = (nextTitle: string) => {
-    if (invalidPublishField === 'title') setInvalidPublishField(null);
     updateDraft({ title: nextTitle });
   };
 
   const handleContentChange = (nextContent: string) => {
-    if (invalidPublishField === 'content') setInvalidPublishField(null);
     updateDraft({ content: nextContent });
   };
 
@@ -54,7 +57,6 @@ export const usePostWriteForm = () => {
   };
 
   const handleCategoryPathChange = (nextCategoryPath: string) => {
-    if (invalidPublishField === 'categoryPath') setInvalidPublishField(null);
     updateDraft({ categoryPath: nextCategoryPath });
   };
 
@@ -67,21 +69,23 @@ export const usePostWriteForm = () => {
   };
 
   const handlePublishClick = () => {
-    const nextInvalidField = getPublishInvalidField({ categoryPath, content, title });
-    setInvalidPublishField(nextInvalidField);
+    const invalidField = getPublishInvalidField({ categoryPath, content, title });
 
-    if (nextInvalidField === 'title') {
+    if (invalidField === 'title') {
       toast.error(TITLE_REQUIRED_MESSAGE);
+      titleRef.current?.focus();
       return;
     }
 
-    if (nextInvalidField === 'categoryPath') {
+    if (invalidField === 'categoryPath') {
       toast.error(CATEGORY_REQUIRED_MESSAGE);
+      categoryRef.current?.focus();
       return;
     }
 
-    if (nextInvalidField === 'content') {
+    if (invalidField === 'content') {
       toast.error(CONTENT_REQUIRED_MESSAGE);
+      contentRef.current?.focus();
       return;
     }
 
@@ -98,7 +102,6 @@ export const usePostWriteForm = () => {
     handleTagsChange,
     handleThumbnailChange,
     handleTitleChange,
-    invalidPublishField,
     isDraftSaving,
     tags,
     thumbnailAttachmentId,
