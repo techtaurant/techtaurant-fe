@@ -36,6 +36,7 @@ export default defineConfig({
           usePrefetch: true,
         },
         operations: {
+          // POST지만 서버 상태를 바꾸지 않는 조회성 API라 멱등함. 폴링(refetchInterval)으로 재요청해야 해서 useQuery로 override.
           issueTmpPreviewUrls: {
             query: {
               useQuery: true,
