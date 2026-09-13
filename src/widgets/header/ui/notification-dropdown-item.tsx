@@ -3,6 +3,7 @@ import Image from 'next/image';
 import type { NotificationListItemResponse } from '@/shared/api/generated';
 import { cn } from '@/shared/lib/cn';
 import { formatDisplayTime } from '@/shared/lib/format-date';
+import { sanitizeNotificationPayload } from '@/widgets/header/lib/sanitize-notification-payload';
 
 type Props = {
   notification: NotificationListItemResponse;
@@ -40,7 +41,7 @@ export function NotificationDropdownItem({ notification, isMarkingRead, onClick 
             )}
             <div
               className="line-clamp-3 min-w-0 flex-1"
-              dangerouslySetInnerHTML={{ __html: notification.payloadHtml }}
+              dangerouslySetInnerHTML={{ __html: sanitizeNotificationPayload(notification.payloadHtml) }}
             />
           </div>
           <time className="text-muted-foreground mt-2 block text-[11px] font-medium" dateTime={notification.createdAt}>
