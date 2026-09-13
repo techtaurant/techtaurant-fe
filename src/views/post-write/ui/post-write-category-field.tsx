@@ -1,6 +1,6 @@
 'use client';
 
-import type { KeyboardEvent } from 'react';
+import type { KeyboardEvent, RefObject } from 'react';
 import { useId } from 'react';
 
 import { useSearchCategories } from '@/entities/category';
@@ -19,10 +19,11 @@ const MAX_CATEGORY_DEPTH = 5;
 
 type Props = {
   categoryPath: string;
+  inputRef?: RefObject<HTMLInputElement | null>;
   onCategoryPathChange: (categoryPath: string) => void;
 };
 
-export function PostWriteCategoryField({ categoryPath, onCategoryPathChange }: Props) {
+export function PostWriteCategoryField({ categoryPath, inputRef, onCategoryPathChange }: Props) {
   const inputId = useId();
 
   const trimmedCategoryPath = categoryPath.trim();
@@ -87,6 +88,7 @@ export function PostWriteCategoryField({ categoryPath, onCategoryPathChange }: P
       </label>
 
       <input
+        ref={inputRef}
         autoComplete="off"
         className={cn(
           'text-foreground w-full bg-transparent px-0 py-0 text-base font-bold transition-colors duration-200',
