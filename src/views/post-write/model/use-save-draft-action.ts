@@ -3,9 +3,10 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getPostListQueryKey } from '@/entities/post-list';
-import { extractAttachmentIds, getDraftDetailQueryKey, useSaveDraft } from '@/entities/post-write';
+import { getDraftDetailQueryKey, useSaveDraft } from '@/entities/post-write';
 import { CreatePostRequestStatus } from '@/shared/api/generated';
 import { toast } from '@/shared/ui/toast';
+import { buildCreatePostRequest } from '@/views/post-write/lib/build-create-post-request';
 import type { PostDraft } from '@/views/post-write/model/post-draft';
 import { useDraftIdSearchParam } from '@/views/post-write/model/use-draft-id-search-param';
 
@@ -37,23 +38,15 @@ export const useSaveDraftAction = () => {
     await Promise.all(invalidateQueries);
   };
 
-  const saveDraft = ({ categoryPath, content, tags, thumbnailAttachmentId, title }: PostDraft) => {
-    if (!title.trim() && !content.trim()) {
+  const saveDraft = (draft: PostDraft) => {
+    if (!draft.title.trim() && !draft.content.trim()) {
       toast.error(DRAFT_EMPTY_MESSAGE);
       return;
     }
 
     saveDraftMutation.mutate(
       {
-        data: {
-          attachmentIds: extractAttachmentIds(content),
-          categoryPath,
-          content,
-          status: CreatePostRequestStatus.DRAFT,
-          tags,
-          title,
-          ...(thumbnailAttachmentId && { thumbnailAttachmentId }),
-        },
+        data: buildCreatePostRequest(draft, CreatePostRequestStatus.DRAFT),
         draftId,
       },
       {
