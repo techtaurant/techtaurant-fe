@@ -1,12 +1,5 @@
-import mockDOMPurify from 'dompurify';
-
 import type { PostDetailAttachmentPresignedUrlResponse } from '@/shared/api/generated';
 import { renderPostMarkdown } from '@/shared/lib/markdown/render-post-markdown';
-
-jest.mock('isomorphic-dompurify', () => ({
-  __esModule: true,
-  default: mockDOMPurify,
-}));
 
 function renderHtml(markdown: string, attachmentPresignedUrls: PostDetailAttachmentPresignedUrlResponse[] = []) {
   const container = document.createElement('div');
