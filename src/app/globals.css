@@ -46,6 +46,7 @@
   --shadow-floating-sm: var(--floating-shadow-sm);
   --shadow-floating-lg: var(--floating-shadow-lg);
   --shadow-floating-top: var(--floating-shadow-top);
+  --color-modal-surface: var(--modal-surface);
 }
 
 :root {
@@ -58,8 +59,8 @@
   --border: #dadce0;
   --button-primary: #111827;
   --button-primary-hover: #1f2937;
-  --button-primary-surface: rgb(56, 139, 252);
-  --button-primary-surface-hover: rgb(43, 124, 235);
+  --button-primary-surface: rgb(43, 124, 235);
+  --button-primary-surface-hover: rgb(56, 139, 252);
   --button-neutral-surface: #e6e8ea;
   --button-neutral-surface-hover: #dcdfe3;
   --post-write-preview-surface: #f0f5f0;
@@ -93,6 +94,7 @@
   --floating-shadow-sm: 0 16px 36px rgb(15 23 42 / 0.12);
   --floating-shadow-lg: 0 24px 70px rgb(15 23 42 / 0.16);
   --floating-shadow-top: 0 -6px 20px rgb(15 23 42 / 0.14);
+  --modal-surface: var(--background);
 }
 
 [data-mode='dark'] {
@@ -131,6 +133,7 @@
   --floating-shadow-sm: 0 16px 36px rgb(0 0 0 / 0.24);
   --floating-shadow-lg: 0 24px 70px rgb(0 0 0 / 0.28);
   --floating-shadow-top: 0 -6px 20px rgb(0 0 0 / 0.36);
+  --modal-surface: #2c2c35;
 }
 
 @layer base {

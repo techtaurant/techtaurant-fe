@@ -21,6 +21,8 @@ const TITLE_MAX_LENGTH = 200;
 export function PostWriteView() {
   const router = useRouter();
   const contentRef = useRef<HTMLTextAreaElement>(null);
+  const titleRef = useRef<HTMLInputElement>(null);
+  const categoryRef = useRef<HTMLInputElement>(null);
 
   const { data: me, isPending: isAuthPending } = useGetMe();
   const {
@@ -29,6 +31,7 @@ export function PostWriteView() {
     handleCategoryPathChange,
     handleContentChange,
     handleDraftSaveClick,
+    handlePublishClick,
     handleTagsChange,
     handleThumbnailChange,
     handleTitleChange,
@@ -36,7 +39,7 @@ export function PostWriteView() {
     tags,
     thumbnailAttachmentId,
     title,
-  } = usePostWriteForm();
+  } = usePostWriteForm({ categoryRef, contentRef, titleRef });
 
   const { attachmentPreviewUrls, thumbnailUrl } = usePostAttachmentPreviews({ content, thumbnailAttachmentId });
   const { handleImageSelect, isUploading } = usePostImageUpload({
@@ -72,6 +75,7 @@ export function PostWriteView() {
           )}
         >
           <input
+            ref={titleRef}
             className={cn(
               'text-foreground w-full border-0 bg-transparent px-0 py-0 text-3xl font-semibold tracking-tight transition-colors duration-200',
               'placeholder:text-muted-foreground focus:outline-none',
@@ -86,7 +90,11 @@ export function PostWriteView() {
           <div className="bg-foreground/80 mt-4 h-1.5 w-16" />
 
           <div className="mt-6 flex flex-col gap-5">
-            <PostWriteCategoryField categoryPath={categoryPath} onCategoryPathChange={handleCategoryPathChange} />
+            <PostWriteCategoryField
+              categoryPath={categoryPath}
+              inputRef={categoryRef}
+              onCategoryPathChange={handleCategoryPathChange}
+            />
             <PostWriteTagField onTagsChange={handleTagsChange} tags={tags} />
             <div className="flex flex-wrap items-center gap-3">
               <PostWriteImageButton isUploading={isUploading} onImageSelect={handleImageSelect} />
@@ -127,6 +135,7 @@ export function PostWriteView() {
           isDraftSaving={isDraftSaving}
           onDraftSaveClick={handleDraftSaveClick}
           onExitClick={handleExitClick}
+          onPublishClick={handlePublishClick}
         />
       </div>
     </div>
