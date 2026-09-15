@@ -1,15 +1,9 @@
 import { render, screen } from '@testing-library/react';
-import mockDOMPurify from 'dompurify';
 
 import type { PostDetailAttachmentPresignedUrlResponse } from '@/shared/api/generated';
 import type * as MarkdownRendererModule from '@/shared/lib/markdown/render-post-markdown';
 import { renderPostMarkdown } from '@/shared/lib/markdown/render-post-markdown';
 import { PostDetailContent } from '@/views/post-detail/ui/post-detail-content';
-
-jest.mock('isomorphic-dompurify', () => ({
-  __esModule: true,
-  default: mockDOMPurify,
-}));
 
 jest.mock('@/shared/lib/markdown/render-post-markdown', () => {
   const actual = jest.requireActual<typeof MarkdownRendererModule>('@/shared/lib/markdown/render-post-markdown');

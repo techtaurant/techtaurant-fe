@@ -1,11 +1,4 @@
-import mockDOMPurify from 'dompurify';
-
 import { sanitizeNotificationPayload } from '@/widgets/header/lib/sanitize-notification-payload';
-
-jest.mock('isomorphic-dompurify', () => ({
-  __esModule: true,
-  default: mockDOMPurify,
-}));
 
 describe('sanitizeNotificationPayload', () => {
   it('strong만 남기고 실행 가능한 HTML을 제거한다', () => {

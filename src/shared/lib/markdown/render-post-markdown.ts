@@ -1,6 +1,6 @@
-import DOMPurify from 'isomorphic-dompurify';
 import MarkdownIt from 'markdown-it';
 import type Token from 'markdown-it/lib/token.mjs';
+import sanitizeHtml from 'sanitize-html';
 
 import type { PostDetailAttachmentPresignedUrlResponse } from '@/shared/api/generated';
 
@@ -101,8 +101,6 @@ const ALLOWED_ATTRIBUTES = [
   'type',
 ];
 
-const ALLOWED_URI = /^(?:(?:https?|mailto):|(?:\/|#|\?))/i;
-
 const IMAGE_TOKEN_TYPE = 'image';
 
 /**
@@ -125,12 +123,11 @@ export function renderPostMarkdown(
 
   const renderedHtml = markdown.renderer.render(tokens, markdown.options, env);
 
-  return DOMPurify.sanitize(renderedHtml, {
-    ALLOWED_ATTR: ALLOWED_ATTRIBUTES,
-    ALLOWED_TAGS,
-    ALLOWED_URI_REGEXP: ALLOWED_URI,
-    ALLOW_ARIA_ATTR: false,
-    ALLOW_DATA_ATTR: false,
+  return sanitizeHtml(renderedHtml, {
+    allowedAttributes: { '*': ALLOWED_ATTRIBUTES },
+    allowedSchemes: ['http', 'https', 'mailto'],
+    allowedTags: ALLOWED_TAGS,
+    allowProtocolRelative: false,
   });
 }
 
@@ -147,8 +144,10 @@ const replaceAttachmentImageSources = (tokens: Token[], presignedUrlByAttachment
     const attachmentId = token.attrGet('src');
     const presignedUrl = attachmentId && presignedUrlByAttachmentId.get(attachmentId);
 
-    if (!presignedUrl) continue;
-
-    token.attrSet('src', presignedUrl);
+    if (presignedUrl) {
+      token.attrSet('src', presignedUrl);
+    } else if (attachmentId?.match(/^[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$/)) {
+      token.attrSet('src', '');
+    }
   }
 };

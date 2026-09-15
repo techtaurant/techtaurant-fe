@@ -1,5 +1,5 @@
-import DOMPurify from 'isomorphic-dompurify';
+import sanitizeHtml from 'sanitize-html';
 
 export const sanitizeNotificationPayload = (payloadHtml: string) => {
-  return DOMPurify.sanitize(payloadHtml, { ALLOWED_ATTR: [], ALLOWED_TAGS: ['strong'] });
+  return sanitizeHtml(payloadHtml, { allowedAttributes: {}, allowedTags: ['strong'] });
 };
