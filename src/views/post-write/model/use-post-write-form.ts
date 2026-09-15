@@ -31,6 +31,12 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
   const { isDraftSaving, saveDraft } = useSaveDraftAction();
   const openPostWritePublishConfirmModal = useOpenPostWritePublishConfirmModal();
 
+  const invalidFieldConfig = {
+    categoryPath: { message: CATEGORY_REQUIRED_MESSAGE, ref: categoryRef },
+    content: { message: CONTENT_REQUIRED_MESSAGE, ref: contentRef },
+    title: { message: TITLE_REQUIRED_MESSAGE, ref: titleRef },
+  };
+
   const restoredDraft = savedDraft && {
     categoryPath: savedDraft.category?.path ?? '',
     content: savedDraft.content,
@@ -71,21 +77,10 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
   const handlePublishClick = () => {
     const invalidField = getPublishInvalidField({ categoryPath, content, title });
 
-    if (invalidField === 'title') {
-      toast.error(TITLE_REQUIRED_MESSAGE);
-      titleRef.current?.focus();
-      return;
-    }
-
-    if (invalidField === 'categoryPath') {
-      toast.error(CATEGORY_REQUIRED_MESSAGE);
-      categoryRef.current?.focus();
-      return;
-    }
-
-    if (invalidField === 'content') {
-      toast.error(CONTENT_REQUIRED_MESSAGE);
-      contentRef.current?.focus();
+    if (invalidField) {
+      const { message, ref } = invalidFieldConfig[invalidField];
+      toast.error(message);
+      ref.current?.focus();
       return;
     }
 
