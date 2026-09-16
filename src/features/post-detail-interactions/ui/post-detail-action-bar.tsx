@@ -10,6 +10,7 @@ import { PostDetailReadToggleButton } from '@/features/post-detail-interactions/
 import { PostDetailShareButton } from '@/features/post-detail-interactions/ui/post-detail-share-button';
 
 type Props = {
+  authorId: string;
   commentCount: number;
   isRead?: boolean;
   likeCount: number;
@@ -21,6 +22,7 @@ type Props = {
 };
 
 export function PostDetailActionBar({
+  authorId,
   commentCount,
   isRead,
   likeCount,
@@ -30,13 +32,14 @@ export function PostDetailActionBar({
   postId,
   viewCount,
 }: Props) {
-  const { isPending: isAuthPending } = useGetMe();
+  const { data: me, isPending: isAuthPending } = useGetMe();
   const { isLikePending, toggleDislike, toggleLike } = usePostDetailInteractions({
     likeStatus,
     onRequireLogin,
     postId,
   });
   const { sharePostDetail } = usePostDetailShare();
+  const isOwnPost = !!me && me.id === authorId;
   const isLiked = likeStatus === POST_LIKE_STATUS.LIKE;
   const isDisliked = likeStatus === POST_LIKE_STATUS.DISLIKE;
 
@@ -58,7 +61,9 @@ export function PostDetailActionBar({
       </div>
 
       <div className="flex shrink-0 items-center justify-end gap-1 md:gap-3">
-        <PostDetailReadToggleButton isRead={isRead ?? false} onRequireLogin={onRequireLogin} postId={postId} />
+        {!isOwnPost && (
+          <PostDetailReadToggleButton isRead={isRead ?? false} onRequireLogin={onRequireLogin} postId={postId} />
+        )}
         <PostDetailShareButton onShare={sharePostDetail} />
       </div>
     </div>

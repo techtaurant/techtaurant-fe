@@ -51,6 +51,7 @@ export function PostDetailView({ postId }: Props) {
         />
         <PostDetailContent attachmentPresignedUrls={post.attachmentPresignedUrls} content={post.content} />
         <PostDetailActionBar
+          authorId={authorId}
           commentCount={post.commentCount}
           isRead={post.isRead}
           likeCount={post.likeCount}
