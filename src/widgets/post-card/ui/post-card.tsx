@@ -3,16 +3,21 @@ import Link from 'next/link';
 import { PostPreview, PostStatList, PostTagList, PostThumbnail } from '@/entities/post-list';
 import { UserAvatar } from '@/entities/user';
 import type { PostListItemResponse } from '@/shared/api/generated';
+import { PostListItemResponseStatus } from '@/shared/api/generated';
 import { cn } from '@/shared/lib/cn';
 import { formatDisplayTime } from '@/shared/lib/format-date';
+import { Badge } from '@/shared/ui/badge';
 
 type Props = {
   post: PostListItemResponse;
 };
 
+const PRIVATE_BADGE_LABEL = '비공개';
+
 // TODO: 작성자 클릭, 게시물 클릭 시 읽음 처리, 태그 클릭 구현 필요
 export function PostCard({ post }: Props) {
   const thumbnailUrl = post.thumbnailUrl?.trim();
+  const isPrivate = post.status === PostListItemResponseStatus.PRIVATE;
 
   return (
     <article
@@ -34,6 +39,7 @@ export function PostCard({ post }: Props) {
             <time className="text-muted-foreground text-xs" dateTime={post.updatedAt}>
               {formatDisplayTime(post.updatedAt)}
             </time>
+            {isPrivate && <Badge>{PRIVATE_BADGE_LABEL}</Badge>}
           </div>
           <PostPreview title={post.title} content={post.content} />
           <div className={cn('flex flex-wrap items-center gap-3', 'md:gap-4')}>
