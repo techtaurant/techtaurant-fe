@@ -6,6 +6,7 @@ import { CreatePostRequestStatus } from '@/shared/api/generated';
 import { Button } from '@/shared/ui/button';
 import { Modal } from '@/shared/ui/modal';
 import type { PostDraft } from '@/views/post-write/model/post-draft';
+import type { PostVisibility } from '@/views/post-write/model/post-visibility';
 import { usePublishAction } from '@/views/post-write/model/use-publish-action';
 
 type Props = {
@@ -22,12 +23,13 @@ const PUBLISH_CANCEL_ACTION = '취소';
 const VISIBILITY_PUBLIC_TITLE = '공개';
 const VISIBILITY_PUBLIC_DESCRIPTION = '모든 사용자가 이 게시물을 볼 수 있어요.';
 const VISIBILITY_PRIVATE_TITLE = '비공개';
-const VISIBILITY_PRIVATE_DESCRIPTION = '나만 볼 수 있어요. 곧 지원할 예정이에요.';
+const VISIBILITY_PRIVATE_DESCRIPTION = '나만 볼 수 있어요.';
 
 export function PostWritePublishConfirmModal({ draft, isOpen, onClose, overlayId }: Props) {
-  const [visibility, setVisibility] = useState<CreatePostRequestStatus>(CreatePostRequestStatus.PUBLISHED);
+  const [visibility, setVisibility] = useState<PostVisibility>(CreatePostRequestStatus.PUBLISHED);
 
   const isPublicSelected = visibility === CreatePostRequestStatus.PUBLISHED;
+  const isPrivateSelected = visibility === CreatePostRequestStatus.PRIVATE;
 
   const { isPublishing, publish } = usePublishAction();
 
@@ -40,9 +42,13 @@ export function PostWritePublishConfirmModal({ draft, isOpen, onClose, overlayId
     setVisibility(CreatePostRequestStatus.PUBLISHED);
   };
 
+  const handlePrivateSelect = () => {
+    setVisibility(CreatePostRequestStatus.PRIVATE);
+  };
+
   const handlePublishClick = () => {
     if (isPublishing) return;
-    publish(draft, { onSuccess: onClose });
+    publish(draft, visibility, { onSuccess: onClose });
   };
 
   return (
@@ -65,9 +71,9 @@ export function PostWritePublishConfirmModal({ draft, isOpen, onClose, overlayId
         </Button>
 
         <Button
-          variant="outline"
+          variant={isPrivateSelected ? 'primarySurface' : 'outline'}
           className="h-auto w-full flex-col items-start gap-1 rounded-xl p-4 text-left"
-          disabled
+          onClick={handlePrivateSelect}
         >
           <span className="text-base font-semibold">{VISIBILITY_PRIVATE_TITLE}</span>
           <span className="text-sm font-normal opacity-80">{VISIBILITY_PRIVATE_DESCRIPTION}</span>
