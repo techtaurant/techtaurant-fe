@@ -8,8 +8,10 @@ import { useGetMe, UserAvatar } from '@/entities/user';
 import { startGoogleLogin } from '@/features/auth';
 import { usePostDetailAuthorFollow } from '@/features/post-detail-interactions';
 import type { PostListTagResponse } from '@/shared/api/generated';
+import { PostDetailResponseStatus } from '@/shared/api/generated';
 import { cn } from '@/shared/lib/cn';
 import { formatAbsoluteDate } from '@/shared/lib/format-date';
+import { Badge } from '@/shared/ui/badge';
 import { toast } from '@/shared/ui/toast';
 import { useOpenPostDetailAuthorBlockConfirmModal } from '@/views/post-detail/model/use-open-post-detail-author-block-confirm-modal';
 import { PostDetailHeaderActions } from '@/views/post-detail/ui/post-detail-header-actions';
@@ -21,6 +23,7 @@ type Props = {
   createdAt: string;
   postId: string;
   profileImageUrl: string;
+  status: PostDetailResponseStatus;
   tags: PostListTagResponse[];
   title: string;
   updatedAt: string;
@@ -28,6 +31,7 @@ type Props = {
 
 const FOLLOW_ERROR_MESSAGE = '팔로우에 실패했어요';
 const UNFOLLOW_ERROR_MESSAGE = '팔로우 취소에 실패했어요';
+const PRIVATE_BADGE_LABEL = '비공개';
 
 export function PostDetailArticleHeader({
   authorId,
@@ -36,6 +40,7 @@ export function PostDetailArticleHeader({
   createdAt,
   postId,
   profileImageUrl,
+  status,
   tags,
   title,
   updatedAt,
@@ -58,6 +63,7 @@ export function PostDetailArticleHeader({
     postId,
   });
   const shouldShowUpdatedAt = Date.parse(updatedAt) > Date.parse(createdAt);
+  const isPrivate = status === PostDetailResponseStatus.PRIVATE;
 
   const handleBlockAuthorButtonClick = () => {
     if (isAuthPending) return;
@@ -105,6 +111,7 @@ export function PostDetailArticleHeader({
                 </time>
               </>
             )}
+            {isPrivate && <Badge>{PRIVATE_BADGE_LABEL}</Badge>}
           </div>
         </div>
         <PostDetailHeaderActions

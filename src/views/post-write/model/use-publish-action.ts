@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation';
 
 import { getPostListQueryKey } from '@/entities/post-list';
 import { getDraftDetailQueryKey, useSaveDraft } from '@/entities/post-write';
-import { CreatePostRequestStatus } from '@/shared/api/generated';
 import { toast } from '@/shared/ui/toast';
 import { buildCreatePostRequest } from '@/views/post-write/lib/build-create-post-request';
 import type { PostDraft } from '@/views/post-write/model/post-draft';
+import type { PostVisibility } from '@/views/post-write/model/post-visibility';
 import { useDraftIdSearchParam } from '@/views/post-write/model/use-draft-id-search-param';
 
 const PUBLISH_FAILED_MESSAGE = '발행하지 못했어요. 잠시 후 다시 시도해주세요.';
@@ -36,10 +36,10 @@ export const usePublishAction = () => {
     router.push(`/posts/${publishedPostId}`);
   };
 
-  const publish = (draft: PostDraft, { onSuccess }: { onSuccess?: () => void } = {}) => {
+  const publish = (draft: PostDraft, status: PostVisibility, { onSuccess }: { onSuccess?: () => void } = {}) => {
     publishMutation.mutate(
       {
-        data: buildCreatePostRequest(draft, CreatePostRequestStatus.PUBLISHED),
+        data: buildCreatePostRequest(draft, status),
         draftId,
       },
       {

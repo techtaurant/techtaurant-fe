@@ -14,6 +14,7 @@ import { PostDetailCommentActions } from '@/features/post-comments/ui/post-detai
 import { PostDetailCommentEditor } from '@/features/post-comments/ui/post-detail-comment-editor';
 import { cn } from '@/shared/lib/cn';
 import { formatDisplayTime } from '@/shared/lib/format-date';
+import { Badge } from '@/shared/ui/badge';
 
 type Props = {
   children?: ReactNode;
@@ -27,6 +28,7 @@ type Props = {
 const DELETED_COMMENT_MESSAGE = '삭제된 댓글입니다.';
 const BANNED_COMMENT_AUTHOR_NAME = '차단한 사용자';
 const BANNED_COMMENT_CONTENT = '차단한 사용자의 댓글입니다.';
+const POST_AUTHOR_BADGE_LABEL = '작성자';
 
 export function PostDetailCommentItem({
   children,
@@ -73,9 +75,9 @@ export function PostDetailCommentItem({
           <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1">
             <span className={cn('text-foreground font-semibold', isCompact ? 'text-xs' : 'text-sm')}>{authorName}</span>
             {isPostAuthor && (
-              <span className="bg-comment-author-badge-background text-comment-author-badge-foreground inline-flex items-center rounded-full px-2 py-0.5 text-[11px] leading-4 font-semibold">
-                작성자
-              </span>
+              <Badge className="bg-comment-author-badge-background text-comment-author-badge-foreground border-0">
+                {POST_AUTHOR_BADGE_LABEL}
+              </Badge>
             )}
             <span className={cn('text-muted-foreground', isCompact ? 'text-[11px]' : 'text-xs')}>
               {formatDisplayTime(comment.createdAt)}

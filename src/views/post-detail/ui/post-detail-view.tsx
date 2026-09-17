@@ -44,12 +44,14 @@ export function PostDetailView({ postId }: Props) {
           createdAt={post.createdAt}
           postId={postId}
           profileImageUrl={post.author.profileImageUrl}
+          status={post.status}
           tags={post.tags}
           title={post.title}
           updatedAt={post.updatedAt}
         />
         <PostDetailContent attachmentPresignedUrls={post.attachmentPresignedUrls} content={post.content} />
         <PostDetailActionBar
+          authorId={authorId}
           commentCount={post.commentCount}
           isRead={post.isRead}
           likeCount={post.likeCount}
