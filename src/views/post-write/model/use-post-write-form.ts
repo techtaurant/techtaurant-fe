@@ -47,6 +47,7 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     thumbnailAttachmentId: savedDraft.thumbnailAttachmentId ?? '',
     title: savedDraft.title,
   };
+  const lastSavedAt = savedDraft?.updatedAt;
   const draft = editedDraft ?? restoredDraft ?? EMPTY_DRAFT;
   const { categoryPath, content, tags, thumbnailAttachmentId, title } = draft;
 
@@ -115,6 +116,7 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     handleThumbnailChange,
     handleTitleChange,
     isDraftSaving,
+    lastSavedAt,
     tags,
     thumbnailAttachmentId,
     title,
