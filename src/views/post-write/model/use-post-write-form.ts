@@ -102,6 +102,7 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
       return;
     }
 
+    cancelScheduledSave();
     openPostWritePublishConfirmModal({ categoryPath, content, tags, thumbnailAttachmentId, title });
   };
 

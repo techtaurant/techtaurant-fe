@@ -7,11 +7,11 @@ import type { PostDraft } from '@/views/post-write/model/post-draft';
 
 const AUTO_SAVE_DEBOUNCE_MS = 30_000;
 const AUTO_SAVE_RETRY_INITIAL_DELAY_MS = 5_000;
-const AUTO_SAVE_RETRY_MAX_DELAY_MS = 30_000;
+const AUTO_SAVE_MAX_RETRY_COUNT = 2;
 
-const AUTO_SAVE_FAILED_MESSAGE = '자동 저장에 실패했어요. 계속 시도할게요.';
+const AUTO_SAVE_FAILED_MESSAGE = '자동 저장에 실패했어요.';
 
-type PostWriteAutoSaveResult = 'saved' | 'skipped' | 'failed';
+type PostWriteAutoSaveResult = 'saved' | 'failed';
 
 type Params = {
   draft: PostDraft;
@@ -22,38 +22,42 @@ type Params = {
 
 export const usePostWriteAutoSave = ({ draft, hasUnsavedChanges, onSaveSuccess, save }: Params) => {
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const retryDelayRef = useRef(AUTO_SAVE_RETRY_INITIAL_DELAY_MS);
   const hasWarnedRef = useRef(false);
+  const retryCountRef = useRef(0);
+  const saveGenerationRef = useRef(0);
+  const isSavingRef = useRef(false);
 
   const draftRef = useRef(draft);
-  const hasUnsavedChangesRef = useRef(hasUnsavedChanges);
   const saveRef = useRef(save);
   const onSaveSuccessRef = useRef(onSaveSuccess);
 
   useEffect(() => {
     draftRef.current = draft;
-    hasUnsavedChangesRef.current = hasUnsavedChanges;
     saveRef.current = save;
     onSaveSuccessRef.current = onSaveSuccess;
   });
 
   const cancelScheduledSave = useCallback(() => {
+    saveGenerationRef.current += 1;
+
     if (!timerRef.current) return;
     clearTimeout(timerRef.current);
     timerRef.current = undefined;
   }, []);
 
   const runSave = useCallback(async (): Promise<PostWriteAutoSaveResult> => {
-    if (!hasUnsavedChangesRef.current) return 'skipped';
+    const sentDraft = draftRef.current;
+    isSavingRef.current = true;
 
     try {
-      await saveRef.current(draftRef.current);
-      retryDelayRef.current = AUTO_SAVE_RETRY_INITIAL_DELAY_MS;
+      await saveRef.current(sentDraft);
       hasWarnedRef.current = false;
-      onSaveSuccessRef.current();
+      if (draftRef.current === sentDraft) onSaveSuccessRef.current();
       return 'saved';
     } catch {
       return 'failed';
+    } finally {
+      isSavingRef.current = false;
     }
   }, []);
 
@@ -61,9 +65,17 @@ export const usePostWriteAutoSave = ({ draft, hasUnsavedChanges, onSaveSuccess, 
     if (!hasUnsavedChanges) return;
 
     const scheduleSave = (delayMs: number) => {
+      const saveGeneration = saveGenerationRef.current;
+
       timerRef.current = setTimeout(async () => {
+        if (isSavingRef.current) {
+          scheduleSave(AUTO_SAVE_DEBOUNCE_MS);
+          return;
+        }
+
         const result = await runSave();
 
+        if (saveGeneration !== saveGenerationRef.current) return;
         if (result !== 'failed') return;
 
         if (!hasWarnedRef.current) {
@@ -71,12 +83,15 @@ export const usePostWriteAutoSave = ({ draft, hasUnsavedChanges, onSaveSuccess, 
           toast.error(AUTO_SAVE_FAILED_MESSAGE);
         }
 
-        const retryDelayMs = retryDelayRef.current;
-        retryDelayRef.current = Math.min(retryDelayMs * 2, AUTO_SAVE_RETRY_MAX_DELAY_MS);
+        if (retryCountRef.current >= AUTO_SAVE_MAX_RETRY_COUNT) return;
+
+        const retryDelayMs = AUTO_SAVE_RETRY_INITIAL_DELAY_MS * 2 ** retryCountRef.current;
+        retryCountRef.current += 1;
         scheduleSave(retryDelayMs);
       }, delayMs);
     };
 
+    retryCountRef.current = 0;
     scheduleSave(AUTO_SAVE_DEBOUNCE_MS);
 
     return cancelScheduledSave;
