@@ -15,7 +15,9 @@ import type { PostDraft } from '@/views/post-write/model/post-draft';
 import { EMPTY_DRAFT } from '@/views/post-write/model/post-draft';
 import { useDraftIdSearchParam } from '@/views/post-write/model/use-draft-id-search-param';
 import { useOpenPostWritePublishConfirmModal } from '@/views/post-write/model/use-open-post-write-publish-confirm-modal';
+import { usePostWriteAutoSave } from '@/views/post-write/model/use-post-write-auto-save';
 import { useSaveDraftAction } from '@/views/post-write/model/use-save-draft-action';
+import { useUnsavedChangesWarning } from '@/views/post-write/model/use-unsaved-changes-warning';
 
 type PostWriteFormRefs = {
   categoryRef: RefObject<HTMLInputElement | null>;
@@ -25,10 +27,11 @@ type PostWriteFormRefs = {
 
 export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWriteFormRefs) => {
   const [editedDraft, setEditedDraft] = useState<PostDraft | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const { draftId } = useDraftIdSearchParam();
   const { data: savedDraft } = useGetDraftDetail({ postId: draftId });
-  const { isDraftSaving, saveDraft } = useSaveDraftAction();
+  const { isDraftSaving, saveDraft, saveDraftSilentlyOrThrow } = useSaveDraftAction();
   const openPostWritePublishConfirmModal = useOpenPostWritePublishConfirmModal();
 
   const invalidFieldConfig = {
@@ -44,10 +47,21 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     thumbnailAttachmentId: savedDraft.thumbnailAttachmentId ?? '',
     title: savedDraft.title,
   };
-  const { categoryPath, content, tags, thumbnailAttachmentId, title } = editedDraft ?? restoredDraft ?? EMPTY_DRAFT;
+  const lastSavedAt = savedDraft?.updatedAt;
+  const draft = editedDraft ?? restoredDraft ?? EMPTY_DRAFT;
+  const { categoryPath, content, tags, thumbnailAttachmentId, title } = draft;
+
+  const { cancelScheduledSave } = usePostWriteAutoSave({
+    draft,
+    hasUnsavedChanges,
+    onSaveSuccess: () => setHasUnsavedChanges(false),
+    save: saveDraftSilentlyOrThrow,
+  });
+  useUnsavedChangesWarning(hasUnsavedChanges);
 
   const updateDraft = (changes: Partial<PostDraft>) => {
     setEditedDraft({ categoryPath, content, tags, thumbnailAttachmentId, title, ...changes });
+    setHasUnsavedChanges(true);
   };
 
   const handleTitleChange = (nextTitle: string) => {
@@ -71,7 +85,11 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
   };
 
   const handleDraftSaveClick = () => {
-    saveDraft({ categoryPath, content, tags, thumbnailAttachmentId, title });
+    cancelScheduledSave();
+    saveDraft(
+      { categoryPath, content, tags, thumbnailAttachmentId, title },
+      { onSuccess: () => setHasUnsavedChanges(false) },
+    );
   };
 
   const handlePublishClick = () => {
@@ -84,6 +102,7 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
       return;
     }
 
+    cancelScheduledSave();
     openPostWritePublishConfirmModal({ categoryPath, content, tags, thumbnailAttachmentId, title });
   };
 
@@ -98,6 +117,7 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     handleThumbnailChange,
     handleTitleChange,
     isDraftSaving,
+    lastSavedAt,
     tags,
     thumbnailAttachmentId,
     title,
