@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
 import { useGetMe } from '@/entities/user';
@@ -19,7 +18,6 @@ import { PostWriteThumbnailField } from '@/views/post-write/ui/post-write-thumbn
 const TITLE_MAX_LENGTH = 200;
 
 export function PostWriteView() {
-  const router = useRouter();
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
   const categoryRef = useRef<HTMLInputElement>(null);
@@ -52,7 +50,7 @@ export function PostWriteView() {
   const isLoggedIn = !!me;
 
   const handleExitClick = () => {
-    router.push('/');
+    window.location.href = '/';
   };
 
   useEffect(() => {
