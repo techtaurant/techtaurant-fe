@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import { getSearchParamValue } from '@/shared/lib/search-params';
 
-const DRAFT_ID_SEARCH_PARAM_KEY = 'draftId';
+export const DRAFT_ID_SEARCH_PARAM_KEY = 'draftId';
 
 export const useDraftIdSearchParam = () => {
   const router = useRouter();
