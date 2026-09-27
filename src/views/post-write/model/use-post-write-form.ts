@@ -14,6 +14,7 @@ import {
 import type { PostDraft } from '@/views/post-write/model/post-draft';
 import { EMPTY_DRAFT } from '@/views/post-write/model/post-draft';
 import { useDraftIdSearchParam } from '@/views/post-write/model/use-draft-id-search-param';
+import { useDraftListNavigation } from '@/views/post-write/model/use-draft-list-navigation';
 import { useOpenPostWritePublishConfirmModal } from '@/views/post-write/model/use-open-post-write-publish-confirm-modal';
 import { usePostWriteAutoSave } from '@/views/post-write/model/use-post-write-auto-save';
 import { useSaveDraftAction } from '@/views/post-write/model/use-save-draft-action';
@@ -51,13 +52,17 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
   const draft = editedDraft ?? restoredDraft ?? EMPTY_DRAFT;
   const { categoryPath, content, tags, thumbnailAttachmentId, title } = draft;
 
-  const { cancelScheduledSave } = usePostWriteAutoSave({
+  const { cancelScheduledSave, flushPendingSave } = usePostWriteAutoSave({
     draft,
     hasUnsavedChanges,
     onSaveSuccess: () => setHasUnsavedChanges(false),
     save: saveDraftSilentlyOrThrow,
   });
   useUnsavedChangesWarning(hasUnsavedChanges);
+  const { closeDraftList, isDraftListOpen, openDraftList, selectDraft } = useDraftListNavigation({
+    flushPendingSave,
+    onDraftSwitch: () => setEditedDraft(null),
+  });
 
   const updateDraft = (changes: Partial<PostDraft>) => {
     setEditedDraft({ categoryPath, content, tags, thumbnailAttachmentId, title, ...changes });
@@ -108,6 +113,7 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
 
   return {
     categoryPath,
+    closeDraftList,
     content,
     handleCategoryPathChange,
     handleContentChange,
@@ -116,8 +122,11 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     handleTagsChange,
     handleThumbnailChange,
     handleTitleChange,
+    isDraftListOpen,
     isDraftSaving,
     lastSavedAt,
+    openDraftList,
+    selectDraft,
     tags,
     thumbnailAttachmentId,
     title,

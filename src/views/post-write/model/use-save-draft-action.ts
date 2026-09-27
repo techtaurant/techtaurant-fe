@@ -3,7 +3,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getPostListQueryKey } from '@/entities/post-list';
-import { getDraftDetailQueryKey, useSaveDraft } from '@/entities/post-write';
+import { getDraftDetailQueryKey, getDraftListQueryKey, useSaveDraft } from '@/entities/post-write';
 import { CreatePostRequestStatus } from '@/shared/api/generated';
 import { toast } from '@/shared/ui/toast';
 import { buildCreatePostRequest } from '@/views/post-write/lib/build-create-post-request';
@@ -27,7 +27,10 @@ export const useSaveDraftAction = () => {
       replaceDraftId(savedDraftId);
     }
 
-    const invalidateQueries = [queryClient.invalidateQueries({ queryKey: getPostListQueryKey() })];
+    const invalidateQueries = [
+      queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
+      queryClient.invalidateQueries({ queryKey: getDraftListQueryKey() }),
+    ];
 
     if (savedDraftId) {
       invalidateQueries.push(queryClient.invalidateQueries({ queryKey: getDraftDetailQueryKey(savedDraftId) }));
