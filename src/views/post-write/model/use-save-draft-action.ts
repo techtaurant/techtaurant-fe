@@ -27,8 +27,6 @@ export const useSaveDraftAction = () => {
       replaceDraftId(savedDraftId);
     }
 
-    toast.success(DRAFT_SAVE_SUCCESS_MESSAGE);
-
     const invalidateQueries = [queryClient.invalidateQueries({ queryKey: getPostListQueryKey() })];
 
     if (savedDraftId) {
@@ -38,8 +36,10 @@ export const useSaveDraftAction = () => {
     await Promise.all(invalidateQueries);
   };
 
-  const saveDraft = (draft: PostDraft) => {
-    if (!draft.title.trim() && !draft.content.trim()) {
+  const isDraftEmpty = (draft: PostDraft) => !draft.title.trim() && !draft.content.trim();
+
+  const saveDraft = (draft: PostDraft, { onSuccess }: { onSuccess?: () => void } = {}) => {
+    if (isDraftEmpty(draft)) {
       toast.error(DRAFT_EMPTY_MESSAGE);
       return;
     }
@@ -50,11 +50,26 @@ export const useSaveDraftAction = () => {
         draftId,
       },
       {
-        onSuccess: applyDraftSaveResult,
+        onSuccess: async (savedDraftId) => {
+          await applyDraftSaveResult(savedDraftId);
+          toast.success(DRAFT_SAVE_SUCCESS_MESSAGE);
+          onSuccess?.();
+        },
         onError: () => toast.error(DRAFT_SAVE_FAILED_MESSAGE),
       },
     );
   };
 
-  return { isDraftSaving, saveDraft };
+  const saveDraftSilentlyOrThrow = async (draft: PostDraft) => {
+    if (isDraftEmpty(draft)) return;
+
+    const savedDraftId = await saveDraftMutation.mutateAsync({
+      data: buildCreatePostRequest(draft, CreatePostRequestStatus.DRAFT),
+      draftId,
+    });
+
+    await applyDraftSaveResult(savedDraftId);
+  };
+
+  return { isDraftSaving, saveDraft, saveDraftSilentlyOrThrow };
 };
