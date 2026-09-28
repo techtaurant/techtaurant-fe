@@ -36,8 +36,8 @@ export function PostCard({ post }: Props) {
             <UserAvatar name={post.authorName} profileImageUrl={post.authorProfileImageUrl} className="h-5 w-5" />
             <p className={cn('text-sm font-medium', 'hover:underline')}>{post.authorName}</p>
             <span>·</span>
-            <time className="text-muted-foreground text-xs" dateTime={post.updatedAt}>
-              {formatDisplayTime(post.updatedAt)}
+            <time className="text-muted-foreground text-xs" dateTime={post.createdAt}>
+              {formatDisplayTime(post.createdAt)}
             </time>
             {isPrivate && <Badge>{PRIVATE_BADGE_LABEL}</Badge>}
           </div>
