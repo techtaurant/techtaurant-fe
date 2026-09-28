@@ -31,6 +31,7 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const { draftId } = useDraftIdSearchParam();
+  const [previousDraftId, setPreviousDraftId] = useState(draftId);
   const { data: savedDraft } = useGetDraftDetail({ postId: draftId });
   const { isDraftSaving, saveDraft, saveDraftSilentlyOrThrow } = useSaveDraftAction();
   const openPostWritePublishConfirmModal = useOpenPostWritePublishConfirmModal();
@@ -40,6 +41,15 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     content: { message: CONTENT_REQUIRED_MESSAGE, ref: contentRef },
     title: { message: TITLE_REQUIRED_MESSAGE, ref: titleRef },
   };
+
+  if (draftId !== previousDraftId) {
+    setPreviousDraftId(draftId);
+
+    if (previousDraftId) {
+      setEditedDraft(null);
+      setHasUnsavedChanges(false);
+    }
+  }
 
   const restoredDraft = savedDraft && {
     categoryPath: savedDraft.category?.path ?? '',
