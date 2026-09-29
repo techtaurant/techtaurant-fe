@@ -47,8 +47,6 @@ export function PostDetailCommentComposer({ focusRequestKey, onRequireLogin, pos
   };
 
   const handleCancelButtonClick = () => {
-    if (isCommentCreating) return;
-
     resetCommentForm();
   };
 

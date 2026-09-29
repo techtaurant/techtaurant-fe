@@ -22,8 +22,6 @@ export function PostDetailCommentDeleteConfirmModal({ commentId, isOpen, onClose
   const { deleteComment, isCommentDeleting } = useDeleteCommentMutation({ postId });
 
   const handleConfirmButtonClick = () => {
-    if (isCommentDeleting) return;
-
     deleteComment({
       commentId,
       onError: () => {

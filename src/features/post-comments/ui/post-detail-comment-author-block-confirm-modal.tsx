@@ -26,8 +26,6 @@ export function PostDetailCommentAuthorBlockConfirmModal({
   const { blockCommentAuthor, isCommentAuthorBlocking } = useCommentAuthorBlock();
 
   const handleConfirmButtonClick = () => {
-    if (isCommentAuthorBlocking) return;
-
     blockCommentAuthor({
       targetUserId,
       onError: () => {

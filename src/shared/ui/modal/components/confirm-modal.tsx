@@ -32,12 +32,6 @@ export function ConfirmModal({
     onClose();
   };
 
-  const handleConfirmButtonClick = () => {
-    if (isConfirming) return;
-
-    onConfirm();
-  };
-
   return (
     <Modal id={id} isOpen={isOpen} onClose={handleModalClose} className="max-w-xs rounded-2xl border-0 p-5 shadow-xl">
       <h2 className="text-foreground text-lg font-semibold">{title}</h2>
@@ -57,7 +51,7 @@ export function ConfirmModal({
             variant="danger"
             className="h-10 min-w-34 flex-1 rounded-lg px-4 py-2 text-center text-sm font-semibold whitespace-nowrap"
             disabled={isConfirming}
-            onClick={handleConfirmButtonClick}
+            onClick={onConfirm}
           >
             {confirmLabel}
           </Button>
