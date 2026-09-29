@@ -14,7 +14,7 @@ import {
 import type { PostDraft } from '@/views/post-write/model/post-draft';
 import { EMPTY_DRAFT } from '@/views/post-write/model/post-draft';
 import { useDraftIdSearchParam } from '@/views/post-write/model/use-draft-id-search-param';
-import { useDraftListNavigation } from '@/views/post-write/model/use-draft-list-navigation';
+import { useOpenDraftList } from '@/views/post-write/model/use-open-draft-list';
 import { useOpenPostWritePublishConfirmModal } from '@/views/post-write/model/use-open-post-write-publish-confirm-modal';
 import { usePostWriteAutoSave } from '@/views/post-write/model/use-post-write-auto-save';
 import { useSaveDraftAction } from '@/views/post-write/model/use-save-draft-action';
@@ -31,7 +31,6 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const { draftId } = useDraftIdSearchParam();
-  const [previousDraftId, setPreviousDraftId] = useState(draftId);
   const { data: savedDraft } = useGetDraftDetail({ postId: draftId });
   const { isDraftSaving, saveDraft, saveDraftSilentlyOrThrow } = useSaveDraftAction();
   const openPostWritePublishConfirmModal = useOpenPostWritePublishConfirmModal();
@@ -41,15 +40,6 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     content: { message: CONTENT_REQUIRED_MESSAGE, ref: contentRef },
     title: { message: TITLE_REQUIRED_MESSAGE, ref: titleRef },
   };
-
-  if (draftId !== previousDraftId) {
-    setPreviousDraftId(draftId);
-
-    if (previousDraftId) {
-      setEditedDraft(null);
-      setHasUnsavedChanges(false);
-    }
-  }
 
   const restoredDraft = savedDraft && {
     categoryPath: savedDraft.category?.path ?? '',
@@ -69,10 +59,7 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     save: saveDraftSilentlyOrThrow,
   });
   useUnsavedChangesWarning(hasUnsavedChanges);
-  const { closeDraftList, isDraftListOpen, openDraftList, selectDraft } = useDraftListNavigation({
-    flushPendingSave,
-    onDraftSwitch: () => setEditedDraft(null),
-  });
+  const openDraftList = useOpenDraftList({ flushPendingSave });
 
   const updateDraft = (changes: Partial<PostDraft>) => {
     setEditedDraft({ categoryPath, content, tags, thumbnailAttachmentId, title, ...changes });
@@ -123,7 +110,6 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
 
   return {
     categoryPath,
-    closeDraftList,
     content,
     handleCategoryPathChange,
     handleContentChange,
@@ -132,11 +118,9 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     handleTagsChange,
     handleThumbnailChange,
     handleTitleChange,
-    isDraftListOpen,
     isDraftSaving,
     lastSavedAt,
     openDraftList,
-    selectDraft,
     tags,
     thumbnailAttachmentId,
     title,

@@ -1,24 +1,27 @@
 'use client';
 
+import Link from 'next/link';
+
 import type { DraftListItemResponse } from '@/shared/api/generated';
 import { cn } from '@/shared/lib/cn';
 import { formatDisplayTime } from '@/shared/lib/format-date';
-import { Button } from '@/shared/ui/button';
+import { Button, buttonVariants } from '@/shared/ui/button';
 import { useOpenPostWriteDraftDeleteConfirmModal } from '@/views/post-write/lib/use-open-post-write-draft-delete-confirm-modal';
-import { useDraftIdSearchParam } from '@/views/post-write/model/use-draft-id-search-param';
+import { DRAFT_ID_SEARCH_PARAM_KEY, useDraftIdSearchParam } from '@/views/post-write/model/use-draft-id-search-param';
 
 type Props = {
   draft: DraftListItemResponse;
-  onSelectClick: () => void;
 };
 
+const POST_WRITE_PATH = '/write';
 const UNTITLED_DRAFT_LABEL = '(제목 없음)';
 
-export function PostWriteDraftListItem({ draft, onSelectClick }: Props) {
+export function PostWriteDraftListItem({ draft }: Props) {
   const { draftId: editingDraftId } = useDraftIdSearchParam();
   const openPostWriteDraftDeleteConfirmModal = useOpenPostWriteDraftDeleteConfirmModal();
 
   const isEditingDraft = draft.id === editingDraftId;
+  const draftEditSearchParams = new URLSearchParams({ [DRAFT_ID_SEARCH_PARAM_KEY]: draft.id });
 
   const handleDeleteButtonClick = () => {
     openPostWriteDraftDeleteConfirmModal(draft.id);
@@ -31,13 +34,13 @@ export function PostWriteDraftListItem({ draft, onSelectClick }: Props) {
         'hover:bg-muted/50',
       )}
     >
-      <Button
+      <Link
         className={cn(
+          buttonVariants({ variant: 'ghost' }),
           'h-auto min-w-0 flex-1 flex-col items-start gap-1.5 px-1 py-0.5 text-left',
           'hover:bg-transparent',
         )}
-        onClick={onSelectClick}
-        variant="ghost"
+        href={`${POST_WRITE_PATH}?${draftEditSearchParams.toString()}`}
       >
         <span className="text-foreground w-full truncate text-base font-semibold">
           {draft.title || UNTITLED_DRAFT_LABEL}
@@ -50,7 +53,7 @@ export function PostWriteDraftListItem({ draft, onSelectClick }: Props) {
         <time className="text-muted-foreground text-xs font-normal" dateTime={draft.updatedAt}>
           {formatDisplayTime(draft.updatedAt)}
         </time>
-      </Button>
+      </Link>
 
       {!isEditingDraft && (
         <Button

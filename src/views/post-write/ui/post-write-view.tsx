@@ -10,7 +10,6 @@ import { usePostImageUpload } from '@/views/post-write/model/use-post-image-uplo
 import { usePostWriteForm } from '@/views/post-write/model/use-post-write-form';
 import { PostWriteActions } from '@/views/post-write/ui/post-write-actions';
 import { PostWriteCategoryField } from '@/views/post-write/ui/post-write-category-field';
-import { PostWriteDraftListPanel } from '@/views/post-write/ui/post-write-draft-list-panel';
 import { PostWriteImageButton } from '@/views/post-write/ui/post-write-image-button';
 import { PostWritePreview } from '@/views/post-write/ui/post-write-preview';
 import { PostWriteTagField } from '@/views/post-write/ui/post-write-tag-field';
@@ -26,7 +25,6 @@ export function PostWriteView() {
   const { data: me, isPending: isAuthPending } = useGetMe();
   const {
     categoryPath,
-    closeDraftList,
     content,
     handleCategoryPathChange,
     handleContentChange,
@@ -35,11 +33,9 @@ export function PostWriteView() {
     handleTagsChange,
     handleThumbnailChange,
     handleTitleChange,
-    isDraftListOpen,
     isDraftSaving,
     lastSavedAt,
     openDraftList,
-    selectDraft,
     tags,
     thumbnailAttachmentId,
     title,
@@ -69,9 +65,7 @@ export function PostWriteView() {
   }
 
   return (
-    <div className={cn('relative grid h-dvh min-w-90 grid-cols-1 grid-rows-[minmax(0,1fr)_auto]', 'xl:grid-cols-2')}>
-      {isDraftListOpen && <PostWriteDraftListPanel onCloseClick={closeDraftList} onSelectDraft={selectDraft} />}
-
+    <div className={cn('grid h-dvh min-w-90 grid-cols-1 grid-rows-[minmax(0,1fr)_auto]', 'xl:grid-cols-2')}>
       {/* xl 미만에서는 작성창과 미리보기가 한 스크롤 영역에 이어지고, xl 이상에서는 contents로 풀려 각각 독립 컬럼이 됩니다. */}
       <div className={cn('min-h-0 overflow-y-auto', 'xl:contents')}>
         <div
