@@ -1,3 +1,4 @@
+export { useDeletePost } from '@/entities/post-detail/api/use-delete-post';
 export {
   fetchPostDetail,
   getPostDetailQueryKey,
