@@ -67,6 +67,12 @@ export default defineConfig({
               useInfiniteQueryParam: 'cursor',
             },
           },
+          getMyDrafts: {
+            query: {
+              useInfinite: true,
+              useInfiniteQueryParam: 'cursor',
+            },
+          },
         },
       },
     },

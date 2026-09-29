@@ -1,7 +1,7 @@
 'use client';
 
 import type { RefObject } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useGetDraftDetail } from '@/entities/post-write';
 import { toast } from '@/shared/ui/toast';
@@ -14,6 +14,7 @@ import {
 import type { PostDraft } from '@/views/post-write/model/post-draft';
 import { EMPTY_DRAFT } from '@/views/post-write/model/post-draft';
 import { useDraftIdSearchParam } from '@/views/post-write/model/use-draft-id-search-param';
+import { useOpenDraftList } from '@/views/post-write/model/use-open-draft-list';
 import { useOpenPostWritePublishConfirmModal } from '@/views/post-write/model/use-open-post-write-publish-confirm-modal';
 import { usePostWriteAutoSave } from '@/views/post-write/model/use-post-write-auto-save';
 import { useSaveDraftAction } from '@/views/post-write/model/use-save-draft-action';
@@ -29,8 +30,8 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
   const [editedDraft, setEditedDraft] = useState<PostDraft | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  const { draftId } = useDraftIdSearchParam();
-  const { data: savedDraft } = useGetDraftDetail({ postId: draftId });
+  const { clearDraftId, draftId } = useDraftIdSearchParam();
+  const { data: savedDraft, error: draftDetailError } = useGetDraftDetail({ postId: draftId });
   const { isDraftSaving, saveDraft, saveDraftSilentlyOrThrow } = useSaveDraftAction();
   const openPostWritePublishConfirmModal = useOpenPostWritePublishConfirmModal();
 
@@ -40,6 +41,7 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     title: { message: TITLE_REQUIRED_MESSAGE, ref: titleRef },
   };
 
+  const isDraftNotFound = draftDetailError instanceof Error && draftDetailError.cause === 404;
   const restoredDraft = savedDraft && {
     categoryPath: savedDraft.category?.path ?? '',
     content: savedDraft.content,
@@ -51,13 +53,14 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
   const draft = editedDraft ?? restoredDraft ?? EMPTY_DRAFT;
   const { categoryPath, content, tags, thumbnailAttachmentId, title } = draft;
 
-  const { cancelScheduledSave } = usePostWriteAutoSave({
+  const { cancelScheduledSave, flushPendingSave } = usePostWriteAutoSave({
     draft,
     hasUnsavedChanges,
     onSaveSuccess: () => setHasUnsavedChanges(false),
     save: saveDraftSilentlyOrThrow,
   });
   useUnsavedChangesWarning(hasUnsavedChanges);
+  const openDraftList = useOpenDraftList({ flushPendingSave });
 
   const updateDraft = (changes: Partial<PostDraft>) => {
     setEditedDraft({ categoryPath, content, tags, thumbnailAttachmentId, title, ...changes });
@@ -106,6 +109,12 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     openPostWritePublishConfirmModal({ categoryPath, content, tags, thumbnailAttachmentId, title });
   };
 
+  useEffect(() => {
+    if (!isDraftNotFound) return;
+
+    clearDraftId();
+  }, [clearDraftId, isDraftNotFound]);
+
   return {
     categoryPath,
     content,
@@ -118,6 +127,7 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     handleTitleChange,
     isDraftSaving,
     lastSavedAt,
+    openDraftList,
     tags,
     thumbnailAttachmentId,
     title,

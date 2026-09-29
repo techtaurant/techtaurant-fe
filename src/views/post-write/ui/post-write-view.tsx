@@ -35,6 +35,7 @@ export function PostWriteView() {
     handleTitleChange,
     isDraftSaving,
     lastSavedAt,
+    openDraftList,
     tags,
     thumbnailAttachmentId,
     title,
@@ -133,6 +134,7 @@ export function PostWriteView() {
         <PostWriteActions
           isDraftSaving={isDraftSaving}
           lastSavedAt={lastSavedAt}
+          onDraftListOpenClick={openDraftList}
           onDraftSaveClick={handleDraftSaveClick}
           onExitClick={handleExitClick}
           onPublishClick={handlePublishClick}
