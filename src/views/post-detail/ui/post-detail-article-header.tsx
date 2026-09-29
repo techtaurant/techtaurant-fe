@@ -114,7 +114,7 @@ export function PostDetailArticleHeader({
             {isPrivate && <Badge>{PRIVATE_BADGE_LABEL}</Badge>}
           </div>
         </div>
-        {isOwnAuthor && <PostDetailOwnerMenu postId={postId} />}
+        {isOwnAuthor && <PostDetailOwnerMenu isPrivate={isPrivate} postId={postId} />}
         {!isOwnAuthor && (
           <PostDetailHeaderActions
             isAuthPending={isAuthPending}
