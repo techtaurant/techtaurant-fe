@@ -47,7 +47,6 @@ export function PostWritePublishConfirmModal({ draft, isOpen, onClose, overlayId
   };
 
   const handlePublishClick = () => {
-    if (isPublishing) return;
     publish(draft, visibility, { onSuccess: onClose });
   };
 

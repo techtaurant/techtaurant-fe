@@ -45,8 +45,6 @@ export function PostDetailCommentEditor({ comment, onCancelEdit, onEditSuccess }
   };
 
   const handleCancelButtonClick = () => {
-    if (isCommentUpdating) return;
-
     onCancelEdit();
   };
 
@@ -55,8 +53,6 @@ export function PostDetailCommentEditor({ comment, onCancelEdit, onEditSuccess }
       toast.error(COMMENT_CONTENT_REQUIRED_MESSAGE);
       return;
     }
-
-    if (isCommentUpdating) return;
 
     updateCommentMutation.mutate(
       {

@@ -33,14 +33,10 @@ export function PostDetailHeaderActions({
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const handleMenuToggle = () => {
-    if (isAuthPending) return;
-
     setIsMenuOpen((prev) => !prev);
   };
 
   const handleToggleAuthorFollow = () => {
-    if (isAuthPending) return;
-
     onToggleAuthorFollow();
   };
 
