@@ -10,7 +10,6 @@ type Props = {
   isAuthPending: boolean;
   isFollowingAuthor: boolean;
   isFollowingUpdating: boolean;
-  isOwnAuthor: boolean;
   onRequestBlockAuthor: () => void;
   onToggleAuthorFollow: () => void;
 };
@@ -27,7 +26,6 @@ export function PostDetailHeaderActions({
   isAuthPending,
   isFollowingAuthor,
   isFollowingUpdating,
-  isOwnAuthor,
   onRequestBlockAuthor,
   onToggleAuthorFollow,
 }: Props) {
@@ -56,8 +54,6 @@ export function PostDetailHeaderActions({
     refs: [menuRef],
     callbackFn: () => setIsMenuOpen(false),
   });
-
-  if (isOwnAuthor) return null;
 
   return (
     <div ref={menuRef} className="relative ml-auto flex items-center gap-2">
