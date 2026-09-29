@@ -1,12 +1,15 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback } from 'react';
 
 import { getSearchParamValue } from '@/shared/lib/search-params';
 
 export const DRAFT_ID_SEARCH_PARAM_KEY = 'draftId';
 
 export const useDraftIdSearchParam = () => {
+  const pathname = usePathname();
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   const draftId = getSearchParamValue(searchParams, DRAFT_ID_SEARCH_PARAM_KEY);
@@ -18,5 +21,9 @@ export const useDraftIdSearchParam = () => {
     window.history.replaceState(null, '', `?${newSearchParams.toString()}`);
   };
 
-  return { draftId, replaceDraftId };
+  const clearDraftId = useCallback(() => {
+    router.replace(pathname);
+  }, [pathname, router]);
+
+  return { clearDraftId, draftId, replaceDraftId };
 };

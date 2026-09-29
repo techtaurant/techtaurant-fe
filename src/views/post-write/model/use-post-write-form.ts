@@ -1,7 +1,7 @@
 'use client';
 
 import type { RefObject } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useGetDraftDetail } from '@/entities/post-write';
 import { toast } from '@/shared/ui/toast';
@@ -30,8 +30,8 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
   const [editedDraft, setEditedDraft] = useState<PostDraft | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  const { draftId } = useDraftIdSearchParam();
-  const { data: savedDraft } = useGetDraftDetail({ postId: draftId });
+  const { clearDraftId, draftId } = useDraftIdSearchParam();
+  const { data: savedDraft, error: draftDetailError } = useGetDraftDetail({ postId: draftId });
   const { isDraftSaving, saveDraft, saveDraftSilentlyOrThrow } = useSaveDraftAction();
   const openPostWritePublishConfirmModal = useOpenPostWritePublishConfirmModal();
 
@@ -41,6 +41,7 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     title: { message: TITLE_REQUIRED_MESSAGE, ref: titleRef },
   };
 
+  const isDraftNotFound = draftDetailError instanceof Error && draftDetailError.cause === 404;
   const restoredDraft = savedDraft && {
     categoryPath: savedDraft.category?.path ?? '',
     content: savedDraft.content,
@@ -107,6 +108,12 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     cancelScheduledSave();
     openPostWritePublishConfirmModal({ categoryPath, content, tags, thumbnailAttachmentId, title });
   };
+
+  useEffect(() => {
+    if (!isDraftNotFound) return;
+
+    clearDraftId();
+  }, [clearDraftId, isDraftNotFound]);
 
   return {
     categoryPath,

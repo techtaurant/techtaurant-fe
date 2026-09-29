@@ -7,7 +7,7 @@ import { cn } from '@/shared/lib/cn';
 import { formatDisplayTime } from '@/shared/lib/format-date';
 import { Button, buttonVariants } from '@/shared/ui/button';
 import { useOpenPostWriteDraftDeleteConfirmModal } from '@/views/post-write/lib/use-open-post-write-draft-delete-confirm-modal';
-import { DRAFT_ID_SEARCH_PARAM_KEY, useDraftIdSearchParam } from '@/views/post-write/model/use-draft-id-search-param';
+import { DRAFT_ID_SEARCH_PARAM_KEY } from '@/views/post-write/model/use-draft-id-search-param';
 
 type Props = {
   draft: DraftListItemResponse;
@@ -17,10 +17,8 @@ const POST_WRITE_PATH = '/write';
 const UNTITLED_DRAFT_LABEL = '(제목 없음)';
 
 export function PostWriteDraftListItem({ draft }: Props) {
-  const { draftId: editingDraftId } = useDraftIdSearchParam();
   const openPostWriteDraftDeleteConfirmModal = useOpenPostWriteDraftDeleteConfirmModal();
 
-  const isEditingDraft = draft.id === editingDraftId;
   const draftEditSearchParams = new URLSearchParams({ [DRAFT_ID_SEARCH_PARAM_KEY]: draft.id });
 
   const handleDeleteButtonClick = () => {
@@ -55,19 +53,17 @@ export function PostWriteDraftListItem({ draft }: Props) {
         </time>
       </Link>
 
-      {!isEditingDraft && (
-        <Button
-          className={cn(
-            'bg-form-error-border/15 text-form-error-foreground shrink-0',
-            'hover:bg-form-error-border/25 hover:text-form-error-foreground',
-          )}
-          onClick={handleDeleteButtonClick}
-          size="sm"
-          variant="ghost"
-        >
-          삭제
-        </Button>
-      )}
+      <Button
+        className={cn(
+          'bg-form-error-border/15 text-form-error-foreground shrink-0',
+          'hover:bg-form-error-border/25 hover:text-form-error-foreground',
+        )}
+        onClick={handleDeleteButtonClick}
+        size="sm"
+        variant="ghost"
+      >
+        삭제
+      </Button>
     </li>
   );
 }
