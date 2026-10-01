@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { PostTagList } from '@/entities/post-list';
 import { useGetMe, UserAvatar } from '@/entities/user';
 import { startGoogleLogin } from '@/features/auth';
-import { usePostDetailAuthorFollow } from '@/features/post-detail-interactions';
+import { PostDetailOwnerMenu, usePostDetailAuthorFollow } from '@/features/post-detail-interactions';
 import type { PostListTagResponse } from '@/shared/api/generated';
 import { PostDetailResponseStatus } from '@/shared/api/generated';
 import { cn } from '@/shared/lib/cn';
@@ -114,14 +114,17 @@ export function PostDetailArticleHeader({
             {isPrivate && <Badge>{PRIVATE_BADGE_LABEL}</Badge>}
           </div>
         </div>
-        <PostDetailHeaderActions
-          isAuthPending={isAuthPending}
-          isFollowingAuthor={isFollowingAuthor}
-          isFollowingUpdating={isFollowingUpdating}
-          isOwnAuthor={isOwnAuthor}
-          onRequestBlockAuthor={handleBlockAuthorButtonClick}
-          onToggleAuthorFollow={toggleAuthorFollow}
-        />
+        {isOwnAuthor ? (
+          <PostDetailOwnerMenu isPrivate={isPrivate} postId={postId} />
+        ) : (
+          <PostDetailHeaderActions
+            isAuthPending={isAuthPending}
+            isFollowingAuthor={isFollowingAuthor}
+            isFollowingUpdating={isFollowingUpdating}
+            onRequestBlockAuthor={handleBlockAuthorButtonClick}
+            onToggleAuthorFollow={toggleAuthorFollow}
+          />
+        )}
       </div>
       <PostTagList tags={tags} variant="detail" />
     </header>

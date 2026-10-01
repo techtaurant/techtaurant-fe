@@ -38,7 +38,6 @@ export function PostDetailAuthorBlockConfirmModal({ authorId, authorName, overla
   };
 
   const handleBlockAuthorClick = () => {
-    if (isAuthorBlockPending) return;
     blockAuthor();
   };
 
