@@ -1,6 +1,6 @@
 'use client';
 
-import { Eye, EyeOff, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { Globe, Lock, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 import { useOpenPostDetailDeleteConfirmModal } from '@/features/post-detail-interactions/lib/use-open-post-detail-delete-confirm-modal';
@@ -56,7 +56,7 @@ export function PostDetailOwnerMenu({ isPrivate, postId }: Props) {
           {EDIT_POST_LABEL}
         </DropdownItem>
         <DropdownItem onClick={handleVisibilityToggleClick}>
-          {isPrivate ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
+          {isPrivate ? <Globe className="h-3.5 w-3.5" /> : <Lock className="h-3.5 w-3.5" />}
           {isPrivate ? MAKE_PUBLIC_LABEL : MAKE_PRIVATE_LABEL}
         </DropdownItem>
         <DropdownItem
