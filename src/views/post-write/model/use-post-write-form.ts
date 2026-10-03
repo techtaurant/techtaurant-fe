@@ -1,13 +1,9 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import type { RefObject } from 'react';
 import { useEffect, useState } from 'react';
 
-import { useGetDraftDetail } from '@/entities/post-write';
-import { useGetMe } from '@/entities/user';
 import { PostDetailResponseStatus } from '@/shared/api/generated';
-import { getSearchParamValue } from '@/shared/lib/search-params';
 import { toast } from '@/shared/ui/toast';
 import {
   CATEGORY_REQUIRED_MESSAGE,
@@ -23,9 +19,8 @@ import { useOpenPostWritePublishConfirmModal } from '@/views/post-write/model/us
 import { usePostEditAction } from '@/views/post-write/model/use-post-edit-action';
 import { usePostWriteAutoSave } from '@/views/post-write/model/use-post-write-auto-save';
 import { useSaveDraftAction } from '@/views/post-write/model/use-save-draft-action';
+import { useSavedDraft } from '@/views/post-write/model/use-saved-draft';
 import { useUnsavedChangesWarning } from '@/views/post-write/model/use-unsaved-changes-warning';
-
-const EDIT_POST_ID_SEARCH_PARAM_KEY = 'postId';
 
 type PostWriteFormRefs = {
   categoryRef: RefObject<HTMLInputElement | null>;
@@ -37,14 +32,8 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
   const [editedDraft, setEditedDraft] = useState<PostDraft | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  const searchParams = useSearchParams();
-
-  const editPostId = getSearchParamValue(searchParams, EDIT_POST_ID_SEARCH_PARAM_KEY);
-  const isEditMode = !!editPostId;
-
-  const { clearDraftId, draftId } = useDraftIdSearchParam();
-  const { data: me } = useGetMe();
-  const { data: savedDraft, error: draftDetailError } = useGetDraftDetail({ postId: editPostId ?? draftId });
+  const { clearDraftId } = useDraftIdSearchParam();
+  const { editPostId, savedDraft, shouldResetToNewPost } = useSavedDraft();
   const { isDraftSaving, saveDraft, saveDraftSilentlyOrThrow } = useSaveDraftAction();
   const openPostWritePublishConfirmModal = useOpenPostWritePublishConfirmModal();
   const { editPost, isPostEditing } = usePostEditAction();
@@ -55,20 +44,16 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     title: { message: TITLE_REQUIRED_MESSAGE, ref: titleRef },
   };
 
-  const isDraftNotFound = draftDetailError instanceof Error && draftDetailError.cause === 404;
-  const isOtherAuthorPost = !!savedDraft && !!me && savedDraft.author.id !== me.id;
-  const shouldResetToNewPost = isDraftNotFound || isOtherAuthorPost;
-  const ownSavedDraft = isOtherAuthorPost ? undefined : savedDraft;
-  const restoredDraft = ownSavedDraft && {
-    categoryPath: ownSavedDraft.category?.path ?? '',
-    content: ownSavedDraft.content,
-    tags: ownSavedDraft.tags.map(({ name }) => name),
-    thumbnailAttachmentId: ownSavedDraft.thumbnailAttachmentId ?? '',
-    title: ownSavedDraft.title,
+  const isEditMode = !!editPostId;
+  const restoredDraft = savedDraft && {
+    categoryPath: savedDraft.category?.path ?? '',
+    content: savedDraft.content,
+    tags: savedDraft.tags.map(({ name }) => name),
+    thumbnailAttachmentId: savedDraft.thumbnailAttachmentId ?? '',
+    title: savedDraft.title,
   };
-  const lastSavedAt = ownSavedDraft?.updatedAt;
-  const isPrivate = ownSavedDraft?.status === PostDetailResponseStatus.PRIVATE;
-  const savedAttachmentUrls = ownSavedDraft?.attachmentPresignedUrls ?? [];
+  const lastSavedAt = savedDraft?.updatedAt;
+  const isPrivate = savedDraft?.status === PostDetailResponseStatus.PRIVATE;
   const draft = editedDraft ?? restoredDraft ?? EMPTY_DRAFT;
   const { categoryPath, content, tags, thumbnailAttachmentId, title } = draft;
 
@@ -162,7 +147,6 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     isPostEditing,
     lastSavedAt,
     openDraftList,
-    savedAttachmentUrls,
     tags,
     thumbnailAttachmentId,
     title,

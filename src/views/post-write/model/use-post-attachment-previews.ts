@@ -1,20 +1,22 @@
 'use client';
 
 import { extractAttachmentIds, useGetTmpPreviewUrls } from '@/entities/post-write';
-import type { PostDetailAttachmentPresignedUrlResponse } from '@/shared/api/generated';
+import { useSavedDraft } from '@/views/post-write/model/use-saved-draft';
 
 type Params = {
   content: string;
-  savedAttachmentUrls: PostDetailAttachmentPresignedUrlResponse[];
   thumbnailAttachmentId: string;
 };
 
-export const usePostAttachmentPreviews = ({ content, savedAttachmentUrls, thumbnailAttachmentId }: Params) => {
+export const usePostAttachmentPreviews = ({ content, thumbnailAttachmentId }: Params) => {
+  const { savedDraft } = useSavedDraft();
+
   const contentAttachmentIds = extractAttachmentIds(content);
   const requestedAttachmentIds = thumbnailAttachmentId
     ? [...new Set([thumbnailAttachmentId, ...contentAttachmentIds])]
     : contentAttachmentIds;
 
+  const savedAttachmentUrls = savedDraft?.attachmentPresignedUrls ?? [];
   const savedAttachmentIds = new Set(savedAttachmentUrls.map(({ attachmentId }) => attachmentId));
   const tmpAttachmentIds = requestedAttachmentIds.filter((attachmentId) => !savedAttachmentIds.has(attachmentId));
 
