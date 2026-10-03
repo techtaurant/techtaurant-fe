@@ -16,11 +16,12 @@ export type PostWriteAutoSaveResult = 'saved' | 'failed';
 type Params = {
   draft: PostDraft;
   hasUnsavedChanges: boolean;
+  isEnabled: boolean;
   onSaveSuccess: () => void;
   save: (draft: PostDraft) => Promise<void>;
 };
 
-export const usePostWriteAutoSave = ({ draft, hasUnsavedChanges, onSaveSuccess, save }: Params) => {
+export const usePostWriteAutoSave = ({ draft, hasUnsavedChanges, isEnabled, onSaveSuccess, save }: Params) => {
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const hasWarnedRef = useRef(false);
   const retryCountRef = useRef(0);
@@ -68,7 +69,7 @@ export const usePostWriteAutoSave = ({ draft, hasUnsavedChanges, onSaveSuccess, 
   }, []);
 
   useEffect(() => {
-    if (!hasUnsavedChanges) return;
+    if (!isEnabled || !hasUnsavedChanges) return;
 
     const scheduleSave = (delayMs: number) => {
       const saveGeneration = saveGenerationRef.current;
@@ -101,7 +102,7 @@ export const usePostWriteAutoSave = ({ draft, hasUnsavedChanges, onSaveSuccess, 
     scheduleSave(AUTO_SAVE_DEBOUNCE_MS);
 
     return cancelScheduledSave;
-  }, [cancelScheduledSave, draft, hasUnsavedChanges, runSave]);
+  }, [cancelScheduledSave, draft, hasUnsavedChanges, isEnabled, runSave]);
 
   const flushPendingSave = async (): Promise<PostWriteAutoSaveResult> => {
     cancelScheduledSave();

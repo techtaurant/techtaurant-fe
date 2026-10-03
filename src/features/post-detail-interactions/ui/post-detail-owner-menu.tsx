@@ -1,6 +1,7 @@
 'use client';
 
-import { Eye, EyeOff, MoreHorizontal, Trash2 } from 'lucide-react';
+import { Globe, Lock, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 import { useOpenPostDetailDeleteConfirmModal } from '@/features/post-detail-interactions/lib/use-open-post-detail-delete-confirm-modal';
 import { usePostDetailVisibility } from '@/features/post-detail-interactions/model/use-post-detail-visibility';
@@ -12,6 +13,9 @@ type Props = {
   postId: string;
 };
 
+const POST_WRITE_PATH = '/write';
+const POST_ID_SEARCH_PARAM_KEY = 'postId';
+const EDIT_POST_LABEL = '수정';
 const MAKE_PRIVATE_LABEL = '비공개';
 const MAKE_PUBLIC_LABEL = '공개';
 const DELETE_POST_LABEL = '삭제';
@@ -20,6 +24,7 @@ const MADE_PUBLIC_MESSAGE = '공개로 전환했어요.';
 const VISIBILITY_UPDATE_FAILED_MESSAGE = '전환하지 못했어요. 잠시 후 다시 시도해주세요.';
 
 export function PostDetailOwnerMenu({ isPrivate, postId }: Props) {
+  const router = useRouter();
   const { isVisibilityUpdating, toggleVisibility } = usePostDetailVisibility({
     onError: () => toast.error(VISIBILITY_UPDATE_FAILED_MESSAGE),
     onSuccess: () => toast.success(isPrivate ? MADE_PUBLIC_MESSAGE : MADE_PRIVATE_MESSAGE),
@@ -27,6 +32,12 @@ export function PostDetailOwnerMenu({ isPrivate, postId }: Props) {
     postId,
   });
   const openPostDetailDeleteConfirmModal = useOpenPostDetailDeleteConfirmModal({ postId });
+
+  const postEditSearchParams = new URLSearchParams({ [POST_ID_SEARCH_PARAM_KEY]: postId });
+
+  const handleEditClick = () => {
+    router.replace(`${POST_WRITE_PATH}?${postEditSearchParams.toString()}`);
+  };
 
   const handleVisibilityToggleClick = () => {
     if (isVisibilityUpdating) return;
@@ -40,8 +51,12 @@ export function PostDetailOwnerMenu({ isPrivate, postId }: Props) {
         <MoreHorizontal className="h-5 w-5" />
       </DropdownTrigger>
       <DropdownContent align="end" className="min-w-36 rounded-xl">
+        <DropdownItem onClick={handleEditClick}>
+          <Pencil className="h-3.5 w-3.5" />
+          {EDIT_POST_LABEL}
+        </DropdownItem>
         <DropdownItem onClick={handleVisibilityToggleClick}>
-          {isPrivate ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
+          {isPrivate ? <Globe className="h-3.5 w-3.5" /> : <Lock className="h-3.5 w-3.5" />}
           {isPrivate ? MAKE_PUBLIC_LABEL : MAKE_PRIVATE_LABEL}
         </DropdownItem>
         <DropdownItem

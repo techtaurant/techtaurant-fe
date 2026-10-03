@@ -1,32 +1,32 @@
 'use client';
 
-import { useGetDraftList } from '@/entities/post-write';
 import { cn } from '@/shared/lib/cn';
 import { Button } from '@/shared/ui/button';
-import { PostWriteLastSavedLabel } from '@/views/post-write/ui/post-write-last-saved-label';
+import { PostWriteDraftActions } from '@/views/post-write/ui/post-write-draft-actions';
 
 type Props = {
   isDraftSaving: boolean;
+  isEditMode: boolean;
+  isPostEditing: boolean;
   lastSavedAt?: string;
   onDraftListOpenClick: () => void;
   onDraftSaveClick: () => void;
   onExitClick: () => void;
+  onPostEditClick: () => void;
   onPublishClick: () => void;
 };
 
 export function PostWriteActions({
   isDraftSaving,
+  isEditMode,
+  isPostEditing,
   lastSavedAt,
   onDraftListOpenClick,
   onDraftSaveClick,
   onExitClick,
+  onPostEditClick,
   onPublishClick,
 }: Props) {
-  const { data: drafts = [], hasNextPage } = useGetDraftList();
-
-  const draftCount = drafts.length;
-  const draftCountLabel = hasNextPage ? `${draftCount}+` : `${draftCount}`;
-
   return (
     <div className={cn('flex w-full items-center justify-between gap-3')}>
       <Button className={cn('shrink-0 font-semibold')} onClick={onExitClick} size="lg" variant="neutral">
@@ -34,41 +34,36 @@ export function PostWriteActions({
       </Button>
 
       <div className={cn('flex shrink-0 items-center gap-3')}>
-        {lastSavedAt && <PostWriteLastSavedLabel lastSavedAt={lastSavedAt} />}
-
-        <div className="bg-button-neutral-surface inline-flex shrink-0 overflow-hidden rounded-lg">
+        {isEditMode ? (
           <Button
-            className={cn('rounded-none font-semibold')}
-            disabled={isDraftSaving}
-            onClick={onDraftSaveClick}
+            className={cn('shrink-0 font-semibold')}
+            disabled={isPostEditing}
+            onClick={onPostEditClick}
             size="lg"
-            variant="neutral"
+            variant="primarySurface"
           >
-            {isDraftSaving ? '저장 중...' : '임시저장'}
+            {isPostEditing ? '수정 중...' : '수정하기'}
           </Button>
+        ) : (
+          <>
+            <PostWriteDraftActions
+              isDraftSaving={isDraftSaving}
+              lastSavedAt={lastSavedAt}
+              onDraftListOpenClick={onDraftListOpenClick}
+              onDraftSaveClick={onDraftSaveClick}
+            />
 
-          {draftCount > 0 && (
             <Button
-              className={cn('border-muted-foreground/50 min-w-11 rounded-none border-l px-2.5 font-semibold')}
-              onClick={onDraftListOpenClick}
+              className={cn('shrink-0 font-semibold')}
+              disabled={isDraftSaving}
+              onClick={onPublishClick}
               size="lg"
-              variant="neutral"
-              aria-label={`임시저장 목록 (${draftCountLabel}개)`}
+              variant="primarySurface"
             >
-              {draftCountLabel}
+              발행하기
             </Button>
-          )}
-        </div>
-
-        <Button
-          className={cn('shrink-0 font-semibold')}
-          disabled={isDraftSaving}
-          onClick={onPublishClick}
-          size="lg"
-          variant="primarySurface"
-        >
-          발행하기
-        </Button>
+          </>
+        )}
       </div>
     </div>
   );

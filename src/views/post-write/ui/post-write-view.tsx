@@ -16,6 +16,7 @@ import { PostWriteTagField } from '@/views/post-write/ui/post-write-tag-field';
 import { PostWriteThumbnailField } from '@/views/post-write/ui/post-write-thumbnail-field';
 
 const TITLE_MAX_LENGTH = 200;
+const POST_DETAIL_PATH = '/posts';
 
 export function PostWriteView() {
   const contentRef = useRef<HTMLTextAreaElement>(null);
@@ -26,14 +27,18 @@ export function PostWriteView() {
   const {
     categoryPath,
     content,
+    editPostId,
     handleCategoryPathChange,
     handleContentChange,
     handleDraftSaveClick,
+    handlePostEditClick,
     handlePublishClick,
     handleTagsChange,
     handleThumbnailChange,
     handleTitleChange,
     isDraftSaving,
+    isEditMode,
+    isPostEditing,
     lastSavedAt,
     openDraftList,
     tags,
@@ -51,7 +56,7 @@ export function PostWriteView() {
   const isLoggedIn = !!me;
 
   const handleExitClick = () => {
-    window.location.href = '/';
+    window.location.replace(editPostId ? `${POST_DETAIL_PATH}/${editPostId}` : '/');
   };
 
   useEffect(() => {
@@ -133,10 +138,13 @@ export function PostWriteView() {
       >
         <PostWriteActions
           isDraftSaving={isDraftSaving}
+          isEditMode={isEditMode}
+          isPostEditing={isPostEditing}
           lastSavedAt={lastSavedAt}
           onDraftListOpenClick={openDraftList}
           onDraftSaveClick={handleDraftSaveClick}
           onExitClick={handleExitClick}
+          onPostEditClick={handlePostEditClick}
           onPublishClick={handlePublishClick}
         />
       </div>

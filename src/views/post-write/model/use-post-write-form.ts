@@ -3,7 +3,7 @@
 import type { RefObject } from 'react';
 import { useEffect, useState } from 'react';
 
-import { useGetDraftDetail } from '@/entities/post-write';
+import { PostDetailResponseStatus } from '@/shared/api/generated';
 import { toast } from '@/shared/ui/toast';
 import {
   CATEGORY_REQUIRED_MESSAGE,
@@ -16,8 +16,10 @@ import { EMPTY_DRAFT } from '@/views/post-write/model/post-draft';
 import { useDraftIdSearchParam } from '@/views/post-write/model/use-draft-id-search-param';
 import { useOpenDraftList } from '@/views/post-write/model/use-open-draft-list';
 import { useOpenPostWritePublishConfirmModal } from '@/views/post-write/model/use-open-post-write-publish-confirm-modal';
+import { usePostEditAction } from '@/views/post-write/model/use-post-edit-action';
 import { usePostWriteAutoSave } from '@/views/post-write/model/use-post-write-auto-save';
 import { useSaveDraftAction } from '@/views/post-write/model/use-save-draft-action';
+import { useSavedDraft } from '@/views/post-write/model/use-saved-draft';
 import { useUnsavedChangesWarning } from '@/views/post-write/model/use-unsaved-changes-warning';
 
 type PostWriteFormRefs = {
@@ -30,10 +32,11 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
   const [editedDraft, setEditedDraft] = useState<PostDraft | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  const { clearDraftId, draftId } = useDraftIdSearchParam();
-  const { data: savedDraft, error: draftDetailError } = useGetDraftDetail({ postId: draftId });
+  const { clearDraftId } = useDraftIdSearchParam();
+  const { editPostId, savedDraft, shouldResetToNewPost } = useSavedDraft();
   const { isDraftSaving, saveDraft, saveDraftSilentlyOrThrow } = useSaveDraftAction();
   const openPostWritePublishConfirmModal = useOpenPostWritePublishConfirmModal();
+  const { editPost, isPostEditing } = usePostEditAction();
 
   const invalidFieldConfig = {
     categoryPath: { message: CATEGORY_REQUIRED_MESSAGE, ref: categoryRef },
@@ -41,7 +44,7 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     title: { message: TITLE_REQUIRED_MESSAGE, ref: titleRef },
   };
 
-  const isDraftNotFound = draftDetailError instanceof Error && draftDetailError.cause === 404;
+  const isEditMode = !!editPostId;
   const restoredDraft = savedDraft && {
     categoryPath: savedDraft.category?.path ?? '',
     content: savedDraft.content,
@@ -50,12 +53,14 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     title: savedDraft.title,
   };
   const lastSavedAt = savedDraft?.updatedAt;
+  const isPrivate = savedDraft?.status === PostDetailResponseStatus.PRIVATE;
   const draft = editedDraft ?? restoredDraft ?? EMPTY_DRAFT;
   const { categoryPath, content, tags, thumbnailAttachmentId, title } = draft;
 
   const { cancelScheduledSave, flushPendingSave } = usePostWriteAutoSave({
     draft,
     hasUnsavedChanges,
+    isEnabled: !isEditMode,
     onSaveSuccess: () => setHasUnsavedChanges(false),
     save: saveDraftSilentlyOrThrow,
   });
@@ -95,37 +100,51 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
     );
   };
 
-  const handlePublishClick = () => {
+  const focusInvalidField = () => {
     const invalidField = getPublishInvalidField({ categoryPath, content, title });
 
-    if (invalidField) {
-      const { message, ref } = invalidFieldConfig[invalidField];
-      toast.error(message);
-      ref.current?.focus();
-      return;
-    }
+    if (!invalidField) return false;
+
+    const { message, ref } = invalidFieldConfig[invalidField];
+    toast.error(message);
+    ref.current?.focus();
+    return true;
+  };
+
+  const handlePublishClick = () => {
+    if (focusInvalidField()) return;
 
     cancelScheduledSave();
     openPostWritePublishConfirmModal({ categoryPath, content, tags, thumbnailAttachmentId, title });
   };
 
+  const handlePostEditClick = () => {
+    if (!editPostId || focusInvalidField()) return;
+
+    editPost({ draft: { categoryPath, content, tags, thumbnailAttachmentId, title }, isPrivate, postId: editPostId });
+  };
+
   useEffect(() => {
-    if (!isDraftNotFound) return;
+    if (!shouldResetToNewPost) return;
 
     clearDraftId();
-  }, [clearDraftId, isDraftNotFound]);
+  }, [clearDraftId, shouldResetToNewPost]);
 
   return {
     categoryPath,
     content,
+    editPostId,
     handleCategoryPathChange,
     handleContentChange,
     handleDraftSaveClick,
+    handlePostEditClick,
     handlePublishClick,
     handleTagsChange,
     handleThumbnailChange,
     handleTitleChange,
     isDraftSaving,
+    isEditMode,
+    isPostEditing,
     lastSavedAt,
     openDraftList,
     tags,
