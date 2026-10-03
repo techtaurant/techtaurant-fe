@@ -36,7 +36,7 @@ export function PostDetailOwnerMenu({ isPrivate, postId }: Props) {
   const postEditSearchParams = new URLSearchParams({ [POST_ID_SEARCH_PARAM_KEY]: postId });
 
   const handleEditClick = () => {
-    router.push(`${POST_WRITE_PATH}?${postEditSearchParams.toString()}`);
+    router.replace(`${POST_WRITE_PATH}?${postEditSearchParams.toString()}`);
   };
 
   const handleVisibilityToggleClick = () => {

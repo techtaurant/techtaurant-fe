@@ -56,7 +56,7 @@ export function PostWriteView() {
   const isLoggedIn = !!me;
 
   const handleExitClick = () => {
-    window.location.href = editPostId ? `${POST_DETAIL_PATH}/${editPostId}` : '/';
+    window.location.replace(editPostId ? `${POST_DETAIL_PATH}/${editPostId}` : '/');
   };
 
   useEffect(() => {
