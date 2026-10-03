@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { PostTagList } from '@/entities/post-list';
 import { useGetMe, UserAvatar } from '@/entities/user';
 import { startGoogleLogin } from '@/features/auth';
-import { PostDetailOwnerMenu, usePostDetailAuthorFollow } from '@/features/post-detail-interactions';
+import { PostDetailOwnerMenu } from '@/features/post-detail-interactions';
+import { useUserFollow } from '@/features/user-follow';
 import type { PostListTagResponse } from '@/shared/api/generated';
 import { PostDetailResponseStatus } from '@/shared/api/generated';
 import { cn } from '@/shared/lib/cn';
@@ -47,8 +48,13 @@ export function PostDetailArticleHeader({
 }: Props) {
   const { data: me, isPending: isAuthPending } = useGetMe();
   const isLoggedIn = !!me;
-  const { isFollowingAuthor, isFollowingUpdating, isOwnAuthor, toggleAuthorFollow } = usePostDetailAuthorFollow({
-    authorId,
+  const {
+    isFollowing: isFollowingAuthor,
+    isUpdating: isFollowingUpdating,
+    isOwnUser: isOwnAuthor,
+    toggleFollow: toggleAuthorFollow,
+  } = useUserFollow({
+    userId: authorId,
     onError: (nextFollowingState) => {
       toast.error(nextFollowingState ? FOLLOW_ERROR_MESSAGE : UNFOLLOW_ERROR_MESSAGE);
     },
