@@ -8,6 +8,7 @@ export type {
   PostListSortFilter,
 } from '@/entities/post-list/model/post-list-filters';
 export { POST_LIST_FILTER_SEARCH_PARAM_KEYS } from '@/entities/post-list/model/post-list-filters';
+export { PostList } from '@/entities/post-list/ui/post-list';
 export { PostPreview } from '@/entities/post-list/ui/post-preview';
 export { PostStatList } from '@/entities/post-list/ui/post-stat-list';
 export { PostTagList } from '@/entities/post-list/ui/post-tag-list';
