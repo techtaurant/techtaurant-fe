@@ -1,8 +1,11 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { overlay } from 'overlay-kit';
 
-import { PostDetailAuthorBlockConfirmModal } from '@/views/post-detail/ui/post-detail-author-block-confirm-modal';
+import { getPostDetailQueryKey } from '@/entities/post-detail';
+import { UserBlockConfirmModal } from '@/features/user-block';
 
 type Params = {
   authorId: string;
@@ -11,15 +14,21 @@ type Params = {
 };
 
 export const useOpenPostDetailAuthorBlockConfirmModal = ({ authorId, authorName, postId }: Params) => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
   const openPostDetailAuthorBlockConfirmModal = () => {
     return overlay.open(({ overlayId, isOpen, unmount }) => (
-      <PostDetailAuthorBlockConfirmModal
-        authorId={authorId}
-        authorName={authorName}
-        overlayId={overlayId}
+      <UserBlockConfirmModal
+        userId={authorId}
+        userName={authorName}
+        id={overlayId}
         isOpen={isOpen}
         onClose={unmount}
-        postId={postId}
+        onSuccess={() => {
+          queryClient.removeQueries({ exact: true, queryKey: getPostDetailQueryKey(postId) });
+          router.replace('/posts');
+        }}
       />
     ));
   };
