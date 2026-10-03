@@ -41,17 +41,12 @@ export function PostWriteView() {
     isPostEditing,
     lastSavedAt,
     openDraftList,
-    savedAttachmentUrls,
     tags,
     thumbnailAttachmentId,
     title,
   } = usePostWriteForm({ categoryRef, contentRef, titleRef });
 
-  const { attachmentPreviewUrls, thumbnailUrl } = usePostAttachmentPreviews({
-    content,
-    savedAttachmentUrls,
-    thumbnailAttachmentId,
-  });
+  const { attachmentPreviewUrls, thumbnailUrl } = usePostAttachmentPreviews({ content, thumbnailAttachmentId });
   const { handleImageSelect, isUploading } = usePostImageUpload({
     content,
     contentRef,
