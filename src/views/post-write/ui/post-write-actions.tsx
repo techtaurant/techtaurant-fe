@@ -6,19 +6,25 @@ import { PostWriteDraftActions } from '@/views/post-write/ui/post-write-draft-ac
 
 type Props = {
   isDraftSaving: boolean;
+  isEditMode: boolean;
+  isPostEditing: boolean;
   lastSavedAt?: string;
   onDraftListOpenClick: () => void;
   onDraftSaveClick: () => void;
   onExitClick: () => void;
+  onPostEditClick: () => void;
   onPublishClick: () => void;
 };
 
 export function PostWriteActions({
   isDraftSaving,
+  isEditMode,
+  isPostEditing,
   lastSavedAt,
   onDraftListOpenClick,
   onDraftSaveClick,
   onExitClick,
+  onPostEditClick,
   onPublishClick,
 }: Props) {
   return (
@@ -28,22 +34,36 @@ export function PostWriteActions({
       </Button>
 
       <div className={cn('flex shrink-0 items-center gap-3')}>
-        <PostWriteDraftActions
-          isDraftSaving={isDraftSaving}
-          lastSavedAt={lastSavedAt}
-          onDraftListOpenClick={onDraftListOpenClick}
-          onDraftSaveClick={onDraftSaveClick}
-        />
+        {isEditMode ? (
+          <Button
+            className={cn('shrink-0 font-semibold')}
+            disabled={isPostEditing}
+            onClick={onPostEditClick}
+            size="lg"
+            variant="primarySurface"
+          >
+            {isPostEditing ? '수정 중...' : '수정하기'}
+          </Button>
+        ) : (
+          <>
+            <PostWriteDraftActions
+              isDraftSaving={isDraftSaving}
+              lastSavedAt={lastSavedAt}
+              onDraftListOpenClick={onDraftListOpenClick}
+              onDraftSaveClick={onDraftSaveClick}
+            />
 
-        <Button
-          className={cn('shrink-0 font-semibold')}
-          disabled={isDraftSaving}
-          onClick={onPublishClick}
-          size="lg"
-          variant="primarySurface"
-        >
-          발행하기
-        </Button>
+            <Button
+              className={cn('shrink-0 font-semibold')}
+              disabled={isDraftSaving}
+              onClick={onPublishClick}
+              size="lg"
+              variant="primarySurface"
+            >
+              발행하기
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );
