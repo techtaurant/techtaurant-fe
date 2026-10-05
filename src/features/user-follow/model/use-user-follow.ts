@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import {
   getUserFollowCountsQueryKey,
+  getUserFollowersQueryKey,
   getUserFollowingsQueryKey,
   useGetMe,
   useGetUserFollowings,
@@ -30,6 +31,7 @@ export const useUserFollow = ({ userId, onError, onRequireLogin, onSuccess }: Pa
     if (!currentUserId) return;
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: getUserFollowingsQueryKey(currentUserId) }),
+      queryClient.invalidateQueries({ queryKey: getUserFollowersQueryKey(userId) }),
       queryClient.invalidateQueries({ queryKey: getUserFollowCountsQueryKey(userId) }),
       queryClient.invalidateQueries({ queryKey: getUserFollowCountsQueryKey(currentUserId) }),
     ]);
