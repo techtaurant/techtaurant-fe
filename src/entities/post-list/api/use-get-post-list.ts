@@ -10,6 +10,7 @@ import {
 } from '@/shared/api/generated';
 
 type Params = {
+  enabled?: boolean;
   params?: PostListApiParams;
   options?: CustomFetchInit;
 };
@@ -18,10 +19,11 @@ export const getPostListQueryKey = (params?: PostListApiParams) => {
   return getGetPostsApiInfiniteQueryKey(params);
 };
 
-export const useGetPostList = ({ options, params }: Params) => {
+export const useGetPostList = ({ enabled = true, options, params }: Params) => {
   return useGetPostsApiInfinite(params, {
     request: options,
     query: {
+      enabled,
       getNextPageParam: (lastPage) => lastPage.data?.nextCursor ?? undefined,
       initialPageParam: undefined as string | undefined,
       placeholderData: keepPreviousData,
