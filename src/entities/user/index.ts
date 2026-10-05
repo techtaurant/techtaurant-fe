@@ -8,6 +8,7 @@ export {
   prefetchUserFollowCounts,
   useGetUserFollowCounts,
 } from '@/entities/user/api/use-get-user-follow-counts';
+export { getUserFollowersQueryKey, useGetUserFollowers } from '@/entities/user/api/use-get-user-followers';
 export { getUserFollowingsQueryKey, useGetUserFollowings } from '@/entities/user/api/use-get-user-followings';
 export {
   fetchUserProfileImage,

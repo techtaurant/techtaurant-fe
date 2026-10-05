@@ -7,6 +7,7 @@ import { useGetUserFollowCounts, UserProfileInfo } from '@/entities/user';
 import { startGoogleLogin } from '@/features/auth';
 import { UserBlockButton } from '@/features/user-block';
 import { UserFollowButton } from '@/features/user-follow';
+import { useOpenUserFollowModal } from '@/views/user-detail/model/use-open-user-follow-modal';
 
 type Props = {
   userId: string;
@@ -16,6 +17,7 @@ type Props = {
 export function UserProfileHeader({ userId, profile }: Props) {
   const router = useRouter();
   const { data: counts } = useGetUserFollowCounts(userId);
+  const openUserFollowModal = useOpenUserFollowModal(userId);
 
   return (
     <div className="mb-6 flex flex-col gap-4 px-1 md:flex-row md:items-center md:justify-between">
@@ -24,6 +26,8 @@ export function UserProfileHeader({ userId, profile }: Props) {
         profileImageUrl={profile.profileImageUrl}
         followerCount={counts?.followerCount ?? 0}
         followingCount={counts?.followingCount ?? 0}
+        onFollowersClick={() => openUserFollowModal('followers')}
+        onFollowingsClick={() => openUserFollowModal('followings')}
       />
       <div className="flex items-center gap-3 md:shrink-0">
         <UserFollowButton userId={userId} onRequireLogin={startGoogleLogin} />
