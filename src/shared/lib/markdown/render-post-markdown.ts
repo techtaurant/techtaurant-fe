@@ -3,6 +3,7 @@ import type Token from 'markdown-it/lib/token.mjs';
 import sanitizeHtml from 'sanitize-html';
 
 import type { PostDetailAttachmentPresignedUrlResponse } from '@/shared/api/generated';
+import { isUuid } from '@/shared/lib/is-uuid';
 
 const markdown = new MarkdownIt({
   html: true,
@@ -146,7 +147,7 @@ const replaceAttachmentImageSources = (tokens: Token[], presignedUrlByAttachment
 
     if (presignedUrl) {
       token.attrSet('src', presignedUrl);
-    } else if (attachmentId?.match(/^[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$/)) {
+    } else if (attachmentId && isUuid(attachmentId)) {
       token.attrSet('src', '');
     }
   }

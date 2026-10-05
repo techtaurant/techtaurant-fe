@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { uploadAttachment } from '@/entities/attachment';
-import { getMeQueryKey, updateMe } from '@/entities/user';
+import { getMeQueryKey, getUserProfileImageQueryKey, updateMe } from '@/entities/user';
 import { PresignedUrlRequestReferenceType } from '@/shared/api/generated';
 
 type Params = {
@@ -25,6 +25,11 @@ export const useUpdateProfile = () => {
 
   return useMutation({
     mutationFn: updateProfile,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: getMeQueryKey() }),
+    onSuccess: async (user) => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: getMeQueryKey() }),
+        ...(user ? [queryClient.invalidateQueries({ queryKey: getUserProfileImageQueryKey(user.id) })] : []),
+      ]);
+    },
   });
 };

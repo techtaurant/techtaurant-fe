@@ -34,10 +34,21 @@ export function BottomNavigation() {
           <SquarePen className={cn('h-5 w-5')} />
           <span>글쓰기</span>
         </BottomNavigationLink>
-        <BottomNavigationLink href={'TODO: 작성자 게시물 페이지 href'} onClick={handleAuthRequiredClick}>
-          <UserRound className={cn('h-5 w-5')} />
-          <span>내 글</span>
-        </BottomNavigationLink>
+        {me ? (
+          <BottomNavigationLink href={`/users/${me.id}`}>
+            <UserRound className="h-5 w-5" />
+            <span>내 글</span>
+          </BottomNavigationLink>
+        ) : (
+          <button
+            type="button"
+            onClick={() => startGoogleLogin()}
+            className="text-muted-foreground hover:text-foreground flex min-h-14 min-w-14 flex-col items-center justify-center gap-1 text-xs font-medium transition-colors"
+          >
+            <UserRound className="h-5 w-5" />
+            <span>내 글</span>
+          </button>
+        )}
       </div>
     </nav>
   );
