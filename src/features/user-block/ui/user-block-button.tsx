@@ -1,10 +1,9 @@
 'use client';
 
 import { UserX } from 'lucide-react';
-import { overlay } from 'overlay-kit';
 
 import { useGetMe } from '@/entities/user';
-import { UserBlockConfirmModal } from '@/features/user-block/ui/user-block-confirm-modal';
+import { useOpenUserBlockConfirmModal } from '@/features/user-block/lib/use-open-user-block-confirm-modal';
 import { Button } from '@/shared/ui/button';
 
 type Props = {
@@ -17,6 +16,12 @@ type Props = {
 export function UserBlockButton({ userId, userName, onRequireLogin, onSuccess }: Props) {
   const { data: me, isPending } = useGetMe();
 
+  const openUserBlockConfirmModal = useOpenUserBlockConfirmModal({
+    userId,
+    userName,
+    onSuccess,
+  });
+
   if (isPending || me?.id === userId) return null;
 
   const handleClick = () => {
@@ -25,16 +30,7 @@ export function UserBlockButton({ userId, userName, onRequireLogin, onSuccess }:
       return;
     }
 
-    overlay.open(({ overlayId, isOpen, unmount }) => (
-      <UserBlockConfirmModal
-        id={overlayId}
-        isOpen={isOpen}
-        onClose={unmount}
-        userId={userId}
-        userName={userName}
-        onSuccess={onSuccess}
-      />
-    ));
+    openUserBlockConfirmModal();
   };
 
   return (

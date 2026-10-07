@@ -1,12 +1,16 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
+import { getPostDetailQueryKey } from '@/entities/post-detail';
 import { PostTagList } from '@/entities/post-list';
 import { useGetMe, UserAvatar } from '@/entities/user';
 import { startGoogleLogin } from '@/features/auth';
 import { PostDetailOwnerMenu } from '@/features/post-detail-interactions';
+import { useOpenUserBlockConfirmModal } from '@/features/user-block';
 import { useUserFollow } from '@/features/user-follow';
 import type { PostListTagResponse } from '@/shared/api/generated';
 import { PostDetailResponseStatus } from '@/shared/api/generated';
@@ -14,7 +18,6 @@ import { cn } from '@/shared/lib/cn';
 import { formatAbsoluteDate } from '@/shared/lib/format-date';
 import { Badge } from '@/shared/ui/badge';
 import { toast } from '@/shared/ui/toast';
-import { useOpenPostDetailAuthorBlockConfirmModal } from '@/views/post-detail/model/use-open-post-detail-author-block-confirm-modal';
 import { PostDetailHeaderActions } from '@/views/post-detail/ui/post-detail-header-actions';
 
 type Props = {
@@ -46,6 +49,8 @@ export function PostDetailArticleHeader({
   title,
   updatedAt,
 }: Props) {
+  const queryClient = useQueryClient();
+  const router = useRouter();
   const { data: me, isPending: isAuthPending } = useGetMe();
   const isLoggedIn = !!me;
   const {
@@ -63,10 +68,13 @@ export function PostDetailArticleHeader({
       toast.success(nextFollowingState ? `${authorName}님을 팔로우했어요` : `${authorName}님 팔로우를 해제했어요`);
     },
   });
-  const openPostDetailAuthorBlockConfirmModal = useOpenPostDetailAuthorBlockConfirmModal({
-    authorId,
-    authorName,
-    postId,
+  const openUserBlockConfirmModal = useOpenUserBlockConfirmModal({
+    userId: authorId,
+    userName: authorName,
+    onSuccess: () => {
+      queryClient.removeQueries({ exact: true, queryKey: getPostDetailQueryKey(postId) });
+      router.replace('/posts');
+    },
   });
   const shouldShowUpdatedAt = Date.parse(updatedAt) > Date.parse(createdAt);
   const isPrivate = status === PostDetailResponseStatus.PRIVATE;
@@ -79,7 +87,7 @@ export function PostDetailArticleHeader({
       return;
     }
 
-    openPostDetailAuthorBlockConfirmModal();
+    openUserBlockConfirmModal();
   };
 
   return (
