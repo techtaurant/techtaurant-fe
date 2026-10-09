@@ -12,12 +12,12 @@ type Props = {
   users: UserFollowListItemResponse[];
   isPending: boolean;
   isError: boolean;
-  label: string;
+  emptyMessage: string;
   onRetry: () => void;
   onUserClick: () => void;
 };
 
-export function UserFollowList({ users, isPending, isError, label, onRetry, onUserClick }: Props) {
+export function UserFollowList({ users, isPending, isError, emptyMessage, onRetry, onUserClick }: Props) {
   if (isPending) {
     return <p className="text-muted-foreground py-12 text-center text-sm">목록을 불러오는 중입니다.</p>;
   }
@@ -32,7 +32,7 @@ export function UserFollowList({ users, isPending, isError, label, onRetry, onUs
   }
 
   if (users.length === 0) {
-    return <p className="text-muted-foreground py-12 text-center text-sm">{label}가 없습니다.</p>;
+    return <p className="text-muted-foreground py-12 text-center text-sm">{emptyMessage}</p>;
   }
 
   return (
