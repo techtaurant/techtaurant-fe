@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 
 import { parsePostListFilters, prefetchGetPostList, toPostListApiParams } from '@/entities/post-list';
 import { PostListView } from '@/views/post-list';
+import { Header } from '@/widgets/header';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,6 +26,7 @@ export default async function Page({ searchParams }: Props) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
+      <Header />
       <PostListView />
     </HydrationBoundary>
   );

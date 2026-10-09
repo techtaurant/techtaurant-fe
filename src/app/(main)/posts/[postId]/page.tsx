@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 
 import { fetchPostDetail } from '@/entities/post-detail';
 import { PostDetailView } from '@/views/post-detail';
+import { Header } from '@/widgets/header';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,6 +35,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
+      <Header />
       <PostDetailView postId={postId} />
     </HydrationBoundary>
   );
