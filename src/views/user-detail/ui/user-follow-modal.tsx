@@ -62,7 +62,7 @@ export function UserFollowModal({ overlayId, isOpen, onClose, userId, initialTab
           users={users}
           isPending={isPending}
           isError={isError}
-          label={label}
+          emptyMessage={activeTab === 'followers' ? '팔로워가 없습니다.' : '팔로잉이 없습니다.'}
           onRetry={() => refetch()}
           onUserClick={onClose}
         />

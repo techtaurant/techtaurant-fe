@@ -7,7 +7,7 @@ import { useGetUserFollowCounts, UserProfileInfo } from '@/entities/user';
 import { startGoogleLogin } from '@/features/auth';
 import { UserBlockButton } from '@/features/user-block';
 import { UserFollowButton } from '@/features/user-follow';
-import { useOpenUserFollowModal } from '@/views/user-detail/model/use-open-user-follow-modal';
+import { useOpenUserFollowModal } from '@/views/user-detail/lib/use-open-user-follow-modal';
 
 type Props = {
   userId: string;
