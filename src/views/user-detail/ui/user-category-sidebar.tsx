@@ -17,14 +17,16 @@ export function UserCategorySidebar({ isOpen, onClose, userId, categoryId, onCha
 
   return (
     <SidebarDrawer isOpen={isOpen} onClose={onClose}>
-      <PostCategoryFilterList
-        categories={categories}
-        categoryId={categoryId}
-        onChange={(nextCategoryId) => {
-          onChange(nextCategoryId);
-          onClose();
-        }}
-      />
+      {(close) => (
+        <PostCategoryFilterList
+          categories={categories}
+          categoryId={categoryId}
+          onChange={(nextCategoryId) => {
+            onChange(nextCategoryId);
+            close();
+          }}
+        />
+      )}
     </SidebarDrawer>
   );
 }
