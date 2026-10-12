@@ -9,8 +9,9 @@ import { PostContent } from '@/shared/ui/post-content';
 import { usePostAttachmentPreviews } from '@/views/post-write/model/use-post-attachment-previews';
 import { usePostImageUpload } from '@/views/post-write/model/use-post-image-upload';
 import { usePostWriteForm } from '@/views/post-write/model/use-post-write-form';
-import { PostWriteActions } from '@/views/post-write/ui/post-write-actions';
 import { PostWriteCategoryField } from '@/views/post-write/ui/post-write-category-field';
+import { PostWriteCreateActions } from '@/views/post-write/ui/post-write-create-actions';
+import { PostWriteEditActions } from '@/views/post-write/ui/post-write-edit-actions';
 import { PostWriteImageButton } from '@/views/post-write/ui/post-write-image-button';
 import { PostWriteTagField } from '@/views/post-write/ui/post-write-tag-field';
 import { PostWriteThumbnailField } from '@/views/post-write/ui/post-write-thumbnail-field';
@@ -136,17 +137,22 @@ export function PostWriteView() {
           'xl:col-start-1 xl:row-start-2',
         )}
       >
-        <PostWriteActions
-          isDraftSaving={isDraftSaving}
-          isEditMode={isEditMode}
-          isPostEditing={isPostEditing}
-          lastSavedAt={lastSavedAt}
-          onDraftListOpenClick={openDraftList}
-          onDraftSaveClick={handleDraftSaveClick}
-          onExitClick={handleExitClick}
-          onPostEditClick={handlePostEditClick}
-          onPublishClick={handlePublishClick}
-        />
+        {isEditMode ? (
+          <PostWriteEditActions
+            isPostEditing={isPostEditing}
+            onExitClick={handleExitClick}
+            onPostEditClick={handlePostEditClick}
+          />
+        ) : (
+          <PostWriteCreateActions
+            isDraftSaving={isDraftSaving}
+            lastSavedAt={lastSavedAt}
+            onDraftListOpenClick={openDraftList}
+            onDraftSaveClick={handleDraftSaveClick}
+            onExitClick={handleExitClick}
+            onPublishClick={handlePublishClick}
+          />
+        )}
       </div>
     </div>
   );
