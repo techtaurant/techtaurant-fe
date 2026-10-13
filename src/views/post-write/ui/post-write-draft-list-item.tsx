@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { DraftListItemResponse } from '@/shared/api/generated';
 import { cn } from '@/shared/lib/cn';
 import { formatDisplayTime } from '@/shared/lib/format-date';
+import { extractPostPlainText } from '@/shared/lib/markdown/extract-post-plain-text';
 import { Button, buttonVariants } from '@/shared/ui/button';
 import { useOpenPostWriteDraftDeleteConfirmModal } from '@/views/post-write/lib/use-open-post-write-draft-delete-confirm-modal';
 import { DRAFT_ID_SEARCH_PARAM_KEY } from '@/views/post-write/model/use-draft-id-search-param';
@@ -20,6 +21,7 @@ export function PostWriteDraftListItem({ draft }: Props) {
   const openPostWriteDraftDeleteConfirmModal = useOpenPostWriteDraftDeleteConfirmModal();
 
   const draftEditSearchParams = new URLSearchParams({ [DRAFT_ID_SEARCH_PARAM_KEY]: draft.id });
+  const previewText = draft.contentPreview && extractPostPlainText(draft.contentPreview);
 
   const handleDeleteButtonClick = () => {
     openPostWriteDraftDeleteConfirmModal(draft.id);
@@ -43,9 +45,9 @@ export function PostWriteDraftListItem({ draft }: Props) {
         <span className="text-foreground w-full truncate text-base font-semibold">
           {draft.title || UNTITLED_DRAFT_LABEL}
         </span>
-        {draft.contentPreview && (
+        {previewText && (
           <span className="text-muted-foreground line-clamp-2 w-full text-sm font-normal whitespace-normal">
-            {draft.contentPreview}
+            {previewText}
           </span>
         )}
         <time className="text-muted-foreground text-xs font-normal" dateTime={draft.updatedAt}>
