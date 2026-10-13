@@ -3,9 +3,9 @@
 import { Menu } from 'lucide-react';
 import Link from 'next/link';
 
+import { PostSearchForm } from '@/features/post-search';
 import { cn } from '@/shared/lib/cn';
 import { AuthSection } from '@/widgets/header/ui/auth-section';
-import { GlobalSearchForm } from '@/widgets/header/ui/global-search-form';
 
 type Props = {
   onMenuClick?: () => void;
@@ -36,7 +36,7 @@ export function Header({ onMenuClick }: Props) {
         >
           Techtaurant
         </Link>
-        <GlobalSearchForm />
+        <PostSearchForm variant="header" />
         <AuthSection />
       </div>
     </header>
