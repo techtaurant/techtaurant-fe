@@ -181,6 +181,12 @@ describe('게시물 마크다운 렌더러', () => {
       expect(hasCodeBlock(container, 'mermaid', '<br/>')).toBe(true);
       expect(container.querySelector('pre code.language-mermaid br')).not.toBeInTheDocument();
     });
+    it('엔터 한 번(소프트 줄바꿈)을 <br>로 바꿔 작성한 줄 그대로 보여준다', () => {
+      const container = renderHtml('첫 줄\n둘째 줄');
+
+      expect(container.querySelector('p br')).toBeInTheDocument();
+      expect(container.querySelector('p')).toHaveTextContent('첫 줄 둘째 줄');
+    });
   });
 
   describe('첨부 이미지', () => {
