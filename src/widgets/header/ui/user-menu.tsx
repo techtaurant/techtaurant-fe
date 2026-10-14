@@ -1,6 +1,7 @@
 'use client';
 
 import { FileText, LogOut, Settings } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 import { UserAvatar } from '@/entities/user';
 import { requestLogout } from '@/features/auth/lib/logout';
@@ -20,10 +21,11 @@ type Props = {
 };
 
 export function UserMenu({ user }: Props) {
+  const router = useRouter();
   const openSettingModal = useOpenSettingModal();
 
   const handleMyPageClick = () => {
-    // TODO: 작성자 게시글 리스트 페이지로 이동 router.push
+    router.push(`/users/${user.id}`);
   };
 
   const handleLogout = async () => {

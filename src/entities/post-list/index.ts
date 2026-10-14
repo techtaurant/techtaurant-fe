@@ -1,3 +1,4 @@
+export { useGetCategoryPostList } from '@/entities/post-list/api/use-get-category-post-list';
 export { getPostListQueryKey, prefetchGetPostList, useGetPostList } from '@/entities/post-list/api/use-get-post-list';
 export { parsePostListFilters } from '@/entities/post-list/lib/parse-post-list-filters';
 export { toPostListApiParams } from '@/entities/post-list/lib/to-post-list-api-params';

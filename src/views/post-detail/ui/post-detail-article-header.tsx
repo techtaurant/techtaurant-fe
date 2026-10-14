@@ -110,9 +110,13 @@ export function PostDetailArticleHeader({
       </h1>
       <div className="mb-1 flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <UserAvatar name={authorName} profileImageUrl={profileImageUrl} className="h-6 w-6 shrink-0" />
+          <Link href={`/users/${authorId}`}>
+            <UserAvatar name={authorName} profileImageUrl={profileImageUrl} className="h-6 w-6 shrink-0" />
+          </Link>
           <div className="text-muted-foreground flex min-w-0 flex-wrap items-center gap-2 text-sm">
-            <span className="text-foreground truncate font-medium">{authorName}</span>
+            <Link href={`/users/${authorId}`} className="text-foreground truncate font-medium hover:underline">
+              {authorName}
+            </Link>
             <span>•</span>
             <time className="shrink-0" dateTime={createdAt}>
               {formatAbsoluteDate(createdAt)}
