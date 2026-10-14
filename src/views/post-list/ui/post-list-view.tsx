@@ -3,10 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 
 import { parsePostListFilters, toPostListApiParams, useGetPostList } from '@/entities/post-list';
-import { cn } from '@/shared/lib/cn';
-import { Observer } from '@/shared/ui/intersection-observer';
-import { PostList } from '@/views/post-list/ui/post-list';
-import { PostCard } from '@/widgets/post-card';
+import { PostCardList } from '@/widgets/post-card';
 import { PostListFilterBar } from '@/widgets/post-list-filter-bar';
 import { PostListSidebar } from '@/widgets/post-list-sidebar';
 
@@ -18,37 +15,17 @@ export function PostListView() {
     params: toPostListApiParams(filters),
   });
 
-  const isRefreshingPostList = isFetching && !isFetchingNextPage;
-
-  const handleObserverEnter = () => {
-    if (!hasNextPage || isRefreshingPostList || isFetchingNextPage) return;
-
-    fetchNextPage();
-  };
-
   return (
     <div className="mx-auto flex w-full max-w-350 gap-6 px-4 py-6 md:px-6">
       <PostListSidebar />
       <section className="mx-auto w-full max-w-182 min-w-0">
         <PostListFilterBar />
-        <PostList
+        <PostCardList
           posts={data ?? []}
-          isRefreshing={isRefreshingPostList}
-          renderPosts={(posts, { isRefreshing }) => (
-            <>
-              <div className={cn('transition-opacity', isRefreshing && 'opacity-60')}>
-                {posts.map((post) => (
-                  <PostCard key={post.id} post={post} />
-                ))}
-              </div>
-              {hasNextPage && <Observer onEnter={handleObserverEnter} />}
-            </>
-          )}
-          renderEmpty={() => (
-            <div className="flex flex-col items-center justify-center py-20">
-              <p className="text-muted-foreground text-lg">조건에 맞는 게시물이 없습니다.</p>
-            </div>
-          )}
+          hasNextPage={hasNextPage}
+          isFetching={isFetching}
+          isFetchingNextPage={isFetchingNextPage}
+          fetchNextPage={fetchNextPage}
         />
       </section>
     </div>
