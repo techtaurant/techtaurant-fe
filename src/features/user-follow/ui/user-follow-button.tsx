@@ -1,15 +1,17 @@
 'use client';
 
 import { useUserFollow } from '@/features/user-follow/model/use-user-follow';
+import { cn } from '@/shared/lib/cn';
 import { Button } from '@/shared/ui/button';
 import { toast } from '@/shared/ui/toast';
 
 type Props = {
   userId: string;
   onRequireLogin: () => void;
+  className?: string;
 };
 
-export function UserFollowButton({ userId, onRequireLogin }: Props) {
+export function UserFollowButton({ userId, onRequireLogin, className }: Props) {
   const { isAuthPending, isFollowing, isUpdating, isOwnUser, toggleFollow } = useUserFollow({
     userId,
     onRequireLogin,
@@ -27,7 +29,7 @@ export function UserFollowButton({ userId, onRequireLogin }: Props) {
   return (
     <Button
       variant="primarySurface"
-      className="h-10 min-w-30 rounded-md px-5 text-base font-semibold"
+      className={cn('h-10 min-w-30 rounded-md px-5 text-base font-semibold', className)}
       disabled={isUpdating}
       onClick={toggleFollow}
     >
