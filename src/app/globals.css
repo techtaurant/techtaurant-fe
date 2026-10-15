@@ -63,7 +63,7 @@
   --button-primary-surface-hover: rgb(56, 139, 252);
   --button-neutral-surface: #e6e8ea;
   --button-neutral-surface-hover: #dcdfe3;
-  --post-write-preview-surface: #f0f5f0;
+  --post-write-preview-surface: #e9efe9;
   --button-danger-surface: #f04452;
   --button-danger-surface-hover: #d92d3a;
   --save-button: #2879f0;
@@ -103,7 +103,7 @@
   --primary-foreground: #3c3c3c;
   --muted: #262626;
   --muted-foreground: #b7b7b7;
-  --post-write-preview-surface: #262626;
+  --post-write-preview-surface: #1e1e1e;
   --border: #4a4a4a;
   --button-primary: #f2f2f2;
   --button-primary-hover: #dfdfdf;

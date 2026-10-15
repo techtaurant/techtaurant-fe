@@ -6,6 +6,7 @@ import type { PostDetailAttachmentPresignedUrlResponse } from '@/shared/api/gene
 import { isUuid } from '@/shared/lib/is-uuid';
 
 const markdown = new MarkdownIt({
+  breaks: true,
   html: true,
   langPrefix: 'language-',
   linkify: true,
