@@ -2,7 +2,7 @@
 
 import { notFound } from 'next/navigation';
 import { overlay } from 'overlay-kit';
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useSearchCategories } from '@/entities/category';
 import { useGetUserProfileImage } from '@/entities/user';
@@ -20,27 +20,27 @@ export function UserDetailView({ userId }: Props) {
   const { data: profile, isPending: isProfilePending, isError: isProfileError } = useGetUserProfileImage({ userId });
   const { data: categories } = useSearchCategories({ userId, path: '' });
   const [categoryId, setCategoryId] = useState<string>();
-  const sidebarId = useId();
+  const sidebarIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     return () => {
-      overlay.unmount(sidebarId);
+      if (sidebarIdRef.current === null) return;
+
+      overlay.unmount(sidebarIdRef.current);
+      sidebarIdRef.current = null;
     };
-  }, [userId, sidebarId]);
+  }, [userId]);
 
   const openCategorySidebar = () => {
-    overlay.open(
-      ({ isOpen, unmount }) => (
-        <UserCategorySidebar
-          isOpen={isOpen}
-          onClose={unmount}
-          userId={userId}
-          categoryId={categoryId}
-          onChange={setCategoryId}
-        />
-      ),
-      { overlayId: sidebarId },
-    );
+    sidebarIdRef.current = overlay.open(({ isOpen, unmount }) => (
+      <UserCategorySidebar
+        isOpen={isOpen}
+        onClose={unmount}
+        userId={userId}
+        categoryId={categoryId}
+        onChange={setCategoryId}
+      />
+    ));
   };
 
   if (isProfilePending) return null;
