@@ -2,9 +2,8 @@
 
 import { useGetPostList } from '@/entities/post-list';
 import { useSearchKeyword } from '@/features/post-search';
-import { Observer } from '@/shared/ui/intersection-observer';
 import { SearchResultsStatus } from '@/views/search/ui/search-results-status';
-import { PostCard } from '@/widgets/post-card';
+import { PostCardList } from '@/widgets/post-card';
 
 export function SearchResults() {
   const keyword = useSearchKeyword();
@@ -14,6 +13,7 @@ export function SearchResults() {
     data: posts = [],
     isPending,
     isFetching,
+    isFetchingNextPage,
     isPlaceholderData,
     isError,
     hasNextPage,
@@ -23,11 +23,6 @@ export function SearchResults() {
     enabled: isValidKeyword,
     params: { keyword, size: 20 },
   });
-
-  const handleLoadMore = () => {
-    if (!hasNextPage || isFetching) return;
-    void fetchNextPage();
-  };
 
   if (!keyword) {
     return <p className="text-muted-foreground py-20 text-center text-sm">검색어를 입력하세요.</p>;
@@ -47,12 +42,14 @@ export function SearchResults() {
         isEmpty={posts.length === 0}
         onRetry={refetch}
       >
-        <div className="flex flex-col gap-6">
-          {posts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
-        </div>
-        {hasNextPage && <Observer onEnter={handleLoadMore} />}
+        <PostCardList
+          posts={posts}
+          hasNextPage={hasNextPage}
+          isFetching={isFetching}
+          isFetchingNextPage={isFetchingNextPage}
+          fetchNextPage={fetchNextPage}
+          className="flex flex-col gap-6 opacity-100"
+        />
       </SearchResultsStatus>
     </section>
   );
