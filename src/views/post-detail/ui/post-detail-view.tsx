@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useGetPostDetail } from '@/entities/post-detail';
 import { startGoogleLogin } from '@/features/auth';
@@ -33,15 +33,22 @@ export function PostDetailView({ postId }: Props) {
     if (!isCommentsLoaded || target !== 'comment') return;
 
     const frameId = requestAnimationFrame(() => {
-      commentsRef.current?.scrollIntoView({ block: 'start' });
+      const comments = commentsRef.current;
+      if (!comments) return;
+
+      comments.scrollIntoView({ block: 'start' });
+
+      const url = new URL(window.location.href);
+      url.searchParams.delete('target');
+      window.history.replaceState(null, '', url);
     });
 
     return () => cancelAnimationFrame(frameId);
   }, [isCommentsLoaded, postId, target]);
 
-  const handleCommentsLoaded = useCallback(() => {
+  const handleCommentsLoaded = () => {
     setIsCommentsLoaded(true);
-  }, []);
+  };
 
   const handleCommentButtonClick = () => {
     setCommentFocusRequestKey((currentKey) => currentKey + 1);
