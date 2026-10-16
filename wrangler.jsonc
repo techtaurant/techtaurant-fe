@@ -21,6 +21,9 @@
   "env": {
     "dev": {
       "name": "techtaurant-dev",
+      "placement": {
+        "region": "aws:ap-northeast-2",
+      },
       "services": [
         {
           "binding": "WORKER_SELF_REFERENCE",
