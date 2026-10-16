@@ -3,24 +3,19 @@ import Image from 'next/image';
 import type { NotificationListItemResponse } from '@/shared/api/generated';
 import { cn } from '@/shared/lib/cn';
 import { formatDisplayTime } from '@/shared/lib/format-date';
+import { DropdownItem } from '@/shared/ui/dropdown';
 import { sanitizeNotificationPayload } from '@/widgets/header/lib/sanitize-notification-payload';
 
 type Props = {
   notification: NotificationListItemResponse;
-  isMarkingRead: boolean;
   onClick: (notification: NotificationListItemResponse) => void;
 };
 
-export function NotificationDropdownItem({ notification, isMarkingRead, onClick }: Props) {
+export function NotificationDropdownItem({ notification, onClick }: Props) {
   return (
-    <button
-      type="button"
-      disabled={isMarkingRead}
+    <DropdownItem
       onClick={() => onClick(notification)}
-      className={cn(
-        'group block w-full rounded-[18px] px-0 py-1 text-left transition-colors focus-visible:outline-none',
-        'disabled:cursor-wait',
-      )}
+      className="group block w-full rounded-[18px] px-0 py-1 text-left leading-normal font-normal transition-colors hover:bg-transparent focus-visible:bg-transparent focus-visible:outline-none active:bg-transparent"
     >
       <div
         className={cn(
@@ -49,6 +44,6 @@ export function NotificationDropdownItem({ notification, isMarkingRead, onClick 
           </time>
         </div>
       </div>
-    </button>
+    </DropdownItem>
   );
 }

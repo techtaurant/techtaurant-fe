@@ -1,10 +1,13 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
 import { useGetMyNotifications, useMarkNotificationsRead } from '@/entities/notification';
 import type { NotificationListItemResponse } from '@/shared/api/generated';
 import { cn } from '@/shared/lib/cn';
 import { DropdownContent } from '@/shared/ui/dropdown';
 import { useDropdownContext } from '@/shared/ui/dropdown/providers/dropdown-provider';
+import { getNotificationDestination } from '@/widgets/header/lib/get-notification-destination';
 import { NotificationDropdownItem } from '@/widgets/header/ui/notification-dropdown-item';
 
 type Props = {
@@ -12,16 +15,21 @@ type Props = {
 };
 
 export function NotificationDropdownContent({ unreadCount }: Props) {
+  const router = useRouter();
   const { isOpen } = useDropdownContext();
+
   const { data: notifications = [], isError, isPending } = useGetMyNotifications(isOpen);
   const { isPending: isMarkingRead, mutate: markNotificationsRead } = useMarkNotificationsRead();
 
   const handleNotificationClick = (notification: NotificationListItemResponse) => {
+    const destination = getNotificationDestination(notification);
+    if (!destination) return;
+
     if (!notification.isRead) {
       markNotificationsRead({ data: { notificationIds: [notification.id] } });
     }
 
-    // TODO: 알림 종류에 맞는 페이지로 router.push 수행
+    router.push(destination);
   };
 
   const handleMarkAllAsRead = () => {
@@ -71,7 +79,6 @@ export function NotificationDropdownContent({ unreadCount }: Props) {
             <NotificationDropdownItem
               key={notification.id}
               notification={notification}
-              isMarkingRead={isMarkingRead}
               onClick={handleNotificationClick}
             />
           ))}
