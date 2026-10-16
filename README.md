@@ -76,3 +76,8 @@ Segment는 각 Slice별로 필요한 것만 사용합니다.
 - **model**: DTO 타입, 데이터 구조 변환 함수, 커스텀 훅 등
 - **lib**: 유틸 함수 등
 - **config**: 설정 파일, 상수, 객체 등
+
+### 게시물 상세 목차
+
+`views/post-detail/ui/post-detail-content.tsx`는 기존 `PostContent`의 h2/h3에 게시물별 고유 ID를 설정하고 목차 링크를
+제공합니다. 본문이 바뀌면 목차를 갱신하며, 공유 Markdown 렌더러와 작성 미리보기는 기존 동작을 유지합니다.
