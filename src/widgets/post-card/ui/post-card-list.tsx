@@ -12,9 +12,10 @@ type Props = {
   isFetching: boolean;
   isFetchingNextPage: boolean;
   fetchNextPage: () => void;
+  className?: string;
 };
 
-export function PostCardList({ posts, hasNextPage, isFetching, isFetchingNextPage, fetchNextPage }: Props) {
+export function PostCardList({ posts, hasNextPage, isFetching, isFetchingNextPage, fetchNextPage, className }: Props) {
   const isRefreshing = isFetching && !isFetchingNextPage;
 
   const handleObserverEnter = () => {
@@ -28,7 +29,7 @@ export function PostCardList({ posts, hasNextPage, isFetching, isFetchingNextPag
       isRefreshing={isRefreshing}
       renderPosts={(items, { isRefreshing }) => (
         <>
-          <div className={cn('transition-opacity', isRefreshing && 'opacity-60')}>
+          <div className={cn('transition-opacity', isRefreshing && 'opacity-60', className)}>
             {items.map((post) => (
               <PostCard key={post.id} post={post} />
             ))}
