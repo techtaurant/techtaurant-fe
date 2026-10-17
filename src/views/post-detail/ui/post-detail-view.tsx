@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 import { useGetPostDetail } from '@/entities/post-detail';
 import { startGoogleLogin } from '@/features/auth';
@@ -16,13 +17,38 @@ type Props = {
 };
 
 export function PostDetailView({ postId }: Props) {
+  const commentsRef = useRef<HTMLElement>(null);
   const [commentFocusRequestKey, setCommentFocusRequestKey] = useState(0);
+  const [isCommentsLoaded, setIsCommentsLoaded] = useState(false);
   const { data: post } = useGetPostDetail(postId);
+
+  const target = useSearchParams().get('target');
 
   useRecordPostViewOnce({
     enabled: Boolean(post),
     postId,
   });
+
+  useEffect(() => {
+    if (!isCommentsLoaded || target !== 'comment') return;
+
+    const frameId = requestAnimationFrame(() => {
+      const comments = commentsRef.current;
+      if (!comments) return;
+
+      comments.scrollIntoView({ block: 'start' });
+
+      const url = new URL(window.location.href);
+      url.searchParams.delete('target');
+      window.history.replaceState(null, '', url);
+    });
+
+    return () => cancelAnimationFrame(frameId);
+  }, [isCommentsLoaded, postId, target]);
+
+  const handleCommentsLoaded = () => {
+    setIsCommentsLoaded(true);
+  };
 
   const handleCommentButtonClick = () => {
     setCommentFocusRequestKey((currentKey) => currentKey + 1);
@@ -62,8 +88,10 @@ export function PostDetailView({ postId }: Props) {
           postId={postId}
         />
         <PostDetailCommentsSection
+          ref={commentsRef}
           commentCount={post.commentCount}
           focusRequestKey={commentFocusRequestKey}
+          onCommentsLoaded={handleCommentsLoaded}
           onRequireLogin={startGoogleLogin}
           postAuthorId={authorId}
           postId={postId}

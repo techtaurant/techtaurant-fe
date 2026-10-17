@@ -1,5 +1,7 @@
 'use client';
 
+import { type Ref, useEffect } from 'react';
+
 import type { CommentSort } from '@/entities/comment';
 import { COMMENT_SORT } from '@/entities/comment';
 import { usePostDetailCommentList } from '@/features/post-comments/model/use-post-detail-comment-list';
@@ -10,9 +12,11 @@ import { cn } from '@/shared/lib/cn';
 type Props = {
   commentCount: number;
   focusRequestKey: number;
+  onCommentsLoaded?: () => void;
   onRequireLogin: () => void;
   postAuthorId: string;
   postId: string;
+  ref?: Ref<HTMLElement>;
 };
 
 const EMPTY_COMMENT_LIST_MESSAGE = '아직 댓글이 없습니다. 첫 번째 댓글을 작성해보세요.';
@@ -28,17 +32,23 @@ const COMMENT_SORT_OPTIONS = [
 export function PostDetailCommentsSection({
   commentCount,
   focusRequestKey,
+  onCommentsLoaded,
   onRequireLogin,
   postAuthorId,
   postId,
+  ref,
 }: Props) {
   const commentList = usePostDetailCommentList({ postId });
   const hasComments = commentList.comments.length > 0;
   const hasKnownComments = commentCount > 0 || hasComments;
   const shouldShowEmptyCommentList = !commentList.isCommentsLoading && !hasKnownComments;
 
+  useEffect(() => {
+    if (!commentList.isCommentsLoading) onCommentsLoaded?.();
+  }, [commentList.isCommentsLoading, onCommentsLoaded, postId]);
+
   return (
-    <section>
+    <section ref={ref} className="scroll-mt-20">
       <PostDetailCommentComposer focusRequestKey={focusRequestKey} onRequireLogin={onRequireLogin} postId={postId} />
 
       <div className="flex flex-col gap-6">

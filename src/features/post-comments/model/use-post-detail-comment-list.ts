@@ -33,7 +33,7 @@ export const usePostDetailCommentList = ({ postId }: Params) => {
     commentsSort,
     handleCommentsSortChange,
     handleLoadMoreComments,
-    isCommentsLoading: parentCommentsQuery.isPending,
+    isCommentsLoading: parentCommentsQuery.isPending || parentCommentsQuery.isPlaceholderData,
     isCommentsLoadingMore: parentCommentsQuery.isFetchingNextPage,
   };
 };
