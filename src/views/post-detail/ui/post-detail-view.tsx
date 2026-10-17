@@ -6,10 +6,10 @@ import { useGetPostDetail } from '@/entities/post-detail';
 import { startGoogleLogin } from '@/features/auth';
 import { PostDetailCommentsSection } from '@/features/post-comments';
 import { PostDetailActionBar } from '@/features/post-detail-interactions';
-import { PostContent } from '@/shared/ui/post-content';
 import { useRecordPostViewOnce } from '@/views/post-detail/model/use-record-post-view-once';
 import { PostDetailArticleHeader } from '@/views/post-detail/ui/post-detail-article-header';
 import { PostDetailContainer } from '@/views/post-detail/ui/post-detail-container';
+import { PostDetailContent } from '@/views/post-detail/ui/post-detail-content';
 
 type Props = {
   postId: string;
@@ -49,7 +49,11 @@ export function PostDetailView({ postId }: Props) {
           title={post.title}
           updatedAt={post.updatedAt}
         />
-        <PostContent attachmentPresignedUrls={post.attachmentPresignedUrls} className="mb-12" content={post.content} />
+        <PostDetailContent
+          attachmentPresignedUrls={post.attachmentPresignedUrls}
+          content={post.content}
+          postId={postId}
+        />
         <PostDetailActionBar
           authorId={authorId}
           commentCount={post.commentCount}
