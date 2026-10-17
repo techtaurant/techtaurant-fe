@@ -1,10 +1,16 @@
 'use client';
 
-import { Eye, EyeOff, MoreHorizontal, Trash2 } from 'lucide-react';
+import { Globe, Lock, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 
 import { useOpenPostDetailDeleteConfirmModal } from '@/features/post-detail-interactions/lib/use-open-post-detail-delete-confirm-modal';
 import { usePostDetailVisibility } from '@/features/post-detail-interactions/model/use-post-detail-visibility';
-import { DropdownContent, DropdownItem, DropdownProvider, DropdownTrigger } from '@/shared/ui/dropdown';
+import {
+  DropdownContent,
+  DropdownItem,
+  DropdownLinkItem,
+  DropdownProvider,
+  DropdownTrigger,
+} from '@/shared/ui/dropdown';
 import { toast } from '@/shared/ui/toast';
 
 type Props = {
@@ -12,6 +18,9 @@ type Props = {
   postId: string;
 };
 
+const POST_WRITE_PATH = '/write';
+const POST_ID_SEARCH_PARAM_KEY = 'postId';
+const EDIT_POST_LABEL = '수정';
 const MAKE_PRIVATE_LABEL = '비공개';
 const MAKE_PUBLIC_LABEL = '공개';
 const DELETE_POST_LABEL = '삭제';
@@ -28,6 +37,9 @@ export function PostDetailOwnerMenu({ isPrivate, postId }: Props) {
   });
   const openPostDetailDeleteConfirmModal = useOpenPostDetailDeleteConfirmModal({ postId });
 
+  const postEditSearchParams = new URLSearchParams({ [POST_ID_SEARCH_PARAM_KEY]: postId });
+  const postEditPath = `${POST_WRITE_PATH}?${postEditSearchParams.toString()}`;
+
   const handleVisibilityToggleClick = () => {
     if (isVisibilityUpdating) return;
 
@@ -40,8 +52,12 @@ export function PostDetailOwnerMenu({ isPrivate, postId }: Props) {
         <MoreHorizontal className="h-5 w-5" />
       </DropdownTrigger>
       <DropdownContent align="end" className="min-w-36 rounded-xl">
+        <DropdownLinkItem href={postEditPath}>
+          <Pencil className="h-3.5 w-3.5" />
+          {EDIT_POST_LABEL}
+        </DropdownLinkItem>
         <DropdownItem onClick={handleVisibilityToggleClick}>
-          {isPrivate ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
+          {isPrivate ? <Globe className="h-3.5 w-3.5" /> : <Lock className="h-3.5 w-3.5" />}
           {isPrivate ? MAKE_PUBLIC_LABEL : MAKE_PRIVATE_LABEL}
         </DropdownItem>
         <DropdownItem

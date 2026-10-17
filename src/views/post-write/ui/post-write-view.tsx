@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
 import { useGetMe } from '@/entities/user';
@@ -9,8 +10,9 @@ import { PostContent } from '@/shared/ui/post-content';
 import { usePostAttachmentPreviews } from '@/views/post-write/model/use-post-attachment-previews';
 import { usePostImageUpload } from '@/views/post-write/model/use-post-image-upload';
 import { usePostWriteForm } from '@/views/post-write/model/use-post-write-form';
-import { PostWriteActions } from '@/views/post-write/ui/post-write-actions';
 import { PostWriteCategoryField } from '@/views/post-write/ui/post-write-category-field';
+import { PostWriteCreateActions } from '@/views/post-write/ui/post-write-create-actions';
+import { PostWriteEditActions } from '@/views/post-write/ui/post-write-edit-actions';
 import { PostWriteImageButton } from '@/views/post-write/ui/post-write-image-button';
 import { PostWriteTagField } from '@/views/post-write/ui/post-write-tag-field';
 import { PostWriteThumbnailField } from '@/views/post-write/ui/post-write-thumbnail-field';
@@ -21,6 +23,7 @@ export function PostWriteView() {
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
   const categoryRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   const { data: me, isPending: isAuthPending } = useGetMe();
   const {
@@ -29,11 +32,14 @@ export function PostWriteView() {
     handleCategoryPathChange,
     handleContentChange,
     handleDraftSaveClick,
+    handlePostEditClick,
     handlePublishClick,
     handleTagsChange,
     handleThumbnailChange,
     handleTitleChange,
     isDraftSaving,
+    isEditMode,
+    isPostEditing,
     lastSavedAt,
     openDraftList,
     tags,
@@ -51,7 +57,12 @@ export function PostWriteView() {
   const isLoggedIn = !!me;
 
   const handleExitClick = () => {
-    window.location.href = '/';
+    if (isEditMode) {
+      router.back();
+      return;
+    }
+
+    window.location.replace('/');
   };
 
   useEffect(() => {
@@ -131,14 +142,22 @@ export function PostWriteView() {
           'xl:col-start-1 xl:row-start-2',
         )}
       >
-        <PostWriteActions
-          isDraftSaving={isDraftSaving}
-          lastSavedAt={lastSavedAt}
-          onDraftListOpenClick={openDraftList}
-          onDraftSaveClick={handleDraftSaveClick}
-          onExitClick={handleExitClick}
-          onPublishClick={handlePublishClick}
-        />
+        {isEditMode ? (
+          <PostWriteEditActions
+            isPostEditing={isPostEditing}
+            onExitClick={handleExitClick}
+            onPostEditClick={handlePostEditClick}
+          />
+        ) : (
+          <PostWriteCreateActions
+            isDraftSaving={isDraftSaving}
+            lastSavedAt={lastSavedAt}
+            onDraftListOpenClick={openDraftList}
+            onDraftSaveClick={handleDraftSaveClick}
+            onExitClick={handleExitClick}
+            onPublishClick={handlePublishClick}
+          />
+        )}
       </div>
     </div>
   );
