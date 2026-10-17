@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
 import { useGetMe } from '@/entities/user';
@@ -17,18 +18,17 @@ import { PostWriteTagField } from '@/views/post-write/ui/post-write-tag-field';
 import { PostWriteThumbnailField } from '@/views/post-write/ui/post-write-thumbnail-field';
 
 const TITLE_MAX_LENGTH = 200;
-const POST_DETAIL_PATH = '/posts';
 
 export function PostWriteView() {
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
   const categoryRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   const { data: me, isPending: isAuthPending } = useGetMe();
   const {
     categoryPath,
     content,
-    editPostId,
     handleCategoryPathChange,
     handleContentChange,
     handleDraftSaveClick,
@@ -57,7 +57,12 @@ export function PostWriteView() {
   const isLoggedIn = !!me;
 
   const handleExitClick = () => {
-    window.location.replace(editPostId ? `${POST_DETAIL_PATH}/${editPostId}` : '/');
+    if (isEditMode) {
+      router.back();
+      return;
+    }
+
+    window.location.replace('/');
   };
 
   useEffect(() => {

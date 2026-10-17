@@ -133,7 +133,6 @@ export const usePostWriteForm = ({ categoryRef, contentRef, titleRef }: PostWrit
   return {
     categoryPath,
     content,
-    editPostId,
     handleCategoryPathChange,
     handleContentChange,
     handleDraftSaveClick,
