@@ -32,7 +32,8 @@ NEXT_PUBLIC_ENV = local | development | production
 | `ORVAL_OPENAPI_URL` 빌드 변수        | 개발 OpenAPI JSON 전체 주소 | 개발 OpenAPI JSON 전체 주소 | 개발 OpenAPI JSON 전체 주소  |
 
 Cloudflare Builds의 Production branch는 각각 `main`, `dev`로 지정합니다. Preview 빌드는 `techtaurant-dev`에서만
-활성화하고 `main`은 제외합니다. 커스텀 도메인은 각 Worker의 Production에만 연결합니다.
+활성화합니다. Preview의 Build·Preview command는 위 명령을 `if [ "$WORKERS_CI_BRANCH" != "main" ]; then <명령>; fi`로
+감싸 `main`을 제외합니다. 커스텀 도메인은 각 Worker의 Production에만 연결합니다.
 
 `NEXT_PUBLIC_ENV`는 빌드 스크립트가 상용은 `production`, 테섭과 Preview는 `development`로 지정합니다. 배포 명령은 미리
 빌드한 `.open-next`를 사용합니다.
