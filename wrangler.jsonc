@@ -8,28 +8,19 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS",
   },
-  "services": [
-    {
-      "binding": "WORKER_SELF_REFERENCE",
-      "service": "techtaurant",
-    },
-  ],
+  "images": {
+    "binding": "IMAGES",
+  },
   "preview_urls": true,
   "observability": {
     "enabled": true,
   },
-  "env": {
-    "dev": {
-      "name": "techtaurant-dev",
-      "placement": {
-        "region": "aws:ap-northeast-2",
-      },
-      "services": [
-        {
-          "binding": "WORKER_SELF_REFERENCE",
-          "service": "techtaurant-dev",
-        },
-      ],
+  "previews": {
+    "placement": {
+      "region": "aws:ap-northeast-2",
+    },
+    "images": {
+      "binding": "IMAGES",
     },
   },
 }
