@@ -17,6 +17,21 @@ NEXT_PUBLIC_ENV = local | development | production
 환경 변수에 등록해주세요. CI는 GitHub 환경에 등록된 값을 읽습니다. Cloudflare 런타임 변수가 아닌 빌드 변수로 등록해야
 합니다.
 
+### Cloudflare 배포
+
+`techtaurant` Worker 하나에서 `main`은 Production, 나머지 브랜치는 각각의 Preview를 사용합니다.
+
+| 설정                                 | Production (`main`)         | Preview (`dev` 및 작업 브랜치)               |
+| ------------------------------------ | --------------------------- | -------------------------------------------- |
+| 주소                                 | `techtaurant.com`           | `dev.techtaurant.com` / 브랜치별 Preview URL |
+| Build command                        | `pnpm run cf:build:prod`    | `pnpm run cf:build:dev`                      |
+| Deploy / Preview command             | `pnpm run cf:deploy`        | `pnpm run cf:deploy:preview`                 |
+| `NEXT_PUBLIC_API_BASE_URL` 빌드 변수 | 상용 API 주소               | 개발 API 주소                                |
+| `ORVAL_OPENAPI_URL` 빌드 변수        | 개발 OpenAPI JSON 전체 주소 | 개발 OpenAPI JSON 전체 주소                  |
+
+Cloudflare Builds의 Production branch는 `main`으로 지정하고 Worker Previews를 활성화합니다. `NEXT_PUBLIC_ENV`는 빌드
+스크립트가 각각 `production`, `development`로 지정합니다. 배포 명령은 미리 빌드한 `.open-next`를 사용합니다.
+
 ### 개발 환경 시작
 
 로컬 HTTPS 개발 환경 기준

@@ -11,11 +11,10 @@
     "build": "next build",
     "start": "next start",
     "cf:build": "pnpm run api:generate && opennextjs-cloudflare build",
-    "cf:preview": "pnpm run cf:build && opennextjs-cloudflare preview",
-    "cf:deploy": "pnpm run cf:build && opennextjs-cloudflare deploy --env=\"\"",
-    "cf:deploy:dev": "pnpm run cf:build && opennextjs-cloudflare deploy --env dev",
-    "cf:upload": "pnpm run cf:build && opennextjs-cloudflare upload --env=\"\"",
-    "cf:upload:dev": "pnpm run cf:build && opennextjs-cloudflare upload --env dev",
+    "cf:build:dev": "NEXT_PUBLIC_ENV=development pnpm run cf:build",
+    "cf:build:prod": "NEXT_PUBLIC_ENV=production pnpm run cf:build",
+    "cf:deploy": "opennextjs-cloudflare deploy",
+    "cf:deploy:preview": "wrangler preview",
     "cf:typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "api:generate": "orval --config orval.config.ts",
     "lint": "eslint .",
@@ -74,6 +73,6 @@
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "typescript": "^5",
-    "wrangler": "^4.110.0"
+    "wrangler": "^4.151.1"
   }
 }
