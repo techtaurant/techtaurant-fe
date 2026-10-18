@@ -15,6 +15,7 @@ jobs:
       name: development
       deployment: false
     env:
+      ORVAL_OPENAPI_URL: ${{ vars.ORVAL_OPENAPI_URL }}
       NEXT_PUBLIC_API_BASE_URL: ${{ vars.NEXT_PUBLIC_API_BASE_URL }}
       NEXT_PUBLIC_ENV: ${{ vars.NEXT_PUBLIC_ENV }}
     steps:
