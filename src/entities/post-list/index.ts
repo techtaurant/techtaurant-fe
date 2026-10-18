@@ -1,20 +1,7 @@
-export { fetchPostList, getPostListQueryKey, useGetPostList } from '@/entities/post-list/api/use-get-post-list';
-export {
-  prefetchGetPostListMetadatas,
-  useGetPostListMetadatas,
-} from '@/entities/post-list/api/use-get-post-list-metadatas';
-export {
-  prefetchGetPostListProfileImages,
-  useGetPostListProfileImages,
-} from '@/entities/post-list/api/use-get-post-list-profile-images';
-export {
-  getPostListViewerStatesQueryKey,
-  prefetchGetPostListViewerStates,
-  useGetPostListViewerStates,
-} from '@/entities/post-list/api/use-get-post-list-viewer-states';
+export { useGetCategoryPostList } from '@/entities/post-list/api/use-get-category-post-list';
+export { getPostListQueryKey, prefetchGetPostList, useGetPostList } from '@/entities/post-list/api/use-get-post-list';
 export { parsePostListFilters } from '@/entities/post-list/lib/parse-post-list-filters';
 export { toPostListApiParams } from '@/entities/post-list/lib/to-post-list-api-params';
-export { mergePostListItems } from '@/entities/post-list/model/merge-post-list-items';
 export type {
   PostListApiParams,
   PostListFilters,
@@ -22,6 +9,7 @@ export type {
   PostListSortFilter,
 } from '@/entities/post-list/model/post-list-filters';
 export { POST_LIST_FILTER_SEARCH_PARAM_KEYS } from '@/entities/post-list/model/post-list-filters';
+export { PostList } from '@/entities/post-list/ui/post-list';
 export { PostPreview } from '@/entities/post-list/ui/post-preview';
 export { PostStatList } from '@/entities/post-list/ui/post-stat-list';
 export { PostTagList } from '@/entities/post-list/ui/post-tag-list';

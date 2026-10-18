@@ -1,47 +1,94 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
+import { getPostDetailQueryKey } from '@/entities/post-detail';
 import { PostTagList } from '@/entities/post-list';
-import { UserAvatar } from '@/entities/user';
+import { useGetMe, UserAvatar } from '@/entities/user';
+import { startGoogleLogin } from '@/features/auth';
+import { PostDetailOwnerMenu } from '@/features/post-detail-interactions';
+import { useOpenUserBlockConfirmModal } from '@/features/user-block';
+import { useUserFollow } from '@/features/user-follow';
 import type { PostListTagResponse } from '@/shared/api/generated';
+import { PostDetailResponseStatus } from '@/shared/api/generated';
 import { cn } from '@/shared/lib/cn';
 import { formatAbsoluteDate } from '@/shared/lib/format-date';
+import { Badge } from '@/shared/ui/badge';
+import { toast } from '@/shared/ui/toast';
 import { PostDetailHeaderActions } from '@/views/post-detail/ui/post-detail-header-actions';
 
 type Props = {
+  authorId: string;
   authorName: string;
   categoryName?: string;
   createdAt: string;
-  isAuthPending: boolean;
-  isFollowingAuthor: boolean;
-  isFollowingUpdating: boolean;
-  isOwnAuthor: boolean;
-  onRequestBlockAuthor: () => void;
-  onToggleAuthorFollow: () => void;
+  postId: string;
   profileImageUrl: string;
+  status: PostDetailResponseStatus;
   tags: PostListTagResponse[];
   title: string;
   updatedAt: string;
 };
 
+const FOLLOW_ERROR_MESSAGE = '팔로우에 실패했어요';
+const UNFOLLOW_ERROR_MESSAGE = '팔로우 취소에 실패했어요';
+const PRIVATE_BADGE_LABEL = '비공개';
+
 export function PostDetailArticleHeader({
+  authorId,
   authorName,
   categoryName,
   createdAt,
-  isAuthPending,
-  isFollowingAuthor,
-  isFollowingUpdating,
-  isOwnAuthor,
-  onRequestBlockAuthor,
-  onToggleAuthorFollow,
+  postId,
   profileImageUrl,
+  status,
   tags,
   title,
   updatedAt,
 }: Props) {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const { data: me, isPending: isAuthPending } = useGetMe();
+  const isLoggedIn = !!me;
+  const {
+    isFollowing: isFollowingAuthor,
+    isUpdating: isFollowingUpdating,
+    isOwnUser: isOwnAuthor,
+    toggleFollow: toggleAuthorFollow,
+  } = useUserFollow({
+    userId: authorId,
+    onError: (nextFollowingState) => {
+      toast.error(nextFollowingState ? FOLLOW_ERROR_MESSAGE : UNFOLLOW_ERROR_MESSAGE);
+    },
+    onRequireLogin: startGoogleLogin,
+    onSuccess: (nextFollowingState) => {
+      toast.success(nextFollowingState ? `${authorName}님을 팔로우했어요` : `${authorName}님 팔로우를 해제했어요`);
+    },
+  });
+  const openUserBlockConfirmModal = useOpenUserBlockConfirmModal({
+    userId: authorId,
+    userName: authorName,
+    onSuccess: () => {
+      queryClient.removeQueries({ exact: true, queryKey: getPostDetailQueryKey(postId) });
+      router.replace('/posts');
+    },
+  });
   const shouldShowUpdatedAt = Date.parse(updatedAt) > Date.parse(createdAt);
+  const isPrivate = status === PostDetailResponseStatus.PRIVATE;
+
+  const handleBlockAuthorButtonClick = () => {
+    if (isAuthPending) return;
+
+    if (!isLoggedIn) {
+      startGoogleLogin();
+      return;
+    }
+
+    openUserBlockConfirmModal();
+  };
 
   return (
     <header className="mb-8">
@@ -63,9 +110,13 @@ export function PostDetailArticleHeader({
       </h1>
       <div className="mb-1 flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <UserAvatar name={authorName} profileImageUrl={profileImageUrl} className="h-6 w-6 shrink-0" />
+          <Link href={`/users/${authorId}`}>
+            <UserAvatar name={authorName} profileImageUrl={profileImageUrl} className="h-6 w-6 shrink-0" />
+          </Link>
           <div className="text-muted-foreground flex min-w-0 flex-wrap items-center gap-2 text-sm">
-            <span className="text-foreground truncate font-medium">{authorName}</span>
+            <Link href={`/users/${authorId}`} className="text-foreground truncate font-medium hover:underline">
+              {authorName}
+            </Link>
             <span>•</span>
             <time className="shrink-0" dateTime={createdAt}>
               {formatAbsoluteDate(createdAt)}
@@ -78,16 +129,20 @@ export function PostDetailArticleHeader({
                 </time>
               </>
             )}
+            {isPrivate && <Badge>{PRIVATE_BADGE_LABEL}</Badge>}
           </div>
         </div>
-        <PostDetailHeaderActions
-          isAuthPending={isAuthPending}
-          isFollowingAuthor={isFollowingAuthor}
-          isFollowingUpdating={isFollowingUpdating}
-          isOwnAuthor={isOwnAuthor}
-          onRequestBlockAuthor={onRequestBlockAuthor}
-          onToggleAuthorFollow={onToggleAuthorFollow}
-        />
+        {isOwnAuthor ? (
+          <PostDetailOwnerMenu isPrivate={isPrivate} postId={postId} />
+        ) : (
+          <PostDetailHeaderActions
+            isAuthPending={isAuthPending}
+            isFollowingAuthor={isFollowingAuthor}
+            isFollowingUpdating={isFollowingUpdating}
+            onRequestBlockAuthor={handleBlockAuthorButtonClick}
+            onToggleAuthorFollow={toggleAuthorFollow}
+          />
+        )}
       </div>
       <PostTagList tags={tags} variant="detail" />
     </header>

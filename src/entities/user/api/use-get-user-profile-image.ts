@@ -1,14 +1,22 @@
 import type { QueryClient } from '@tanstack/react-query';
 
+import type { CustomFetchInit } from '@/shared/api/custom-fetch';
 import {
   getGetUserProfileImagesApiQueryKey,
-  prefetchGetUserProfileImagesApiQuery,
+  getGetUserProfileImagesApiQueryOptions,
   useGetUserProfileImagesApi,
 } from '@/shared/api/generated';
 
 type Params = {
-  options?: RequestInit;
+  options?: CustomFetchInit;
   userId?: string;
+};
+
+export const fetchUserProfileImage = async (queryClient: QueryClient, { userId, options }: Params) => {
+  const response = await queryClient.fetchQuery(
+    getGetUserProfileImagesApiQueryOptions(toUserProfileImageParams(userId), { request: options }),
+  );
+  return response.data?.[0];
 };
 
 const toUserProfileImageParams = (userId?: string) => {
@@ -17,7 +25,7 @@ const toUserProfileImageParams = (userId?: string) => {
   };
 };
 
-const getUserProfileImageQueryKey = (userId?: string) => {
+export const getUserProfileImageQueryKey = (userId?: string) => {
   return getGetUserProfileImagesApiQueryKey(toUserProfileImageParams(userId));
 };
 
@@ -28,17 +36,6 @@ export const useGetUserProfileImage = ({ options, userId }: Params) => {
       enabled: Boolean(userId),
       queryKey: getUserProfileImageQueryKey(userId),
       select: (response) => response.data?.[0],
-    },
-  });
-};
-
-export const prefetchGetUserProfileImage = async (queryClient: QueryClient, { options, userId }: Params) => {
-  if (!userId) return;
-
-  await prefetchGetUserProfileImagesApiQuery(queryClient, toUserProfileImageParams(userId), {
-    request: options,
-    query: {
-      queryKey: getUserProfileImageQueryKey(userId),
     },
   });
 };

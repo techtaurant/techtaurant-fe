@@ -3,6 +3,10 @@ import { defineConfig } from 'orval';
 
 loadEnvConfig(process.cwd());
 
+if (!process.env.ORVAL_OPENAPI_URL) {
+  throw new Error('ORVAL_OPENAPI_URL 환경 변수를 확인해주세요.');
+}
+
 if (!process.env.NEXT_PUBLIC_API_BASE_URL) {
   throw new Error('NEXT_PUBLIC_API_BASE_URL 환경 변수를 확인해주세요.');
 }
@@ -10,7 +14,7 @@ if (!process.env.NEXT_PUBLIC_API_BASE_URL) {
 export default defineConfig({
   techtaurant: {
     input: {
-      target: `${process.env.NEXT_PUBLIC_API_BASE_URL}/v3/api-docs`,
+      target: process.env.ORVAL_OPENAPI_URL,
     },
     output: {
       mode: 'single',
@@ -36,14 +40,38 @@ export default defineConfig({
           usePrefetch: true,
         },
         operations: {
+          // POST지만 서버 상태를 바꾸지 않는 조회성 API라 멱등함. 폴링(refetchInterval)으로 재요청해야 해서 useQuery로 override.
+          issueTmpPreviewUrls: {
+            query: {
+              useQuery: true,
+            },
+          },
           // infiniteQuery가 필요한 API에 한해서 추가
-          getPostContents: {
+          getPosts: {
             query: {
               useInfinite: true,
               useInfiniteQueryParam: 'cursor',
             },
           },
           getTags: {
+            query: {
+              useInfinite: true,
+              useInfiniteQueryParam: 'cursor',
+            },
+          },
+          getParentComments: {
+            query: {
+              useInfinite: true,
+              useInfiniteQueryParam: 'cursor',
+            },
+          },
+          getReplies: {
+            query: {
+              useInfinite: true,
+              useInfiniteQueryParam: 'cursor',
+            },
+          },
+          getMyDrafts: {
             query: {
               useInfinite: true,
               useInfiniteQueryParam: 'cursor',

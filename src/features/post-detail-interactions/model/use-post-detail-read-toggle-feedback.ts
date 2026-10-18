@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useGetMe } from '@/entities/user';
 import { usePostDetailReadGuide } from '@/features/post-detail-interactions/model/use-post-detail-read-guide';
 import { usePostDetailReadToggle } from '@/features/post-detail-interactions/model/use-post-detail-read-toggle';
 import { toast } from '@/shared/ui/toast';
@@ -13,8 +14,6 @@ const READ_TOGGLE_PRESS_RESET_MS = 320;
 
 type Params = {
   postId: string;
-  isAuthPending: boolean;
-  isLoggedIn: boolean;
   isRead: boolean;
   onMarkReadAnimationStart: () => void;
   onRequireLogin: () => void;
@@ -22,18 +21,16 @@ type Params = {
 
 export const usePostDetailReadToggleFeedback = ({
   postId,
-  isAuthPending,
-  isLoggedIn,
   isRead,
   onMarkReadAnimationStart,
   onRequireLogin,
 }: Params) => {
+  const { data: me } = useGetMe();
   const [isPressingReadToggle, setIsPressingReadToggle] = useState(false);
   const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const { dismissReadGuide, isReadGuideVisible } = usePostDetailReadGuide({ isLoggedIn });
-  const { isReadPending, toggleRead } = usePostDetailReadToggle({
-    isAuthPending,
-    isLoggedIn,
+  const isLoggedIn = !!me;
+  const { dismissReadGuide, isReadGuideVisible } = usePostDetailReadGuide();
+  const { isReadToggleDisabled, toggleRead } = usePostDetailReadToggle({
     isRead,
     onError: () => {
       toast.error(READ_TOGGLE_ERROR_TOAST_MESSAGE);
@@ -96,7 +93,7 @@ export const usePostDetailReadToggleFeedback = ({
     handleReadPointerUp,
     handleToggleRead,
     isPressingReadToggle,
-    isReadPending,
     isReadGuideVisible,
+    isReadToggleDisabled,
   };
 };

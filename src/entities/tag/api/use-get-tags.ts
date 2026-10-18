@@ -5,7 +5,7 @@ import type { GetTagsApiParams } from '@/shared/api/generated';
 import { getGetTagsApiInfiniteQueryKey, useGetTagsApiInfinite } from '@/shared/api/generated';
 
 type Params = {
-  options?: RequestInit;
+  enabled?: boolean;
   params?: GetTagsApiParams;
 };
 
@@ -18,10 +18,10 @@ const getTagsQueryKey = (params?: GetTagsApiParams) => {
   return getGetTagsApiInfiniteQueryKey(getTagListParams(params));
 };
 
-export const useGetTags = ({ options, params }: Params = {}) => {
+export const useGetTags = ({ enabled, params }: Params = {}) => {
   return useGetTagsApiInfinite(getTagListParams(params), {
-    request: options,
     query: {
+      enabled,
       initialPageParam: undefined as GetTagsApiParams['cursor'],
       getNextPageParam: (lastPage) => lastPage.data?.nextCursor ?? undefined,
       placeholderData: keepPreviousData,

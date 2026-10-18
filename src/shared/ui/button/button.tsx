@@ -17,7 +17,7 @@ export const Button = forwardRef<HTMLButtonElement, Props>(
 Button.displayName = 'Button';
 
 // TODO: Codex 기반 초안 variant라서 추후 살짝씩 수정해서 공통 버튼 UI를 정리해보면 좋을 것 같습니다.
-const buttonVariants = cva(
+export const buttonVariants = cva(
   'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus-visible:outline-none disabled:opacity-60',
   {
     variants: {

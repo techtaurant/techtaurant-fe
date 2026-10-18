@@ -2,34 +2,24 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 
-import {
-  getPostDetailMetadataQueryKey,
-  getPostDetailViewerStateQueryKey,
-  useUpdatePostReadStatus,
-} from '@/entities/post-detail';
+import { getPostDetailQueryKey, useUpdatePostReadStatus } from '@/entities/post-detail';
 import { getPostListQueryKey } from '@/entities/post-list';
+import { useGetMe } from '@/entities/user';
 
 type Params = {
   postId: string;
-  isAuthPending: boolean;
-  isLoggedIn: boolean;
   isRead: boolean;
   onError?: () => void;
   onRequireLogin: () => void;
   onSuccess?: (nextReadState: boolean) => void;
 };
 
-export const usePostDetailReadToggle = ({
-  postId,
-  isAuthPending,
-  isLoggedIn,
-  isRead,
-  onError,
-  onRequireLogin,
-  onSuccess,
-}: Params) => {
+export const usePostDetailReadToggle = ({ postId, isRead, onError, onRequireLogin, onSuccess }: Params) => {
   const queryClient = useQueryClient();
+  const { data: me, isPending: isAuthPending } = useGetMe();
   const readMutation = useUpdatePostReadStatus();
+  const isLoggedIn = !!me;
+  const isReadToggleDisabled = isAuthPending || readMutation.isPending;
 
   const toggleRead = () => {
     if (isAuthPending) return;
@@ -51,8 +41,7 @@ export const usePostDetailReadToggle = ({
       {
         onSuccess: async () => {
           await Promise.all([
-            queryClient.invalidateQueries({ queryKey: getPostDetailMetadataQueryKey(postId) }),
-            queryClient.invalidateQueries({ queryKey: getPostDetailViewerStateQueryKey(postId) }),
+            queryClient.invalidateQueries({ queryKey: getPostDetailQueryKey(postId) }),
             queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
           ]);
           onSuccess?.(nextReadState);
@@ -65,7 +54,7 @@ export const usePostDetailReadToggle = ({
   };
 
   return {
-    isReadPending: readMutation.isPending,
+    isReadToggleDisabled,
     toggleRead,
   };
 };

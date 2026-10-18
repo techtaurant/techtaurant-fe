@@ -12,14 +12,12 @@ import { Button } from '@/shared/ui/button';
 const READ_TOGGLE_GUIDE_TEXT = '해당 아이콘을 눌러 읽음 상태를 바꿔보세요!';
 
 type Props = {
-  isAuthPending: boolean;
-  isLoggedIn: boolean;
   isRead: boolean;
   onRequireLogin: () => void;
   postId: string;
 };
 
-export function PostDetailReadToggleButton({ isAuthPending, isLoggedIn, isRead, onRequireLogin, postId }: Props) {
+export function PostDetailReadToggleButton({ isRead, onRequireLogin, postId }: Props) {
   const showReadCheckedIconRef = useRef(isRead);
   const lottieRef = useRef<LottieRefCurrentProps>(null);
   const readStatusLabel = getReadStatusLabel(isRead);
@@ -28,11 +26,9 @@ export function PostDetailReadToggleButton({ isAuthPending, isLoggedIn, isRead, 
     handleReadPointerUp,
     handleToggleRead,
     isPressingReadToggle,
-    isReadPending,
     isReadGuideVisible,
+    isReadToggleDisabled,
   } = usePostDetailReadToggleFeedback({
-    isAuthPending,
-    isLoggedIn,
     isRead,
     onMarkReadAnimationStart: () => {
       showReadCheckedIconRef.current = false;
@@ -75,7 +71,7 @@ export function PostDetailReadToggleButton({ isAuthPending, isLoggedIn, isRead, 
 
   return (
     <div className="relative">
-      {isLoggedIn && isReadGuideVisible && (
+      {isReadGuideVisible && (
         <p className="border-border bg-background text-foreground absolute -top-8 left-1/2 z-10 -translate-x-1/2 rounded-full border px-3 py-1 text-[11px] whitespace-nowrap shadow-sm">
           {READ_TOGGLE_GUIDE_TEXT}
         </p>
@@ -87,7 +83,7 @@ export function PostDetailReadToggleButton({ isAuthPending, isLoggedIn, isRead, 
           'relative h-10 w-10 rounded-full px-0 hover:bg-transparent',
           isPressingReadToggle ? 'scale-[0.94]' : 'scale-100',
         )}
-        disabled={isAuthPending || isReadPending}
+        disabled={isReadToggleDisabled}
         title={readStatusLabel}
         onClick={handleToggleRead}
         onPointerCancel={handleReadPointerUp}

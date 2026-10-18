@@ -1,0 +1,1 @@
+export const DEFAULT_COMMENT_LIST_SIZE = 20;

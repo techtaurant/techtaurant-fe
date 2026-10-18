@@ -2,31 +2,26 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "main": ".open-next/worker.js",
   "name": "techtaurant",
+  "keep_names": false,
   "compatibility_date": "2026-07-13",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS",
   },
-  "services": [
-    {
-      "binding": "WORKER_SELF_REFERENCE",
-      "service": "techtaurant",
-    },
-  ],
+  "images": {
+    "binding": "IMAGES",
+  },
   "preview_urls": true,
   "observability": {
     "enabled": true,
   },
-  "env": {
-    "dev": {
-      "name": "techtaurant-dev",
-      "services": [
-        {
-          "binding": "WORKER_SELF_REFERENCE",
-          "service": "techtaurant-dev",
-        },
-      ],
+  "previews": {
+    "placement": {
+      "region": "aws:ap-northeast-2",
+    },
+    "images": {
+      "binding": "IMAGES",
     },
   },
 }

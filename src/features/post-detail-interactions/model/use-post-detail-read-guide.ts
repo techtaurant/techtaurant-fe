@@ -2,6 +2,8 @@
 
 import { useCallback, useSyncExternalStore } from 'react';
 
+import { useGetMe } from '@/entities/user';
+
 const READ_TOGGLE_GUIDE_STORAGE_KEY = 'post-detail-read-toggle-guide-seen';
 
 const readGuideListeners = new Set<() => void>();
@@ -26,18 +28,15 @@ const getReadGuideServerSnapshot = () => {
   return true;
 };
 
-type Params = {
-  isLoggedIn: boolean;
-};
-
-export const usePostDetailReadGuide = ({ isLoggedIn }: Params) => {
+export const usePostDetailReadGuide = () => {
+  const { data: me } = useGetMe();
   const hasSeenReadGuide = useSyncExternalStore(
     subscribeReadGuideStore,
     getReadGuideSnapshot,
     getReadGuideServerSnapshot,
   );
 
-  const isReadGuideVisible = isLoggedIn && !hasSeenReadGuide;
+  const isReadGuideVisible = !!me && !hasSeenReadGuide;
 
   const dismissReadGuide = useCallback(() => {
     try {

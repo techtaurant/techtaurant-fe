@@ -2,27 +2,30 @@ import type { QueryClient } from '@tanstack/react-query';
 import { keepPreviousData } from '@tanstack/react-query';
 
 import type { PostListApiParams } from '@/entities/post-list/model/post-list-filters';
+import type { CustomFetchInit } from '@/shared/api/custom-fetch';
 import {
-  getGetPostContentsApiInfiniteQueryKey,
-  getGetPostContentsApiInfiniteQueryOptions,
-  useGetPostContentsApiInfinite,
+  getGetPostsApiInfiniteQueryKey,
+  prefetchGetPostsApiInfiniteQuery,
+  useGetPostsApiInfinite,
 } from '@/shared/api/generated';
 
 type Params = {
+  enabled?: boolean;
   params?: PostListApiParams;
-  options?: RequestInit;
+  options?: CustomFetchInit;
 };
 
 export const getPostListQueryKey = (params?: PostListApiParams) => {
-  return getGetPostContentsApiInfiniteQueryKey(params);
+  return getGetPostsApiInfiniteQueryKey(params);
 };
 
-export const useGetPostList = ({ options, params }: Params) => {
-  return useGetPostContentsApiInfinite(params, {
+export const useGetPostList = ({ enabled = true, options, params }: Params) => {
+  return useGetPostsApiInfinite(params, {
     request: options,
     query: {
-      initialPageParam: undefined as string | undefined,
+      enabled,
       getNextPageParam: (lastPage) => lastPage.data?.nextCursor ?? undefined,
+      initialPageParam: undefined as string | undefined,
       placeholderData: keepPreviousData,
       queryKey: getPostListQueryKey(params),
       select: (data) => data.pages.flatMap(({ data }) => data?.content ?? []),
@@ -30,21 +33,13 @@ export const useGetPostList = ({ options, params }: Params) => {
   });
 };
 
-export const fetchPostList = async (queryClient: QueryClient, { options, params }: Params) => {
-  try {
-    const data = await queryClient.fetchInfiniteQuery({
-      ...getGetPostContentsApiInfiniteQueryOptions(params, {
-        request: options,
-        query: {
-          initialPageParam: undefined as string | undefined,
-          getNextPageParam: (lastPage) => lastPage.data?.nextCursor ?? undefined,
-          queryKey: getPostListQueryKey(params),
-        },
-      }),
-    });
-
-    return data.pages.flatMap(({ data }) => data?.content ?? []);
-  } catch {
-    return [];
-  }
+export const prefetchGetPostList = (queryClient: QueryClient, { options, params }: Params) => {
+  return prefetchGetPostsApiInfiniteQuery(queryClient, params, {
+    request: options,
+    query: {
+      getNextPageParam: (lastPage) => lastPage.data?.nextCursor ?? undefined,
+      initialPageParam: undefined as string | undefined,
+      queryKey: getPostListQueryKey(params),
+    },
+  });
 };

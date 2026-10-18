@@ -4,7 +4,10 @@
   --font-brand: var(--font-montserrat);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
   --color-muted: var(--muted);
+  --color-post-write-preview-surface: var(--post-write-preview-surface);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-button-primary: var(--button-primary);
@@ -15,12 +18,26 @@
   --color-button-neutral-surface-hover: var(--button-neutral-surface-hover);
   --color-button-danger-surface: var(--button-danger-surface);
   --color-button-danger-surface-hover: var(--button-danger-surface-hover);
+  --color-save-button: var(--save-button);
+  --color-save-button-hover: var(--save-button-hover);
   --color-follow-button-surface: var(--follow-button-surface);
   --color-follow-button-surface-hover: var(--follow-button-surface-hover);
   --color-follow-button-foreground: var(--follow-button-foreground);
   --color-following-button-surface: var(--following-button-surface);
   --color-following-button-surface-hover: var(--following-button-surface-hover);
   --color-following-button-foreground: var(--following-button-foreground);
+  --color-form-error-border: var(--form-error-border);
+  --color-form-error-foreground: var(--form-error-foreground);
+  --color-suggestion-active-foreground: var(--suggestion-active-foreground);
+  --color-comment-submit-button: var(--comment-submit-button);
+  --color-comment-submit-button-hover: var(--comment-submit-button-hover);
+  --color-comment-input-hover: var(--comment-input-hover);
+  --color-comment-sort-button: var(--comment-sort-button);
+  --color-comment-sort-button-hover: var(--comment-sort-button-hover);
+  --color-comment-sort-button-foreground: var(--comment-sort-button-foreground);
+  --color-comment-cancel-button-foreground: var(--comment-cancel-button-foreground);
+  --color-comment-author-badge-background: var(--comment-author-badge-background);
+  --color-comment-author-badge-foreground: var(--comment-author-badge-foreground);
   --color-toast-surface: var(--toast-surface);
   --color-toast-block-icon: var(--toast-block-icon);
   --color-toast-block-badge: var(--toast-block-badge);
@@ -28,28 +45,47 @@
   --color-toast-success-icon-surface: var(--toast-success-icon-surface);
   --shadow-floating-sm: var(--floating-shadow-sm);
   --shadow-floating-lg: var(--floating-shadow-lg);
+  --shadow-floating-top: var(--floating-shadow-top);
+  --color-modal-surface: var(--modal-surface);
 }
 
 :root {
   --background: #f8f9fa;
   --foreground: #202124;
+  --primary: var(--foreground);
+  --primary-foreground: var(--background);
   --muted: #f3f4f5;
   --muted-foreground: #5f6368;
   --border: #dadce0;
   --button-primary: #111827;
   --button-primary-hover: #1f2937;
-  --button-primary-surface: rgb(56, 139, 252);
-  --button-primary-surface-hover: rgb(43, 124, 235);
-  --button-neutral-surface: #eef1f4;
-  --button-neutral-surface-hover: #e5e9ee;
+  --button-primary-surface: rgb(43, 124, 235);
+  --button-primary-surface-hover: rgb(56, 139, 252);
+  --button-neutral-surface: #e6e8ea;
+  --button-neutral-surface-hover: #dcdfe3;
+  --post-write-preview-surface: #e9efe9;
   --button-danger-surface: #f04452;
   --button-danger-surface-hover: #d92d3a;
+  --save-button: #2879f0;
+  --suggestion-active-foreground: #2879f0;
+  --save-button-hover: #2273eb;
   --follow-button-surface: #e8f2ff;
   --follow-button-surface-hover: #d8e9ff;
   --follow-button-foreground: #277af0;
   --following-button-surface: #f3f4f5;
   --following-button-surface-hover: #ebecef;
   --following-button-foreground: #303949;
+  --form-error-border: #ef4444;
+  --form-error-foreground: #dc2626;
+  --comment-submit-button: #3182f6;
+  --comment-submit-button-hover: #2676ee;
+  --comment-input-hover: #f3f4f6;
+  --comment-sort-button: #edeff1;
+  --comment-sort-button-hover: #e6e8ea;
+  --comment-sort-button-foreground: var(--muted-foreground);
+  --comment-cancel-button-foreground: #5f6368;
+  --comment-author-badge-background: #e8f2ff;
+  --comment-author-badge-foreground: #1b64db;
   --toast-surface: #000000;
   --toast-block-icon: #b7c0cf;
   --toast-block-badge: #ff5a6d;
@@ -57,27 +93,47 @@
   --toast-success-icon-surface: #03a87c;
   --floating-shadow-sm: 0 16px 36px rgb(15 23 42 / 0.12);
   --floating-shadow-lg: 0 24px 70px rgb(15 23 42 / 0.16);
+  --floating-shadow-top: 0 -6px 20px rgb(15 23 42 / 0.14);
+  --modal-surface: var(--background);
 }
 
 [data-mode='dark'] {
   --background: #323232;
   --foreground: #f2f2f2;
+  --primary-foreground: #3c3c3c;
   --muted: #262626;
   --muted-foreground: #b7b7b7;
+  --post-write-preview-surface: #1e1e1e;
   --border: #4a4a4a;
   --button-primary: #f2f2f2;
   --button-primary-hover: #dfdfdf;
-  --button-neutral-surface: #3a3a3a;
-  --button-neutral-surface-hover: #454545;
+  --button-neutral-surface: #454545;
+  --button-neutral-surface-hover: #4f4f4f;
+  --save-button: #3585fa;
+  --suggestion-active-foreground: #61b0ff;
+  --save-button-hover: #3b8ffd;
   --follow-button-surface: #1e2d49;
   --follow-button-surface-hover: #203455;
   --follow-button-foreground: #459bff;
   --following-button-surface: #2c2c36;
   --following-button-surface-hover: #353540;
   --following-button-foreground: #e6e6e7;
+  --form-error-border: #f87171;
+  --form-error-foreground: #f87171;
+  --comment-submit-button: #3585fa;
+  --comment-submit-button-hover: #3e92fe;
+  --comment-input-hover: #3c3c3c;
+  --comment-sort-button: #2c2c36;
+  --comment-sort-button-hover: #3d3c47;
+  --comment-sort-button-foreground: #cfcfcf;
+  --comment-cancel-button-foreground: #cfcfcf;
+  --comment-author-badge-background: #1e2d49;
+  --comment-author-badge-foreground: #61b0ff;
   --toast-surface: #2c2c35;
   --floating-shadow-sm: 0 16px 36px rgb(0 0 0 / 0.24);
   --floating-shadow-lg: 0 24px 70px rgb(0 0 0 / 0.28);
+  --floating-shadow-top: 0 -6px 20px rgb(0 0 0 / 0.36);
+  --modal-surface: #2c2c35;
 }
 
 @layer base {
@@ -86,7 +142,7 @@
   }
 
   button:disabled {
-    cursor: not-allowed;
+    cursor: default;
   }
 
   * {

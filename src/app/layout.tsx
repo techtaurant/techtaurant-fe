@@ -8,8 +8,6 @@ import { montserrat, pretendard } from '@/shared/config/fonts';
 import { cn } from '@/shared/lib/cn';
 import { ModalProvider } from '@/shared/ui/modal';
 import { ToastsRoot } from '@/shared/ui/toast';
-import { BottomNavigation } from '@/widgets/bottom-navigation';
-import { Header } from '@/widgets/header';
 
 type Props = {
   children: ReactNode;
@@ -22,11 +20,7 @@ export default function RootLayout({ children }: Props) {
         <ThemeProvider attribute="data-mode">
           <ReactQueryProvider>
             <ModalProvider>
-              <main>
-                <Header />
-                <div className={cn('min-h-screen py-16', 'md:pb-0')}>{children}</div>
-                <BottomNavigation />
-              </main>
+              {children}
               <ToastsRoot />
             </ModalProvider>
           </ReactQueryProvider>

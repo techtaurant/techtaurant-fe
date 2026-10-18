@@ -3,31 +3,21 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 import type { PostLikeStatus } from '@/entities/post-detail';
-import {
-  getPostDetailMetadataQueryKey,
-  getPostDetailViewerStateQueryKey,
-  POST_LIKE_STATUS,
-  useUpdatePostLikeStatus,
-} from '@/entities/post-detail';
+import { getPostDetailQueryKey, POST_LIKE_STATUS, useUpdatePostLikeStatus } from '@/entities/post-detail';
 import { getPostListQueryKey } from '@/entities/post-list';
+import { useGetMe } from '@/entities/user';
 
 type Params = {
   postId: string;
-  isAuthPending: boolean;
-  isLoggedIn: boolean;
   likeStatus: PostLikeStatus;
   onRequireLogin: () => void;
 };
 
-export const usePostDetailInteractions = ({
-  postId,
-  isAuthPending,
-  isLoggedIn,
-  likeStatus,
-  onRequireLogin,
-}: Params) => {
+export const usePostDetailInteractions = ({ postId, likeStatus, onRequireLogin }: Params) => {
   const queryClient = useQueryClient();
+  const { data: me, isPending: isAuthPending } = useGetMe();
   const likeMutation = useUpdatePostLikeStatus();
+  const isLoggedIn = !!me;
 
   const ensureLoggedIn = () => {
     if (isAuthPending) return false;
@@ -52,8 +42,7 @@ export const usePostDetailInteractions = ({
       {
         onSuccess: async () => {
           await Promise.all([
-            queryClient.invalidateQueries({ queryKey: getPostDetailMetadataQueryKey(postId) }),
-            queryClient.invalidateQueries({ queryKey: getPostDetailViewerStateQueryKey(postId) }),
+            queryClient.invalidateQueries({ queryKey: getPostDetailQueryKey(postId) }),
             queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
           ]);
         },

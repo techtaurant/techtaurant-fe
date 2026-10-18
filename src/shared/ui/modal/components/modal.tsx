@@ -38,12 +38,12 @@ export function Modal({ id, isOpen, onClose, ...props }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-4 py-8 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8 backdrop-blur-sm"
       onClick={handleBackdropClick}
     >
       <div
         className={cn(
-          'border-border/80 bg-background text-foreground max-h-[calc(100dvh-2rem)] w-full max-w-140 overflow-hidden rounded-3xl border shadow-2xl',
+          'border-border/80 bg-modal-surface text-foreground max-h-[calc(100dvh-2rem)] w-full max-w-140 overflow-hidden rounded-3xl border shadow-2xl',
           className,
         )}
         {...restProps}

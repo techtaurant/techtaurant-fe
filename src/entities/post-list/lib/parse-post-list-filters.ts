@@ -8,7 +8,7 @@ import {
   POST_LIST_PERIOD_VALUES,
   POST_LIST_SORT_VALUES,
 } from '@/entities/post-list/model/post-list-filters';
-import { GetPostContentsApiPeriod, GetPostContentsApiSort } from '@/shared/api/generated';
+import { GetPostsApiPeriod, GetPostsApiSort } from '@/shared/api/generated';
 import type { SearchParamsLike } from '@/shared/lib/search-params';
 import { getSearchParamValue, getSearchParamValues } from '@/shared/lib/search-params';
 
@@ -32,8 +32,8 @@ export const parsePostListFilters = (searchParams?: SearchParamsLike): PostListF
 
   return {
     ...(!!authorId && { authorId }),
-    period: isValidPeriodValue(period) ? period : GetPostContentsApiPeriod.ALL,
-    sort: isValidSortValue(sort) ? sort : GetPostContentsApiSort.LATEST,
+    period: isValidPeriodValue(period) ? period : GetPostsApiPeriod.ALL,
+    sort: isValidSortValue(sort) ? sort : GetPostsApiSort.LATEST,
     tagIds,
   };
 };

@@ -13,6 +13,7 @@ type Props = {
   isLikePending: boolean;
   isLiked: boolean;
   likeCount: number;
+  onCommentClick: () => void;
   onToggleDislike: () => void;
   onToggleLike: () => void;
   viewCount: number;
@@ -25,6 +26,7 @@ export function PostDetailPrimaryActions({
   isLikePending,
   isLiked,
   likeCount,
+  onCommentClick,
   onToggleDislike,
   onToggleLike,
   viewCount,
@@ -63,11 +65,11 @@ export function PostDetailPrimaryActions({
         </Button>
       </div>
 
-      {/* TODO: 댓글 기능은 다음 작업에서 연결합니다. */}
       <Button
         variant="ghost"
         size="sm"
         className="bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground h-10 rounded-full px-2 text-base font-semibold md:px-4"
+        onClick={onCommentClick}
       >
         <MessageCircle className="h-5 w-5 md:h-6 md:w-6" />
         <span>{formatPostDetailCount(commentCount)}</span>
