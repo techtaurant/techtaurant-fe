@@ -3,6 +3,10 @@ import { defineConfig } from 'orval';
 
 loadEnvConfig(process.cwd());
 
+if (!process.env.ORVAL_OPENAPI_URL) {
+  throw new Error('ORVAL_OPENAPI_URL 환경 변수를 확인해주세요.');
+}
+
 if (!process.env.NEXT_PUBLIC_API_BASE_URL) {
   throw new Error('NEXT_PUBLIC_API_BASE_URL 환경 변수를 확인해주세요.');
 }
@@ -10,7 +14,7 @@ if (!process.env.NEXT_PUBLIC_API_BASE_URL) {
 export default defineConfig({
   techtaurant: {
     input: {
-      target: `${process.env.NEXT_PUBLIC_API_BASE_URL}/v3/api-docs`,
+      target: process.env.ORVAL_OPENAPI_URL,
     },
     output: {
       mode: 'single',
