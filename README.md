@@ -19,18 +19,24 @@ NEXT_PUBLIC_ENV = local | development | production
 
 ### Cloudflare 배포
 
-`techtaurant` Worker 하나에서 `main`은 Production, 나머지 브랜치는 각각의 Preview를 사용합니다.
+상용은 `techtaurant`, 테섭과 작업 브랜치 Preview는 `techtaurant-dev` Worker를 사용합니다.
 
-| 설정                                 | Production (`main`)         | Preview (`dev` 및 작업 브랜치)               |
-| ------------------------------------ | --------------------------- | -------------------------------------------- |
-| 주소                                 | `techtaurant.com`           | `dev.techtaurant.com` / 브랜치별 Preview URL |
-| Build command                        | `pnpm run cf:build:prod`    | `pnpm run cf:build:dev`                      |
-| Deploy / Preview command             | `pnpm run cf:deploy`        | `pnpm run cf:deploy:preview`                 |
-| `NEXT_PUBLIC_API_BASE_URL` 빌드 변수 | 상용 API 주소               | 개발 API 주소                                |
-| `ORVAL_OPENAPI_URL` 빌드 변수        | 개발 OpenAPI JSON 전체 주소 | 개발 OpenAPI JSON 전체 주소                  |
+| 설정                                 | 상용                        | 테섭                        | 작업 브랜치 Preview          |
+| ------------------------------------ | --------------------------- | --------------------------- | ---------------------------- |
+| Worker                               | `techtaurant`               | `techtaurant-dev`           | `techtaurant-dev`            |
+| 브랜치                               | `main`                      | `dev`                       | `main`·`dev` 외 브랜치       |
+| 주소                                 | `techtaurant.com`           | `dev.techtaurant.com`       | 브랜치별 `workers.dev` URL   |
+| Build command                        | `pnpm run cf:build:prod`    | `pnpm run cf:build:dev`     | `pnpm run cf:build:dev`      |
+| Deploy / Preview command             | `pnpm run cf:deploy`        | `pnpm run cf:deploy:dev`    | `pnpm run cf:deploy:preview` |
+| `NEXT_PUBLIC_API_BASE_URL` 빌드 변수 | 상용 API 주소               | 개발 API 주소               | 개발 API 주소                |
+| `ORVAL_OPENAPI_URL` 빌드 변수        | 개발 OpenAPI JSON 전체 주소 | 개발 OpenAPI JSON 전체 주소 | 개발 OpenAPI JSON 전체 주소  |
 
-Cloudflare Builds의 Production branch는 `main`으로 지정하고 Worker Previews를 활성화합니다. `NEXT_PUBLIC_ENV`는 빌드
-스크립트가 각각 `production`, `development`로 지정합니다. 배포 명령은 미리 빌드한 `.open-next`를 사용합니다.
+Cloudflare Builds의 Production branch는 각각 `main`, `dev`로 지정합니다. Preview 빌드는 `techtaurant-dev`에서만
+활성화합니다. Preview의 Build·Preview command는 위 명령을 `if [ "$WORKERS_CI_BRANCH" != "main" ]; then <명령>; fi`로
+감싸 `main`을 제외합니다. 커스텀 도메인은 각 Worker의 Production에만 연결합니다.
+
+`NEXT_PUBLIC_ENV`는 빌드 스크립트가 상용은 `production`, 테섭과 Preview는 `development`로 지정합니다. 배포 명령은 미리
+빌드한 `.open-next`를 사용합니다.
 
 ### 개발 환경 시작
 
