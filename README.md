@@ -31,7 +31,6 @@ NEXT_PUBLIC_ENV = local | development | production
 
 Cloudflare Builds의 Production branch는 `main`으로 지정하고 Worker Previews를 활성화합니다. `NEXT_PUBLIC_ENV`는 빌드
 스크립트가 각각 `production`, `development`로 지정합니다. 배포 명령은 미리 빌드한 `.open-next`를 사용합니다.
-`pnpm cf:preview`는 개발 설정으로 빌드 후 로컬에서 실행합니다.
 
 ### 개발 환경 시작
 

@@ -13,7 +13,6 @@
     "cf:build": "pnpm run api:generate && opennextjs-cloudflare build",
     "cf:build:dev": "NEXT_PUBLIC_ENV=development pnpm run cf:build",
     "cf:build:prod": "NEXT_PUBLIC_ENV=production pnpm run cf:build",
-    "cf:preview": "pnpm run cf:build:dev && opennextjs-cloudflare preview",
     "cf:deploy": "opennextjs-cloudflare deploy",
     "cf:deploy:preview": "wrangler preview",
     "cf:typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
