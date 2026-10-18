@@ -16,12 +16,20 @@
   "observability": {
     "enabled": true,
   },
-  "previews": {
-    "placement": {
-      "region": "aws:ap-northeast-2",
-    },
-    "images": {
-      "binding": "IMAGES",
+  "env": {
+    "dev": {
+      "name": "techtaurant-dev",
+      "placement": {
+        "region": "aws:ap-northeast-2",
+      },
+      "images": {
+        "binding": "IMAGES",
+      },
+      "previews": {
+        "images": {
+          "binding": "IMAGES",
+        },
+      },
     },
   },
 }
