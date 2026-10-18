@@ -5,20 +5,17 @@
 아래 환경 변수가 필요합니다.
 
 ```bash
-ORVAL_OPENAPI_URL = https://dev-api.techtaurant.com/v3/api-docs
-NEXT_PUBLIC_API_BASE_URL = <https://백엔드도메인>
+ORVAL_OPENAPI_URL = <OpenAPI_JSON_전체_URL>
+NEXT_PUBLIC_API_BASE_URL = <실제_API_요청_주소>
 NEXT_PUBLIC_ENV = local | development | production
 ```
 
 `ORVAL_OPENAPI_URL`은 API 클라이언트 생성에만 사용하는 OpenAPI JSON 전체 주소입니다. `/v3/api-docs`까지 포함하며,
 상용에서도 개발 서버의 스펙을 사용합니다. 실제 API 요청 주소는 `NEXT_PUBLIC_API_BASE_URL`로 별도 설정합니다.
 
-로컬 `.env`, GitHub Actions의 `development`·`production` 환경 변수, Cloudflare의 상용·Preview 빌드 환경 변수에
-`ORVAL_OPENAPI_URL=https://dev-api.techtaurant.com/v3/api-docs`를 등록해주세요. CI는 GitHub 환경에 등록된 값을 읽습니다.
-Cloudflare 런타임 변수가 아닌 빌드 변수로 등록해야 합니다.
-
-상용 빌드는 `NEXT_PUBLIC_API_BASE_URL=https://api.techtaurant.com`, 개발·Preview 빌드는
-`NEXT_PUBLIC_API_BASE_URL=https://dev-api.techtaurant.com`을 사용합니다.
+`ORVAL_OPENAPI_URL`은 로컬 `.env`, GitHub Actions의 `development`·`production` 환경 변수, Cloudflare의 상용·Preview 빌드
+환경 변수에 등록해주세요. CI는 GitHub 환경에 등록된 값을 읽습니다. Cloudflare 런타임 변수가 아닌 빌드 변수로 등록해야
+합니다.
 
 ### 개발 환경 시작
 
