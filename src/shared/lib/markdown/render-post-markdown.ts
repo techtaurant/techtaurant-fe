@@ -1,3 +1,4 @@
+import type { Options } from 'markdown-it';
 import MarkdownIt from 'markdown-it';
 import type Token from 'markdown-it/lib/token.mjs';
 import sanitizeHtml from 'sanitize-html';
@@ -112,6 +113,7 @@ const IMAGE_TOKEN_TYPE = 'image';
 export function renderPostMarkdown(
   markdownSource: string,
   attachmentPresignedUrls: PostDetailAttachmentPresignedUrlResponse[],
+  highlight?: Options['highlight'],
 ): string {
   const presignedUrlByAttachmentId = new Map(
     attachmentPresignedUrls.map(({ attachmentId, presignedUrl }) => [attachmentId, presignedUrl]),
@@ -123,7 +125,7 @@ export function renderPostMarkdown(
 
   replaceAttachmentImageSources(tokens, presignedUrlByAttachmentId);
 
-  const renderedHtml = markdown.renderer.render(tokens, markdown.options, env);
+  const renderedHtml = markdown.renderer.render(tokens, { ...markdown.options, highlight }, env);
 
   return sanitizeHtml(renderedHtml, {
     allowedAttributes: { '*': ALLOWED_ATTRIBUTES },

@@ -1,0 +1,7 @@
+[data-post-content] pre {
+  @import 'highlight.js/styles/github.css';
+}
+
+[data-mode='dark'] [data-post-content] pre {
+  @import 'highlight.js/styles/github-dark.css';
+}
