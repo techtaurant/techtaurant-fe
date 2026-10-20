@@ -122,6 +122,18 @@ describe('게시물 본문', () => {
       expectedKeyword: 'local',
       expectedString: "'GET'",
     },
+    {
+      language: 'kotlin',
+      code: [
+        'fun findById(id: Long = 1): Mono<PostResponse> {',
+        '\tval label = "<PostResponse> &"',
+        '',
+        '\treturn postRepository.findById(id)',
+        '}',
+      ].join('\n'),
+      expectedKeyword: 'fun',
+      expectedString: '"<PostResponse> &"',
+    },
   ])(
     '$language 코드의 키워드·문자열·숫자를 강조하고 공백과 특수문자를 보존한다',
     ({ language, code, expectedKeyword, expectedString }) => {
