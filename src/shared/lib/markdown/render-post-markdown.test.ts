@@ -1,9 +1,16 @@
+import type { Options } from 'markdown-it';
+
 import type { PostDetailAttachmentPresignedUrlResponse } from '@/shared/api/generated';
+import { extractPostPlainText } from '@/shared/lib/markdown/extract-post-plain-text';
 import { renderPostMarkdown } from '@/shared/lib/markdown/render-post-markdown';
 
-function renderHtml(markdown: string, attachmentPresignedUrls: PostDetailAttachmentPresignedUrlResponse[] = []) {
+function renderHtml(
+  markdown: string,
+  attachmentPresignedUrls: PostDetailAttachmentPresignedUrlResponse[] = [],
+  highlight?: Options['highlight'],
+) {
   const container = document.createElement('div');
-  container.innerHTML = renderPostMarkdown(markdown, attachmentPresignedUrls);
+  container.innerHTML = renderPostMarkdown(markdown, attachmentPresignedUrls, highlight);
   document.body.append(container);
 
   return container;
@@ -126,6 +133,125 @@ describe('게시물 마크다운 렌더러', () => {
     document.body.replaceChildren();
   });
 
+  describe('코드 강조 함수 주입', () => {
+    const code = 'const count = 1;\n';
+    const source = `\`\`\`typescript\n${code}\`\`\``;
+    const highlightedCode = '<span class="hljs-keyword">const</span> count = 1;\n';
+
+    it('강조 함수를 생략하면 언어가 있어도 원문 코드만 렌더링한다', () => {
+      const container = renderHtml(source);
+      const codeElement = container.querySelector('pre code.language-typescript');
+
+      expect(codeElement?.textContent).toBe(code);
+      expect(codeElement?.children).toHaveLength(0);
+    });
+
+    it('주입한 함수에 코드와 언어를 전달하고 반환된 강조 토큰을 유지한다', () => {
+      const highlight = jest.fn().mockReturnValue(highlightedCode);
+      const container = renderHtml(source, [], highlight);
+
+      expect(highlight).toHaveBeenCalledTimes(1);
+      expect(highlight).toHaveBeenCalledWith(code, 'typescript', '');
+      expect(container.querySelector('pre code.language-typescript .hljs-keyword')).toHaveTextContent('const');
+      expect(container.querySelector('pre code')?.textContent).toBe(code);
+    });
+
+    it('강조 함수가 반환한 HTML도 정제하되 정상적인 강조 토큰은 유지한다', () => {
+      const unsafeHighlightedCode = [
+        '<span class="hljs-keyword" onclick="alert(1)" style="color:red">const</span> count = 1;',
+        '<script>alert(1)</script>',
+      ].join('\n');
+      const highlight = jest.fn().mockReturnValue(unsafeHighlightedCode);
+      const container = renderHtml(source, [], highlight);
+
+      expect(container.querySelector('pre code .hljs-keyword')).toHaveTextContent('const');
+      expect(container.querySelectorAll('script, [onclick], [style]')).toHaveLength(0);
+      expect(container.querySelector('pre code')?.textContent).toBe(code);
+    });
+
+    it('강조 함수가 빈 문자열을 반환하면 원문을 HTML로 실행하지 않고 표시한다', () => {
+      const htmlCode = '<img src=x onerror=alert(1)>\n';
+      const highlight = jest.fn().mockReturnValue('');
+      const container = renderHtml(`\`\`\`unknown\n${htmlCode}\`\`\``, [], highlight);
+
+      expect(highlight).toHaveBeenCalledWith(htmlCode, 'unknown', '');
+      expect(container.querySelector('pre code')?.textContent).toBe(htmlCode);
+      expect(container.querySelector('pre code')?.children).toHaveLength(0);
+    });
+
+    it('여러 언어와 강조하지 않는 블록이 섞여도 각 코드의 순서와 원문을 보존한다', () => {
+      const javascriptCode = 'const count = 1;\n';
+      const unknownCode = '<img src=x onerror=alert(1)>\n';
+      const luaCode = "local current = redis.call('GET', KEYS[1])\n";
+      const highlight = jest
+        .fn()
+        .mockReturnValueOnce('<span class="hljs-keyword">const</span> count = 1;\n')
+        .mockReturnValueOnce('')
+        .mockReturnValueOnce(`<span class="hljs-keyword">local</span> current = redis.call('GET', KEYS[1])\n`);
+      const mixedSource = [
+        `\`\`\`js\n${javascriptCode}\`\`\``,
+        `\`\`\`unknown\n${unknownCode}\`\`\``,
+        `\`\`\`lua\n${luaCode}\`\`\``,
+      ].join('\n\n');
+      const container = renderHtml(mixedSource, [], highlight);
+      const blocks = container.querySelectorAll('pre code');
+
+      expect(highlight).toHaveBeenCalledTimes(3);
+      expect(highlight).toHaveBeenNthCalledWith(1, javascriptCode, 'js', '');
+      expect(highlight).toHaveBeenNthCalledWith(2, unknownCode, 'unknown', '');
+      expect(highlight).toHaveBeenNthCalledWith(3, luaCode, 'lua', '');
+      expect(Array.from(blocks, (block) => block.textContent)).toEqual([javascriptCode, unknownCode, luaCode]);
+      expect(blocks[0].querySelector('.hljs-keyword')).toHaveTextContent('const');
+      expect(blocks[1].children).toHaveLength(0);
+      expect(blocks[2].querySelector('.hljs-keyword')).toHaveTextContent('local');
+    });
+
+    it('강조를 적용하면서 참조 링크와 첨부 이미지를 처리하고 코드 안의 첨부 ID는 보존한다', () => {
+      const attachmentCode = `const attachment = "${FIRST_ATTACHMENT_ID}";\n`;
+      const highlight = jest
+        .fn()
+        .mockReturnValue(`<span class="hljs-keyword">const</span> attachment = "${FIRST_ATTACHMENT_ID}";\n`);
+      const sourceWithAttachment = [
+        '[문서][docs]',
+        '',
+        `![본문 이미지](${FIRST_ATTACHMENT_ID})`,
+        '',
+        `\`\`\`ts\n${attachmentCode}\`\`\``,
+        '',
+        '[docs]: https://example.com/docs',
+      ].join('\n');
+      const container = renderHtml(sourceWithAttachment, attachmentPresignedUrls, highlight);
+
+      expect(container.querySelector('a[href="https://example.com/docs"]')).toHaveTextContent('문서');
+      expect(container.querySelector('img')).toHaveAttribute('src', FIRST_PRESIGNED_URL);
+      expect(container.querySelector('pre code .hljs-keyword')).toHaveTextContent('const');
+      expect(container.querySelector('pre code')?.textContent).toBe(attachmentCode);
+      expect(highlight).toHaveBeenCalledWith(attachmentCode, 'ts', '');
+    });
+
+    it('강조 함수를 주입해도 인라인 코드에는 호출하지 않는다', () => {
+      const highlight = jest.fn().mockReturnValue(highlightedCode);
+      const container = renderHtml('`const count = 1;`', [], highlight);
+
+      expect(highlight).not.toHaveBeenCalled();
+      expect(container.querySelector('code')?.textContent).toBe('const count = 1;');
+      expect(container.querySelector('code')?.children).toHaveLength(0);
+    });
+
+    it('주입한 강조 함수는 다음 일반 렌더링과 목록 요약에 영향을 주지 않는다', () => {
+      const highlight = jest.fn().mockReturnValue(highlightedCode);
+      const highlighted = renderHtml(source, [], highlight);
+      const plain = renderHtml(source);
+      const summary = extractPostPlainText(source);
+
+      expect(highlighted.querySelector('pre code .hljs-keyword')).toHaveTextContent('const');
+      expect(plain.querySelector('pre code')?.textContent).toBe(code);
+      expect(plain.querySelector('pre code')?.children).toHaveLength(0);
+      expect(summary).toBe('const count = 1;');
+      expect(highlight).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('XSS 방지', () => {
     it('다양한 XSS payload가 섞인 본문에서 안전한 서식만 남긴다', () => {
       const container = renderHtml(mixedXssContent);
@@ -181,6 +307,7 @@ describe('게시물 마크다운 렌더러', () => {
       expect(hasCodeBlock(container, 'mermaid', '<br/>')).toBe(true);
       expect(container.querySelector('pre code.language-mermaid br')).not.toBeInTheDocument();
     });
+
     it('엔터 한 번(소프트 줄바꿈)을 <br>로 바꿔 작성한 줄 그대로 보여준다', () => {
       const container = renderHtml('첫 줄\n둘째 줄');
 
