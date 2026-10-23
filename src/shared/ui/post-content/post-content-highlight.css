@@ -1,0 +1,7 @@
+[data-post-content] pre {
+  @import 'highlight.js/styles/vs.css';
+}
+
+[data-mode='dark'] [data-post-content] pre {
+  @import 'highlight.js/styles/vs-dark.css';
+}
