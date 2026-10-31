@@ -28,7 +28,7 @@ export function PostDetailTocModal({ overlayId, isOpen, onClose, headings }: Pro
   }, [isOpen]);
 
   return (
-    <Modal id={overlayId} isOpen={isOpen} onClose={onClose} className="max-w-[420px] rounded-2xl">
+    <Modal id={overlayId} isOpen={isOpen} onClose={onClose} className="max-w-105 rounded-2xl">
       <div ref={dialogRef}>
         <ModalHeader title="목차" onClose={onClose} />
         <div className="p-5 [&_nav]:max-h-[min(62dvh,520px)]">

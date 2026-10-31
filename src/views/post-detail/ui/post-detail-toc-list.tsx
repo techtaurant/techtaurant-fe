@@ -25,7 +25,7 @@ export function PostDetailTocList({ headings, onNavigate }: Props) {
             <a
               href={`#${encodeURIComponent(id)}`}
               className={cn(
-                'text-muted-foreground hover:text-foreground focus-visible:ring-ring block rounded-sm py-1 text-sm leading-7 break-words focus-visible:ring-2',
+                'text-muted-foreground hover:text-foreground focus-visible:ring-ring block rounded-sm py-1 text-sm leading-7 wrap-break-word focus-visible:ring-2',
                 level === 2 && 'pl-4',
                 level === 3 && 'pl-8',
               )}
