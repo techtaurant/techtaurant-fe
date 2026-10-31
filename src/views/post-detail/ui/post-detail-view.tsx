@@ -11,12 +11,14 @@ import { PostContent } from '@/shared/ui/post-content';
 import { useRecordPostViewOnce } from '@/views/post-detail/model/use-record-post-view-once';
 import { PostDetailArticleHeader } from '@/views/post-detail/ui/post-detail-article-header';
 import { PostDetailContainer } from '@/views/post-detail/ui/post-detail-container';
+import { PostDetailToc } from '@/views/post-detail/ui/post-detail-toc';
 
 type Props = {
   postId: string;
 };
 
 export function PostDetailView({ postId }: Props) {
+  const contentRef = useRef<HTMLDivElement>(null);
   const commentsRef = useRef<HTMLElement>(null);
   const [commentFocusRequestKey, setCommentFocusRequestKey] = useState(0);
   const [isCommentsLoaded, setIsCommentsLoaded] = useState(false);
@@ -75,27 +77,35 @@ export function PostDetailView({ postId }: Props) {
           title={post.title}
           updatedAt={post.updatedAt}
         />
-        <PostContent attachmentPresignedUrls={post.attachmentPresignedUrls} className="mb-12" content={post.content} />
-        <PostDetailActionBar
-          authorId={authorId}
-          commentCount={post.commentCount}
-          isRead={post.isRead}
-          likeCount={post.likeCount}
-          likeStatus={post.likeStatus}
-          onRequireLogin={startGoogleLogin}
-          viewCount={post.viewCount}
-          onCommentClick={handleCommentButtonClick}
-          postId={postId}
-        />
-        <PostDetailCommentsSection
-          ref={commentsRef}
-          commentCount={post.commentCount}
-          focusRequestKey={commentFocusRequestKey}
-          onCommentsLoaded={handleCommentsLoaded}
-          onRequireLogin={startGoogleLogin}
-          postAuthorId={authorId}
-          postId={postId}
-        />
+        <div className="relative">
+          <PostContent
+            ref={contentRef}
+            attachmentPresignedUrls={post.attachmentPresignedUrls}
+            content={post.content}
+            className="mb-12"
+          />
+          <PostDetailActionBar
+            authorId={authorId}
+            commentCount={post.commentCount}
+            isRead={post.isRead}
+            likeCount={post.likeCount}
+            likeStatus={post.likeStatus}
+            onRequireLogin={startGoogleLogin}
+            viewCount={post.viewCount}
+            onCommentClick={handleCommentButtonClick}
+            postId={postId}
+          />
+          <PostDetailCommentsSection
+            ref={commentsRef}
+            commentCount={post.commentCount}
+            focusRequestKey={commentFocusRequestKey}
+            onCommentsLoaded={handleCommentsLoaded}
+            onRequireLogin={startGoogleLogin}
+            postAuthorId={authorId}
+            postId={postId}
+          />
+          <PostDetailToc key={postId} contentRef={contentRef} />
+        </div>
       </article>
     </PostDetailContainer>
   );
