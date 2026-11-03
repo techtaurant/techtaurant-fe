@@ -30,7 +30,6 @@ export function PostDetailToc({ headings }: Props) {
       >
         <ListTree className="size-5" />
       </Button>
-      <div className="h-dvh" />
     </>
   );
 }
