@@ -7,6 +7,8 @@ import { useGetPostDetail } from '@/entities/post-detail';
 import { startGoogleLogin } from '@/features/auth';
 import { PostDetailCommentsSection } from '@/features/post-comments';
 import { PostDetailActionBar } from '@/features/post-detail-interactions';
+import { highlightCode } from '@/shared/lib/markdown/highlight-code';
+import { renderPostMarkdown } from '@/shared/lib/markdown/render-post-markdown';
 import { PostContent } from '@/shared/ui/post-content';
 import { useRecordPostViewOnce } from '@/views/post-detail/model/use-record-post-view-once';
 import { PostDetailArticleHeader } from '@/views/post-detail/ui/post-detail-article-header';
@@ -18,7 +20,6 @@ type Props = {
 };
 
 export function PostDetailView({ postId }: Props) {
-  const contentRef = useRef<HTMLDivElement>(null);
   const commentsRef = useRef<HTMLElement>(null);
   const [commentFocusRequestKey, setCommentFocusRequestKey] = useState(0);
   const [isCommentsLoaded, setIsCommentsLoaded] = useState(false);
@@ -61,6 +62,7 @@ export function PostDetailView({ postId }: Props) {
   }
 
   const authorId = post.author.id;
+  const { html, headings } = renderPostMarkdown(post.content, post.attachmentPresignedUrls, highlightCode);
 
   return (
     <PostDetailContainer>
@@ -78,12 +80,7 @@ export function PostDetailView({ postId }: Props) {
           updatedAt={post.updatedAt}
         />
         <div className="relative">
-          <PostContent
-            ref={contentRef}
-            attachmentPresignedUrls={post.attachmentPresignedUrls}
-            content={post.content}
-            className="mb-12"
-          />
+          <PostContent content={html} className="mb-12" />
           <PostDetailActionBar
             authorId={authorId}
             commentCount={post.commentCount}
@@ -104,7 +101,7 @@ export function PostDetailView({ postId }: Props) {
             postAuthorId={authorId}
             postId={postId}
           />
-          <PostDetailToc key={postId} contentRef={contentRef} />
+          <PostDetailToc headings={headings} />
         </div>
       </article>
     </PostDetailContainer>

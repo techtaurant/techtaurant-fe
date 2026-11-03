@@ -38,7 +38,7 @@ const BOUNDARY_SPACE = ' ';
 const NO_ATTACHMENT_PRESIGNED_URLS: PostDetailAttachmentPresignedUrlResponse[] = [];
 
 export const extractPostPlainText = (markdownSource: string) => {
-  const html = renderPostMarkdown(markdownSource, NO_ATTACHMENT_PRESIGNED_URLS);
+  const { html } = renderPostMarkdown(markdownSource, NO_ATTACHMENT_PRESIGNED_URLS);
   let hasPendingBoundary = false;
 
   const markBlockBoundary = (tagName: string) => {

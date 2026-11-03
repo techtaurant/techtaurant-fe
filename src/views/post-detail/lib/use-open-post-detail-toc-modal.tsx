@@ -3,7 +3,7 @@
 import { overlay } from 'overlay-kit';
 import { useEffect, useRef } from 'react';
 
-import type { PostHeading } from '@/views/post-detail/model/use-post-headings';
+import type { PostHeading } from '@/shared/lib/markdown/render-post-markdown';
 import { PostDetailTocModal } from '@/views/post-detail/ui/post-detail-toc-modal';
 
 type Params = {

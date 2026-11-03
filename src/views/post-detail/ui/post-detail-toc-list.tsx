@@ -3,7 +3,7 @@
 import type { MouseEvent } from 'react';
 
 import { cn } from '@/shared/lib/cn';
-import type { PostHeading } from '@/views/post-detail/model/use-post-headings';
+import type { PostHeading } from '@/shared/lib/markdown/render-post-markdown';
 
 type Props = {
   headings: PostHeading[];

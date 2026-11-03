@@ -1,17 +1,17 @@
 'use client';
 
 import { ListTree } from 'lucide-react';
-import type { RefObject } from 'react';
 
+import type { PostHeading } from '@/shared/lib/markdown/render-post-markdown';
 import { Button } from '@/shared/ui/button';
 import { useOpenPostDetailTocModal } from '@/views/post-detail/lib/use-open-post-detail-toc-modal';
-import { usePostHeadings } from '@/views/post-detail/model/use-post-headings';
 import { PostDetailTocList } from '@/views/post-detail/ui/post-detail-toc-list';
 
-type Props = { contentRef: RefObject<HTMLDivElement | null> };
+type Props = {
+  headings: PostHeading[];
+};
 
-export function PostDetailToc({ contentRef }: Props) {
-  const headings = usePostHeadings({ contentRef });
+export function PostDetailToc({ headings }: Props) {
   const openTocModal = useOpenPostDetailTocModal({ headings });
 
   if (headings.length === 0) return null;

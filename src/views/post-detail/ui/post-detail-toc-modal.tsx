@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 
+import type { PostHeading } from '@/shared/lib/markdown/render-post-markdown';
 import { Modal, ModalHeader } from '@/shared/ui/modal';
-import type { PostHeading } from '@/views/post-detail/model/use-post-headings';
 import { PostDetailTocList } from '@/views/post-detail/ui/post-detail-toc-list';
 
 type Props = {

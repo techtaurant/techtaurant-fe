@@ -6,6 +6,12 @@ import sanitizeHtml from 'sanitize-html';
 import type { PostDetailAttachmentPresignedUrlResponse } from '@/shared/api/generated';
 import { isUuid } from '@/shared/lib/is-uuid';
 
+export type PostHeading = {
+  id: string;
+  text: string;
+  level: number;
+};
+
 const markdown = new MarkdownIt({
   breaks: true,
   html: true,
@@ -105,16 +111,77 @@ const ALLOWED_ATTRIBUTES = [
 ];
 
 const IMAGE_TOKEN_TYPE = 'image';
+const HEADING_TAGS = ['h1', 'h2', 'h3'];
+
+const slugifyHeadingText = (text: string) => {
+  return (
+    text
+      .toLowerCase()
+      .replace(/[_\s]+/g, '-')
+      .replace(/[^\p{L}\p{N}-]/gu, '')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '') || 'heading'
+  );
+};
+
+const readHeadingTexts = (html: string) => {
+  const texts: string[] = [];
+
+  sanitizeHtml(html, {
+    allowedTags: HEADING_TAGS,
+    exclusiveFilter: ({ tag, text }) => {
+      if (HEADING_TAGS.includes(tag)) texts.push(text.replace(/\s+/g, ' ').trim());
+
+      return false;
+    },
+  });
+
+  return texts;
+};
+
+const sanitizePostHtml = (renderedHtml: string) => {
+  const headingTexts = readHeadingTexts(renderedHtml);
+  const headings: PostHeading[] = [];
+  const usedIds = new Set<string>();
+  let headingIndex = 0;
+
+  const addHeadingId = (tagName: string, attribs: sanitizeHtml.Attributes) => {
+    const text = headingTexts[headingIndex++];
+    const attributes = { ...attribs };
+    delete attributes.id;
+
+    if (!text) return { tagName, attribs: attributes };
+
+    const slug = slugifyHeadingText(text);
+    let id = slug;
+    let suffix = 2;
+    while (usedIds.has(id)) id = `${slug}-${suffix++}`;
+    usedIds.add(id);
+
+    headings.push({ id, text, level: Number(tagName.slice(1)) });
+
+    return { tagName, attribs: { ...attributes, id } };
+  };
+
+  const html = sanitizeHtml(renderedHtml, {
+    allowedAttributes: { '*': ALLOWED_ATTRIBUTES, h1: ['id'], h2: ['id'], h3: ['id'] },
+    transformTags: { h1: addHeadingId, h2: addHeadingId, h3: addHeadingId },
+    allowedSchemes: ['http', 'https', 'mailto'],
+    allowedTags: ALLOWED_TAGS,
+    allowProtocolRelative: false,
+  });
+
+  return { html, headings };
+};
 
 /**
- * Converts untrusted post markdown to HTML that is safe for the post-detail
- * rendering boundary.
+ * 신뢰할 수 없는 게시물 마크다운을 안전하게 렌더링할 수 있는 HTML과 목차 데이터로 변환합니다.
  */
 export function renderPostMarkdown(
   markdownSource: string,
   attachmentPresignedUrls: PostDetailAttachmentPresignedUrlResponse[],
   highlight?: Options['highlight'],
-): string {
+) {
   const presignedUrlByAttachmentId = new Map(
     attachmentPresignedUrls.map(({ attachmentId, presignedUrl }) => [attachmentId, presignedUrl]),
   );
@@ -127,12 +194,7 @@ export function renderPostMarkdown(
 
   const renderedHtml = markdown.renderer.render(tokens, { ...markdown.options, highlight }, env);
 
-  return sanitizeHtml(renderedHtml, {
-    allowedAttributes: { '*': ALLOWED_ATTRIBUTES },
-    allowedSchemes: ['http', 'https', 'mailto'],
-    allowedTags: ALLOWED_TAGS,
-    allowProtocolRelative: false,
-  });
+  return sanitizePostHtml(renderedHtml);
 }
 
 // 본문은 이미지를 `![alt](attachmentId)`로 참조한다. attachmentId는 URI 형태가 아니라
