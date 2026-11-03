@@ -88,7 +88,7 @@ export function PostWriteView() {
           <input
             ref={titleRef}
             className={cn(
-              'text-foreground w-full border-0 bg-transparent px-0 py-0 text-3xl font-semibold tracking-tight transition-colors duration-200',
+              'text-foreground w-full border-0 bg-transparent p-0 text-3xl font-semibold tracking-tight transition-colors duration-200',
               'placeholder:text-muted-foreground focus:outline-none',
             )}
             maxLength={TITLE_MAX_LENGTH}
@@ -116,7 +116,7 @@ export function PostWriteView() {
           <textarea
             ref={contentRef}
             className={cn(
-              'text-foreground mt-6 field-sizing-content min-h-100 w-full resize-none overflow-hidden border-0 bg-transparent px-0 pt-2 font-mono text-base leading-8',
+              'text-foreground mt-6 field-sizing-content min-h-100 w-full resize-none overflow-hidden border-0 bg-transparent px-0 pt-2 font-mono text-base/8',
               'placeholder:text-muted-foreground focus:outline-none',
             )}
             onChange={(event) => handleContentChange(event.target.value)}

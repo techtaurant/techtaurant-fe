@@ -26,9 +26,9 @@ export function PostDetailToc({ contentRef }: Props) {
       <Button
         variant="outline"
         onClick={openTocModal}
-        className="bg-background/95 fixed top-20 right-4 z-40 h-11 w-11 rounded-full p-0 shadow-lg backdrop-blur md:right-6 xl:hidden"
+        className="bg-background/95 fixed top-20 right-4 z-40 size-11 rounded-full p-0 shadow-lg backdrop-blur md:right-6 xl:hidden"
       >
-        <ListTree className="h-5 w-5" />
+        <ListTree className="size-5" />
       </Button>
       <div className="h-dvh" />
     </>
