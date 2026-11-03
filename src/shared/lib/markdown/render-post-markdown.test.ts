@@ -10,7 +10,8 @@ function renderHtml(
   highlight?: Options['highlight'],
 ) {
   const container = document.createElement('div');
-  container.innerHTML = renderPostMarkdown(markdown, attachmentPresignedUrls, highlight);
+  const { html } = renderPostMarkdown(markdown, attachmentPresignedUrls, highlight);
+  container.innerHTML = html;
   document.body.append(container);
 
   return container;
@@ -131,6 +132,57 @@ const attachmentIdInCodeContent = `
 describe('게시물 마크다운 렌더러', () => {
   afterEach(() => {
     document.body.replaceChildren();
+  });
+
+  describe('목차', () => {
+    it('빈 제목은 제외하고 실제 제목의 ID와 목차 항목을 함께 만든다', () => {
+      const source = [
+        '<h2 id="external"> </h2>',
+        '',
+        '## **소개** & `코드`',
+        '',
+        '<h3>소개 &amp; 코드</h3>',
+        '',
+        '## 소개 코드-2',
+        '',
+        '## 소개 코드',
+        '',
+        '```html',
+        '<h2>코드 속 제목</h2>',
+        '```',
+      ].join('\n');
+      const { html, headings } = renderPostMarkdown(source, []);
+      const container = document.createElement('div');
+      container.innerHTML = html;
+
+      expect(headings).toEqual([
+        { id: '소개-코드', text: '소개 & 코드', level: 2 },
+        { id: '소개-코드-2', text: '소개 & 코드', level: 3 },
+        { id: '소개-코드-2-2', text: '소개 코드-2', level: 2 },
+        { id: '소개-코드-3', text: '소개 코드', level: 2 },
+      ]);
+      expect(container.querySelector('h2')).not.toHaveAttribute('id');
+      expect(Array.from(container.querySelectorAll('h2[id], h3[id]'), (element) => element.id)).toEqual(
+        headings.map(({ id }) => id),
+      );
+      expect(container.querySelector('pre code')?.textContent).toContain('<h2>코드 속 제목</h2>');
+    });
+
+    it('이미지 URL이 갱신되어도 목차와 본문 제목 ID를 유지한다', () => {
+      const source = `## 소개\n\n![첨부](${FIRST_ATTACHMENT_ID})\n\n## 소개`;
+      const before = renderPostMarkdown(source, attachmentPresignedUrls);
+      const after = renderPostMarkdown(source, [
+        { attachmentId: FIRST_ATTACHMENT_ID, presignedUrl: SECOND_PRESIGNED_URL },
+      ]);
+      const container = document.createElement('div');
+      container.innerHTML = after.html;
+
+      expect(after.headings).toEqual(before.headings);
+      expect(Array.from(container.querySelectorAll('h2'), (element) => element.id)).toEqual(
+        before.headings.map(({ id }) => id),
+      );
+      expect(container.querySelector('img')).toHaveAttribute('src', SECOND_PRESIGNED_URL);
+    });
   });
 
   describe('코드 강조 함수 주입', () => {
