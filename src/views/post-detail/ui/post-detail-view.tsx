@@ -7,10 +7,13 @@ import { useGetPostDetail } from '@/entities/post-detail';
 import { startGoogleLogin } from '@/features/auth';
 import { PostDetailCommentsSection } from '@/features/post-comments';
 import { PostDetailActionBar } from '@/features/post-detail-interactions';
+import { highlightCode } from '@/shared/lib/markdown/highlight-code';
+import { renderPostMarkdown } from '@/shared/lib/markdown/render-post-markdown';
 import { PostContent } from '@/shared/ui/post-content';
 import { useRecordPostViewOnce } from '@/views/post-detail/model/use-record-post-view-once';
 import { PostDetailArticleHeader } from '@/views/post-detail/ui/post-detail-article-header';
 import { PostDetailContainer } from '@/views/post-detail/ui/post-detail-container';
+import { PostDetailToc } from '@/views/post-detail/ui/post-detail-toc';
 
 type Props = {
   postId: string;
@@ -59,6 +62,7 @@ export function PostDetailView({ postId }: Props) {
   }
 
   const authorId = post.author.id;
+  const { html, headings } = renderPostMarkdown(post.content, post.attachmentPresignedUrls, highlightCode);
 
   return (
     <PostDetailContainer>
@@ -75,27 +79,30 @@ export function PostDetailView({ postId }: Props) {
           title={post.title}
           updatedAt={post.updatedAt}
         />
-        <PostContent attachmentPresignedUrls={post.attachmentPresignedUrls} className="mb-12" content={post.content} />
-        <PostDetailActionBar
-          authorId={authorId}
-          commentCount={post.commentCount}
-          isRead={post.isRead}
-          likeCount={post.likeCount}
-          likeStatus={post.likeStatus}
-          onRequireLogin={startGoogleLogin}
-          viewCount={post.viewCount}
-          onCommentClick={handleCommentButtonClick}
-          postId={postId}
-        />
-        <PostDetailCommentsSection
-          ref={commentsRef}
-          commentCount={post.commentCount}
-          focusRequestKey={commentFocusRequestKey}
-          onCommentsLoaded={handleCommentsLoaded}
-          onRequireLogin={startGoogleLogin}
-          postAuthorId={authorId}
-          postId={postId}
-        />
+        <div className="relative">
+          <PostContent content={html} className="mb-12" />
+          <PostDetailActionBar
+            authorId={authorId}
+            commentCount={post.commentCount}
+            isRead={post.isRead}
+            likeCount={post.likeCount}
+            likeStatus={post.likeStatus}
+            onRequireLogin={startGoogleLogin}
+            viewCount={post.viewCount}
+            onCommentClick={handleCommentButtonClick}
+            postId={postId}
+          />
+          <PostDetailCommentsSection
+            ref={commentsRef}
+            commentCount={post.commentCount}
+            focusRequestKey={commentFocusRequestKey}
+            onCommentsLoaded={handleCommentsLoaded}
+            onRequireLogin={startGoogleLogin}
+            postAuthorId={authorId}
+            postId={postId}
+          />
+          <PostDetailToc headings={headings} />
+        </div>
       </article>
     </PostDetailContainer>
   );

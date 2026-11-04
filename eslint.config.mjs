@@ -7,6 +7,7 @@ import { fsdImportBoundaryConfig } from './eslint/fsd-boundaries.mjs';
 import { importSortConfig } from './eslint/import-sort.mjs';
 import { namedExportOnlyConfig } from './eslint/named-export-only.mjs';
 import { noUnusedVarsConfig } from './eslint/no-unused-vars.mjs';
+import { tailwindConfig } from './eslint/tailwind.mjs';
 import { typeImportConfig } from './eslint/type-imports.mjs';
 
 const eslintConfig = defineConfig([
@@ -17,6 +18,7 @@ const eslintConfig = defineConfig([
   noUnusedVarsConfig,
   fsdImportBoundaryConfig,
   namedExportOnlyConfig,
+  tailwindConfig,
   prettierConfig,
   globalIgnores(['.next/**', '.open-next/**', 'out/**', 'build/**', 'next-env.d.ts']),
 ]);
