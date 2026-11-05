@@ -6,6 +6,8 @@ import { useEffect, useRef } from 'react';
 import { useGetMe } from '@/entities/user';
 import { startGoogleLogin } from '@/features/auth';
 import { cn } from '@/shared/lib/cn';
+import { highlightCode } from '@/shared/lib/markdown/highlight-code';
+import { renderPostMarkdown } from '@/shared/lib/markdown/render-post-markdown';
 import { PostContent } from '@/shared/ui/post-content';
 import { usePostAttachmentPreviews } from '@/views/post-write/model/use-post-attachment-previews';
 import { usePostImageUpload } from '@/views/post-write/model/use-post-image-upload';
@@ -75,6 +77,8 @@ export function PostWriteView() {
     return null;
   }
 
+  const { html } = renderPostMarkdown(content, attachmentPreviewUrls, highlightCode);
+
   return (
     <div className={cn('grid h-dvh min-w-90 grid-cols-1 grid-rows-[minmax(0,1fr)_auto]', 'xl:grid-cols-2')}>
       {/* xl 미만에서는 작성창과 미리보기가 한 스크롤 영역에 이어지고, xl 이상에서는 contents로 풀려 각각 독립 컬럼이 됩니다. */}
@@ -88,7 +92,7 @@ export function PostWriteView() {
           <input
             ref={titleRef}
             className={cn(
-              'text-foreground w-full border-0 bg-transparent px-0 py-0 text-3xl font-semibold tracking-tight transition-colors duration-200',
+              'text-foreground w-full border-0 bg-transparent p-0 text-3xl font-semibold tracking-tight transition-colors duration-200',
               'placeholder:text-muted-foreground focus:outline-none',
             )}
             maxLength={TITLE_MAX_LENGTH}
@@ -116,7 +120,7 @@ export function PostWriteView() {
           <textarea
             ref={contentRef}
             className={cn(
-              'text-foreground mt-6 field-sizing-content min-h-100 w-full resize-none overflow-hidden border-0 bg-transparent px-0 pt-2 font-mono text-base leading-8',
+              'text-foreground mt-6 field-sizing-content min-h-100 w-full resize-none overflow-hidden border-0 bg-transparent px-0 pt-2 font-mono text-base/8',
               'placeholder:text-muted-foreground focus:outline-none',
             )}
             onChange={(event) => handleContentChange(event.target.value)}
@@ -132,7 +136,7 @@ export function PostWriteView() {
             'xl:col-start-2 xl:row-span-2 xl:row-start-1 xl:min-h-0 xl:overflow-y-auto',
           )}
         >
-          <PostContent attachmentPresignedUrls={attachmentPreviewUrls} content={content} />
+          <PostContent content={html} />
         </div>
       </div>
 

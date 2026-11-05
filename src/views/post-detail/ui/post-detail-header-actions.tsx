@@ -74,7 +74,7 @@ export function PostDetailHeaderActions({
       </Button>
 
       {isMenuOpen && (
-        <div className="border-border bg-background absolute top-12 right-0 z-20 min-w-[120px] rounded-xl border p-1 shadow-lg">
+        <div className="border-border bg-background absolute top-12 right-0 z-20 min-w-30 rounded-xl border p-1 shadow-lg">
           <Button
             variant="ghost"
             size="sm"
