@@ -14,9 +14,7 @@ export const ENVIRONMENT = (() => {
   return process.env.NEXT_PUBLIC_ENV as 'local' | 'development' | 'production';
 })();
 
-const IS_PRODUCTION = ENVIRONMENT === 'production';
-
-export const IS_SEARCH_INDEXING_ALLOWED = IS_PRODUCTION;
+export const IS_PRODUCTION = ENVIRONMENT === 'production';
 
 export const SITE_URL = IS_PRODUCTION ? 'https://techtaurant.com' : 'https://dev.preview.techtaurant.com';
 

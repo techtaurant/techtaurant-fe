@@ -5,13 +5,13 @@ import { ThemeProvider } from 'next-themes';
 import type { ReactNode } from 'react';
 
 import { ReactQueryProvider } from '@/shared/api/react-query-provider';
-import { DEFAULT_SHARE_IMAGE_URL, IS_SEARCH_INDEXING_ALLOWED, SITE_NAME, SITE_URL } from '@/shared/config';
+import { DEFAULT_SHARE_IMAGE_URL, IS_PRODUCTION, SITE_NAME, SITE_URL } from '@/shared/config';
 import { montserrat, pretendard } from '@/shared/config/fonts';
 import { cn } from '@/shared/lib/cn';
 import { ModalProvider } from '@/shared/ui/modal';
 import { ToastsRoot } from '@/shared/ui/toast';
 
-// 공개 페이지는 robots를 따로 지정하지 않고 이 값을 상속한다.
+// 공개 페이지는 robots를 따로 지정하지 않고 이 값을 상속한다. 상용이 아닌 환경은 검색에서 제외한다.
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   },
   description:
     '테크토랑은 개발 경험과 기술 지식을 공유하는 공간입니다. 다양한 기술 이야기와 문제 해결 경험을 만나보세요.',
-  robots: IS_SEARCH_INDEXING_ALLOWED ? { index: true, follow: true } : { index: false, follow: false },
+  robots: { index: IS_PRODUCTION, follow: IS_PRODUCTION },
   openGraph: {
     type: 'website',
     siteName: SITE_NAME,
