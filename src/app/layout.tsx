@@ -8,6 +8,7 @@ import { ReactQueryProvider } from '@/shared/api/react-query-provider';
 import { DEFAULT_SHARE_IMAGE_URL, IS_PRODUCTION, SITE_NAME, SITE_URL } from '@/shared/config';
 import { montserrat, pretendard } from '@/shared/config/fonts';
 import { cn } from '@/shared/lib/cn';
+import { GoogleAnalytics } from '@/shared/ui/analytics';
 import { ModalProvider } from '@/shared/ui/modal';
 import { ToastsRoot } from '@/shared/ui/toast';
 
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: Props) {
             </ModalProvider>
           </ReactQueryProvider>
         </ThemeProvider>
+        {IS_PRODUCTION && <GoogleAnalytics />}
       </body>
     </html>
   );
