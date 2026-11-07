@@ -1,3 +1,4 @@
+export { loadPostDetail } from '@/entities/post-detail/api/load-post-detail';
 export { useDeletePost } from '@/entities/post-detail/api/use-delete-post';
 export {
   fetchPostDetail,
