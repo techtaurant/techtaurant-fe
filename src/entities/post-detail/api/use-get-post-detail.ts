@@ -1,11 +1,7 @@
 import type { QueryClient } from '@tanstack/react-query';
 
 import { type CustomFetchInit } from '@/shared/api/custom-fetch';
-import {
-  getGetPostDetailApiQueryKey,
-  getGetPostDetailApiQueryOptions,
-  useGetPostDetailApi,
-} from '@/shared/api/generated';
+import { getGetPostDetailApiQueryKey, getPostDetailApi, useGetPostDetailApi } from '@/shared/api/generated';
 
 type Params = {
   options?: CustomFetchInit;
@@ -27,14 +23,10 @@ export const useGetPostDetail = (postId: string) => {
 
 export const fetchPostDetail = async (queryClient: QueryClient, { options, postId }: Params) => {
   try {
-    await queryClient.fetchQuery(
-      getGetPostDetailApiQueryOptions(postId, {
-        request: options,
-        query: {
-          queryKey: getPostDetailQueryKey(postId),
-        },
-      }),
-    );
+    await queryClient.fetchQuery({
+      queryKey: getPostDetailQueryKey(postId),
+      queryFn: () => getPostDetailApi(postId, options),
+    });
   } catch (error) {
     // RSC의 401은 클라이언트에서 다시 fetch하며 토큰을 refresh할 수 있도록 조용히 삼킵니다.
     // 그 외 오류는 호출부로 전파합니다.
