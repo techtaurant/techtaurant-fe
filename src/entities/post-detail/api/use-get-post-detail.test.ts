@@ -14,14 +14,14 @@ describe('fetchPostDetail', () => {
     const { fetchQuery, queryClient } = createQueryClientMock();
     fetchQuery.mockResolvedValue({});
 
-    await expect(fetchPostDetail(queryClient, { cookieHeader: '', postId: 'post-id' })).resolves.toBeUndefined();
+    await expect(fetchPostDetail(queryClient, { postId: 'post-id' })).resolves.toBeUndefined();
   });
 
   it('401 오류는 무시한다', async () => {
     const { fetchQuery, queryClient } = createQueryClientMock();
     fetchQuery.mockRejectedValue(new Error('Unauthorized', { cause: 401 }));
 
-    await expect(fetchPostDetail(queryClient, { cookieHeader: '', postId: 'post-id' })).resolves.toBeUndefined();
+    await expect(fetchPostDetail(queryClient, { postId: 'post-id' })).resolves.toBeUndefined();
   });
 
   it.each([404, 500])('%i 오류는 다시 던진다', async (status) => {
@@ -29,6 +29,6 @@ describe('fetchPostDetail', () => {
     const error = new Error('API Error', { cause: status });
     fetchQuery.mockRejectedValue(error);
 
-    await expect(fetchPostDetail(queryClient, { cookieHeader: '', postId: 'post-id' })).rejects.toBe(error);
+    await expect(fetchPostDetail(queryClient, { postId: 'post-id' })).rejects.toBe(error);
   });
 });

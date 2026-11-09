@@ -1,10 +1,10 @@
 import type { QueryClient } from '@tanstack/react-query';
 
-import { loadPostDetail } from '@/entities/post-detail/api/load-post-detail';
-import { getGetPostDetailApiQueryKey, useGetPostDetailApi } from '@/shared/api/generated';
+import { type CustomFetchInit } from '@/shared/api/custom-fetch';
+import { getGetPostDetailApiQueryKey, getPostDetailApi, useGetPostDetailApi } from '@/shared/api/generated';
 
 type Params = {
-  cookieHeader: string;
+  options?: CustomFetchInit;
   postId: string;
 };
 
@@ -21,11 +21,11 @@ export const useGetPostDetail = (postId: string) => {
   });
 };
 
-export const fetchPostDetail = async (queryClient: QueryClient, { cookieHeader, postId }: Params) => {
+export const fetchPostDetail = async (queryClient: QueryClient, { options, postId }: Params) => {
   try {
     await queryClient.fetchQuery({
       queryKey: getPostDetailQueryKey(postId),
-      queryFn: () => loadPostDetail(postId, cookieHeader),
+      queryFn: () => getPostDetailApi(postId, options),
     });
   } catch (error) {
     // RSC의 401은 클라이언트에서 다시 fetch하며 토큰을 refresh할 수 있도록 조용히 삼킵니다.
