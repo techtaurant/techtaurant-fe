@@ -1,5 +1,6 @@
 export { useGetCategoryPostList } from '@/entities/post-list/api/use-get-category-post-list';
 export { getPostListQueryKey, prefetchGetPostList, useGetPostList } from '@/entities/post-list/api/use-get-post-list';
+export { isDefaultPostListFilters } from '@/entities/post-list/lib/is-default-post-list-filters';
 export { parsePostListFilters } from '@/entities/post-list/lib/parse-post-list-filters';
 export { toPostListApiParams } from '@/entities/post-list/lib/to-post-list-api-params';
 export type {
