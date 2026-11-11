@@ -1,8 +1,9 @@
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 
 import { parsePostListFilters, prefetchGetPostList, toPostListApiParams } from '@/entities/post-list';
-import { PostListView } from '@/views/post-list';
+import { buildPostListMetadata, PostListView } from '@/views/post-list';
 import { Header } from '@/widgets/header';
 
 export const dynamic = 'force-dynamic';
@@ -10,6 +11,10 @@ export const dynamic = 'force-dynamic';
 type Props = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
+
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  return buildPostListMetadata(parsePostListFilters(await searchParams));
+}
 
 export default async function Page({ searchParams }: Props) {
   const queryClient = new QueryClient();
