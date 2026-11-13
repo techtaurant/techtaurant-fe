@@ -43,6 +43,7 @@ describe('게시글 본문 확장 렌더링', () => {
         startOnLoad: false,
         suppressErrorRendering: true,
         theme: 'neutral',
+        look: 'classic',
       }),
     );
   });

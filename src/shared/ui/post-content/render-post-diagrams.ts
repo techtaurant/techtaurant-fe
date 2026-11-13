@@ -12,6 +12,7 @@ export async function renderPostDiagrams(container: HTMLElement, isDark: boolean
     securityLevel: 'strict',
     suppressErrorRendering: true,
     theme: isDark ? 'redux-dark' : 'neutral',
+    look: 'classic',
   });
 
   for (const block of blocks) {
