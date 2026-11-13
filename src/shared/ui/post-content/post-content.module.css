@@ -124,6 +124,7 @@
 
 .postContent :global(.post-mermaid) svg {
   height: auto;
+  filter: grayscale(1);
 }
 
 .postContent :global(.math-block) {

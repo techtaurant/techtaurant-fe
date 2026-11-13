@@ -38,7 +38,12 @@ describe('게시글 본문 확장 렌더링', () => {
     expect(container.querySelector('code')).toHaveTextContent('flowchart TD');
     expect(mockRender).toHaveBeenCalledWith(expect.any(String), 'flowchart TD\n A[요청] --> B[응답]\n');
     expect(mockInitialize).toHaveBeenCalledWith(
-      expect.objectContaining({ securityLevel: 'strict', startOnLoad: false, suppressErrorRendering: true }),
+      expect.objectContaining({
+        securityLevel: 'strict',
+        startOnLoad: false,
+        suppressErrorRendering: true,
+        theme: 'neutral',
+      }),
     );
   });
 
@@ -90,7 +95,7 @@ describe('게시글 본문 확장 렌더링', () => {
     rerender(<PostContent content={content} />);
 
     await waitFor(() => expect(mockRender).toHaveBeenCalledTimes(2));
-    expect(mockInitialize).toHaveBeenLastCalledWith(expect.objectContaining({ theme: 'dark' }));
+    expect(mockInitialize).toHaveBeenLastCalledWith(expect.objectContaining({ theme: 'redux-dark' }));
     expect(mockRender.mock.calls[1][1]).toBe(mockRender.mock.calls[0][1]);
   });
 
