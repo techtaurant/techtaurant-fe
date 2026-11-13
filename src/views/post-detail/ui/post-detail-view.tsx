@@ -70,7 +70,7 @@ export function PostDetailView({ postId }: Props) {
         <PostDetailArticleHeader
           authorId={authorId}
           authorName={post.author.name}
-          categoryName={post.category?.name}
+          category={post.category}
           createdAt={post.createdAt}
           postId={postId}
           profileImageUrl={post.author.profileImageUrl}

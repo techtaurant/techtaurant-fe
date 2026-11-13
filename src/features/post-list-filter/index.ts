@@ -1,3 +1,4 @@
+export { usePostListFilters } from '@/features/post-list-filter/model/use-post-list-filters';
 export { PostCategoryFilterList } from '@/features/post-list-filter/ui/post-category-filter-list';
 export { PostPeriodFilter } from '@/features/post-list-filter/ui/post-period-filter';
 export { PostSortFilter } from '@/features/post-list-filter/ui/post-sort-filter';
