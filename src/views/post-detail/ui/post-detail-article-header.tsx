@@ -12,7 +12,7 @@ import { startGoogleLogin } from '@/features/auth';
 import { PostDetailOwnerMenu } from '@/features/post-detail-interactions';
 import { useOpenUserBlockConfirmModal } from '@/features/user-block';
 import { useUserFollow } from '@/features/user-follow';
-import type { PostListTagResponse } from '@/shared/api/generated';
+import type { CategoryResponse, PostListTagResponse } from '@/shared/api/generated';
 import { PostDetailResponseStatus } from '@/shared/api/generated';
 import { cn } from '@/shared/lib/cn';
 import { formatAbsoluteDate } from '@/shared/lib/format-date';
@@ -23,7 +23,7 @@ import { PostDetailHeaderActions } from '@/views/post-detail/ui/post-detail-head
 type Props = {
   authorId: string;
   authorName: string;
-  categoryName?: string;
+  category?: CategoryResponse;
   createdAt: string;
   postId: string;
   profileImageUrl: string;
@@ -40,7 +40,7 @@ const PRIVATE_BADGE_LABEL = '비공개';
 export function PostDetailArticleHeader({
   authorId,
   authorName,
-  categoryName,
+  category,
   createdAt,
   postId,
   profileImageUrl,
@@ -96,22 +96,22 @@ export function PostDetailArticleHeader({
         href="/posts"
         className="text-muted-foreground hover:text-foreground mb-6 flex w-fit items-center gap-1.5 text-sm font-medium transition-colors"
       >
-        <ArrowLeft className="h-4 w-4" />
+        <ArrowLeft className="size-4" />
         목록
       </Link>
-      {/* TODO: 카테고리 클릭 시 작성자의 [내 글] 페이지로 이동하도록 연결합니다. */}
-      {categoryName && (
-        <span className="bg-muted text-muted-foreground mb-3 inline-flex max-w-full rounded-full px-3 py-1 text-sm font-medium">
-          {categoryName}
-        </span>
+      {category && (
+        <Link
+          href={`/users/${authorId}?categoryId=${category.id}`}
+          className="bg-muted text-muted-foreground hover:text-foreground mb-3 inline-flex max-w-full rounded-full px-3 py-1 text-sm font-medium wrap-anywhere transition-colors"
+        >
+          {category.path}
+        </Link>
       )}
-      <h1 className={cn('text-foreground mb-6 text-2xl leading-tight font-bold wrap-break-word', 'md:text-4xl')}>
-        {title}
-      </h1>
+      <h1 className={cn('text-foreground mb-6 text-2xl/tight font-bold wrap-break-word', 'md:text-4xl')}>{title}</h1>
       <div className="mb-1 flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <Link href={`/users/${authorId}`}>
-            <UserAvatar name={authorName} profileImageUrl={profileImageUrl} className="h-6 w-6 shrink-0" />
+            <UserAvatar name={authorName} profileImageUrl={profileImageUrl} className="size-6 shrink-0" />
           </Link>
           <div className="text-muted-foreground flex min-w-0 flex-wrap items-center gap-2 text-sm">
             <Link href={`/users/${authorId}`} className="text-foreground truncate font-medium hover:underline">

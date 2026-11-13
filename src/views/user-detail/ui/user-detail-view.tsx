@@ -1,8 +1,8 @@
 'use client';
 
-import { notFound } from 'next/navigation';
+import { notFound, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { overlay } from 'overlay-kit';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { useSearchCategories } from '@/entities/category';
 import { useGetUserProfileImage } from '@/entities/user';
@@ -17,10 +17,24 @@ type Props = {
 };
 
 export function UserDetailView({ userId }: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { data: profile, isPending: isProfilePending, isError: isProfileError } = useGetUserProfileImage({ userId });
   const { data: categories } = useSearchCategories({ userId, path: '' });
-  const [categoryId, setCategoryId] = useState<string>();
+  const categoryId = searchParams.get('categoryId') || undefined;
   const sidebarIdRef = useRef<string | null>(null);
+
+  const setCategoryId = (nextCategoryId?: string) => {
+    const nextSearchParams = new URLSearchParams(searchParams.toString());
+    if (nextCategoryId) {
+      nextSearchParams.set('categoryId', nextCategoryId);
+    } else {
+      nextSearchParams.delete('categoryId');
+    }
+    const queryString = nextSearchParams.toString();
+    router.push(queryString ? `${pathname}?${queryString}` : pathname);
+  };
 
   useEffect(() => {
     return () => {
