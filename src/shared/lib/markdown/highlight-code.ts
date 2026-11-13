@@ -5,6 +5,7 @@ import c from 'highlight.js/lib/languages/c';
 import cpp from 'highlight.js/lib/languages/cpp';
 import csharp from 'highlight.js/lib/languages/csharp';
 import css from 'highlight.js/lib/languages/css';
+import diff from 'highlight.js/lib/languages/diff';
 import go from 'highlight.js/lib/languages/go';
 import http from 'highlight.js/lib/languages/http';
 import java from 'highlight.js/lib/languages/java';
@@ -33,6 +34,7 @@ const languages = {
   cpp,
   csharp,
   css,
+  diff,
   go,
   http,
   java,
