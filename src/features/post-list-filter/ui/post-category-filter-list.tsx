@@ -40,8 +40,8 @@ export function PostCategoryFilterList({ categories, categoryId, onChange }: Pro
         aria-pressed={!categoryId}
         onClick={() => onChange(undefined)}
         className={cn(
-          'block w-full rounded-md px-2 py-1.5 text-left text-sm transition-colors',
-          !categoryId ? 'bg-muted font-medium' : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+          'focus-visible:bg-primary/10 block w-full rounded-md px-2 py-1.5 text-left text-sm transition-colors focus-visible:outline-none',
+          !categoryId ? 'bg-primary/10 text-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground',
         )}
       >
         전체 글
