@@ -57,6 +57,18 @@ pnpm setup:https # mkcert로 local.techtaurant.com 인증서 등록
 pnpm dev:https # https://local.techtaurant.com:3010 개발 서버 실행
 ```
 
+### 게시글 본문 렌더링
+
+게시글 상세와 글쓰기 미리보기는 `src/shared/ui/post-content/post-content.tsx`의 `PostContent`를 사용합니다.
+`src/shared/lib/markdown/render-post-markdown.ts`가 Markdown과 첨부 이미지를 처리하고 HTML을 정제합니다.
+
+- Mermaid: `mermaid` 코드 블록을 다이어그램으로 표시합니다. 문법 오류가 있으면 코드 원문을 유지합니다.
+- Diff: `diff` 코드 블록의 `+` 추가 행과 `-` 삭제 행을 강조합니다.
+- 수식: `$...$`, `$$...$$`, `\(...\)`, `\[...\]`를 지원합니다. 인라인 코드와 일반 코드 블록 안에서는 변환하지 않습니다.
+
+Mermaid와 KaTeX는 필요한 본문에서 비동기로 로드하며, 다이어그램은 화면 테마에 맞춰 다시 그립니다. 수식은 파싱 단계에서
+원문을 보존하고, HTML 정제 이후 KaTeX로 표시합니다. 잘못된 수식은 원문과 오류 표시를 남깁니다.
+
 ### 아키텍쳐
 
 코드베이스의 **응집도는 높이고** **결합도는 낮춰** 디버깅에 용이한 구조를 만들고, **확장성**을 챙기기 위해

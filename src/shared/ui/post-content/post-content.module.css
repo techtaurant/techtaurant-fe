@@ -115,6 +115,28 @@
   font-size: 0.875rem;
 }
 
+.postContent :global(.post-mermaid) {
+  margin-block: 1rem;
+  max-width: 100%;
+  overflow-x: auto;
+  text-align: center;
+}
+
+.postContent :global(.post-mermaid) svg {
+  height: auto;
+  filter: grayscale(1);
+}
+
+.postContent :global(.math-block) {
+  max-width: 100%;
+  overflow-x: auto;
+  margin-block: 1rem;
+}
+
+.postContent :global(.katex-display) {
+  margin: 0;
+}
+
 /* 표 */
 .postContent table {
   display: block;

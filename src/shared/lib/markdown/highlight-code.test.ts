@@ -90,4 +90,14 @@ describe('코드 하이라이팅 테스트', () => {
     expect(highlightCode('const count = 1;', 'ts')).toBe('');
     expect(highlightCode('local count = 1', 'lua')).toContain('<span class="hljs-keyword">local</span>');
   });
+
+  it('diff 추가·삭제·문맥 행을 강조하면서 원문을 보존한다', () => {
+    const code = '@@ -1 +1 @@\n-const count = 1;\n+const count = 2;\n unchanged\n';
+    const container = document.createElement('div');
+    container.innerHTML = highlightCode(code, 'diff');
+
+    expect(container.querySelector('.hljs-deletion')).toHaveTextContent('-const count = 1;');
+    expect(container.querySelector('.hljs-addition')).toHaveTextContent('+const count = 2;');
+    expect(container.textContent).toBe(code);
+  });
 });
