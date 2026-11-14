@@ -88,6 +88,9 @@ describe('게시글 본문 확장 렌더링', () => {
   });
 
   it('다크 모드로 바꾸면 원문에서 다이어그램을 다시 그린다', async () => {
+    mockRender
+      .mockResolvedValueOnce({ svg: '<svg role="img" aria-label="요청 흐름"></svg>' })
+      .mockResolvedValueOnce({ svg: '<svg role="img" aria-label="다크 테마"></svg>' });
     const content = renderContent(diagramSource);
     const { rerender } = render(<PostContent content={content} />);
     await screen.findByRole('img', { name: '요청 흐름' });
@@ -95,9 +98,69 @@ describe('게시글 본문 확장 렌더링', () => {
     mockResolvedTheme = 'dark';
     rerender(<PostContent content={content} />);
 
-    await waitFor(() => expect(mockRender).toHaveBeenCalledTimes(2));
+    await screen.findByRole('img', { name: '다크 테마' });
+    expect(mockRender).toHaveBeenCalledTimes(2);
     expect(mockInitialize).toHaveBeenLastCalledWith(expect.objectContaining({ theme: 'redux-dark' }));
     expect(mockRender.mock.calls[1][1]).toBe(mockRender.mock.calls[0][1]);
+
+    mockResolvedTheme = 'light';
+    rerender(<PostContent content={content} />);
+    await screen.findByRole('img', { name: '요청 흐름' });
+    expect(mockInitialize).toHaveBeenLastCalledWith(expect.objectContaining({ theme: 'neutral' }));
+    expect(mockRender.mock.calls[2][1]).toBe(mockRender.mock.calls[0][1]);
+  });
+
+  it('테마 재렌더링에 실패하면 원문으로 돌아가고 다음 테마에서 다시 시도한다', async () => {
+    const content = renderContent(diagramSource);
+    const { container, rerender } = render(<PostContent content={content} />);
+    await screen.findByRole('img', { name: '요청 흐름' });
+    mockRender.mockRejectedValueOnce(new Error('렌더링 오류'));
+
+    mockResolvedTheme = 'dark';
+    rerender(<PostContent content={content} />);
+    await waitFor(() => expect(container.querySelector('pre code.language-mermaid')).toHaveTextContent('flowchart TD'));
+    expect(container.querySelector('svg')).not.toBeInTheDocument();
+
+    mockResolvedTheme = 'light';
+    rerender(<PostContent content={content} />);
+    await screen.findByRole('img', { name: '요청 흐름' });
+    expect(mockRender).toHaveBeenCalledTimes(3);
+  });
+
+  it.each(['', diagramSource])('테마 변경은 열린 접기와 수식 DOM을 보존한다 (Mermaid: %s)', async (diagram) => {
+    const content = renderContent('<details><summary>설명</summary>본문</details>\n\n$x^2$\n\n' + diagram);
+    const { container, rerender } = render(<PostContent content={content} />);
+    await waitFor(() => expect(container.querySelector('.katex')).toBeInTheDocument());
+    if (diagram) await screen.findByRole('img', { name: '요청 흐름' });
+    const details = container.querySelector('details')!;
+    const math = container.querySelector('.katex')!;
+    details.open = true;
+
+    mockResolvedTheme = 'dark';
+    rerender(<PostContent content={content} />);
+    if (diagram) await waitFor(() => expect(mockRender).toHaveBeenCalledTimes(2));
+
+    expect(container.querySelector('details')).toBe(details);
+    expect(details.open).toBe(true);
+    expect(container.querySelector('.katex')).toBe(math);
+  });
+
+  it('테마를 바꾸면 늦게 완료된 이전 테마 다이어그램을 적용하지 않는다', async () => {
+    let finishRender!: (value: { svg: string }) => void;
+    mockRender
+      .mockImplementationOnce(() => new Promise((resolve) => (finishRender = resolve)))
+      .mockResolvedValueOnce({ svg: '<svg role="img" aria-label="다크 테마"></svg>' });
+    const content = renderContent(diagramSource);
+    const { rerender } = render(<PostContent content={content} />);
+    await waitFor(() => expect(mockRender).toHaveBeenCalledTimes(1));
+
+    mockResolvedTheme = 'dark';
+    rerender(<PostContent content={content} />);
+    await screen.findByRole('img', { name: '다크 테마' });
+    await act(async () => finishRender({ svg: '<svg role="img" aria-label="이전 테마"></svg>' }));
+
+    expect(screen.getByRole('img', { name: '다크 테마' })).toBeInTheDocument();
+    expect(screen.queryByRole('img', { name: '이전 테마' })).not.toBeInTheDocument();
   });
 
   it('실제 KaTeX로 인라인·블록 수식을 표시하고 코드 원문과 diff를 보존한다', async () => {

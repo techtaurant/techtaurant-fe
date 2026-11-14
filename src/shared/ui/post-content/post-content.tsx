@@ -4,7 +4,7 @@ import 'katex/dist/katex.min.css';
 import '@/shared/ui/post-content/post-content-highlight.css';
 
 import { useTheme } from 'next-themes';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import { cn } from '@/shared/lib/cn';
 import styles from '@/shared/ui/post-content/post-content.module.css';
@@ -19,6 +19,8 @@ type Props = {
 export function PostContent({ className, content }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { resolvedTheme } = useTheme();
+  // 같은 본문의 HTML prop을 재사용해야 테마 렌더가 확장된 DOM을 덮어쓰지 않는다.
+  const innerHtml = useMemo(() => ({ __html: content }), [content]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -28,10 +30,19 @@ export function PostContent({ className, content }: Props) {
     container.innerHTML = content;
 
     // 로딩 실패 시에도 정제된 원문을 읽을 수 있게 유지한다.
-    void Promise.allSettled([
-      renderPostMath(container, () => cancelled),
-      renderPostDiagrams(container, resolvedTheme === 'dark', () => cancelled),
-    ]);
+    void Promise.allSettled([renderPostMath(container, () => cancelled)]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [content]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    let cancelled = false;
+    void Promise.allSettled([renderPostDiagrams(container, resolvedTheme === 'dark', () => cancelled)]);
 
     return () => {
       cancelled = true;
@@ -43,7 +54,7 @@ export function PostContent({ className, content }: Props) {
       ref={containerRef}
       data-post-content
       className={cn(styles.postContent, className)}
-      dangerouslySetInnerHTML={{ __html: content }}
+      dangerouslySetInnerHTML={innerHtml}
     />
   );
 }
