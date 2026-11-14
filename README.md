@@ -62,6 +62,10 @@ pnpm dev:https # https://local.techtaurant.com:3010 개발 서버 실행
 게시글 상세와 글쓰기 미리보기는 `src/shared/ui/post-content/post-content.tsx`의 `PostContent`를 사용합니다.
 `src/shared/lib/markdown/render-post-markdown.ts`가 Markdown과 첨부 이미지를 처리하고 HTML을 정제합니다.
 
+댓글과 답글도 `src/features/post-comments/ui/post-detail-comment-item.tsx`에서 같은 변환 함수와 `PostContent`를
+재사용하므로 아래 문법을 동일하게 지원합니다. 작성·수정 창에는 Markdown 원문을 입력하며, 삭제·차단된 댓글은 안내 문구만
+표시합니다. 댓글에는 게시글 첨부 이미지 URL 매핑을 전달하지 않습니다.
+
 - Mermaid: `mermaid` 코드 블록을 다이어그램으로 표시합니다. 문법 오류가 있으면 코드 원문을 유지합니다.
 - Diff: `diff` 코드 블록의 `+` 추가 행과 `-` 삭제 행을 강조합니다.
 - 수식: `$...$`, `$$...$$`, `\(...\)`, `\[...\]`를 지원합니다. 인라인 코드와 일반 코드 블록 안에서는 변환하지 않습니다.

@@ -2,7 +2,7 @@
 
 import { ThumbsDown, ThumbsUp } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import type { CommentItem } from '@/entities/comment';
 import { COMMENT_LIKE_STATUS } from '@/entities/comment';
@@ -14,7 +14,10 @@ import { PostDetailCommentActions } from '@/features/post-comments/ui/post-detai
 import { PostDetailCommentEditor } from '@/features/post-comments/ui/post-detail-comment-editor';
 import { cn } from '@/shared/lib/cn';
 import { formatDisplayTime } from '@/shared/lib/format-date';
+import { highlightCode } from '@/shared/lib/markdown/highlight-code';
+import { renderPostMarkdown } from '@/shared/lib/markdown/render-post-markdown';
 import { Badge } from '@/shared/ui/badge';
+import { PostContent } from '@/shared/ui/post-content';
 
 type Props = {
   children?: ReactNode;
@@ -52,6 +55,7 @@ export function PostDetailCommentItem({
   const authorName = isBanned ? BANNED_COMMENT_AUTHOR_NAME : comment.authorName;
   const profileImageUrl = isBanned ? '' : (comment.authorProfileImageUrl ?? '');
   const commentContent = getCommentContent(comment);
+  const { html } = useMemo(() => renderPostMarkdown(commentContent, [], highlightCode), [commentContent]);
   const isCompact = variant === 'compact';
 
   const handleEditComment = () => {
@@ -67,7 +71,7 @@ export function PostDetailCommentItem({
       <UserAvatar
         name={authorName}
         profileImageUrl={profileImageUrl}
-        className={cn('z-30 shrink-0', isCompact ? 'h-7 w-7' : 'h-7.5 w-7.5')}
+        className={cn('z-30 shrink-0', isCompact ? 'size-7' : 'size-7.5')}
       />
 
       <div className="min-w-0 flex-1">
@@ -101,14 +105,7 @@ export function PostDetailCommentItem({
             onEditSuccess={handleCloseCommentEditor}
           />
         ) : (
-          <p
-            className={cn(
-              'text-foreground wrap-break-words mb-2 leading-relaxed whitespace-pre-wrap',
-              isCompact ? 'text-xs' : 'text-sm',
-            )}
-          >
-            {commentContent}
-          </p>
+          <PostContent content={html} className={cn('mb-2 leading-relaxed!', isCompact ? 'text-xs!' : 'text-sm!')} />
         )}
 
         {shouldShowInteractionRow && !isEditing && (
@@ -124,7 +121,7 @@ export function PostDetailCommentItem({
                 disabled={commentReaction.isPending}
                 onClick={commentReaction.handleLikeComment}
               >
-                <ThumbsUp className={cn(isCompact ? 'h-3 w-3' : 'h-3.5 w-3.5')} />
+                <ThumbsUp className={cn(isCompact ? 'size-3' : 'size-3.5')} />
               </button>
               <span className="px-0.5 text-[11px] font-semibold">{comment.likeCount}</span>
               <button
@@ -137,7 +134,7 @@ export function PostDetailCommentItem({
                 disabled={commentReaction.isPending}
                 onClick={commentReaction.handleDislikeComment}
               >
-                <ThumbsDown className={cn(isCompact ? 'h-3 w-3' : 'h-3.5 w-3.5')} />
+                <ThumbsDown className={cn(isCompact ? 'size-3' : 'size-3.5')} />
               </button>
             </div>
             {extraActions}
