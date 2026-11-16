@@ -1,11 +1,14 @@
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 
 import { parsePostListFilters, prefetchGetPostList, toPostListApiParams } from '@/entities/post-list';
 import { fetchUserProfileImage, prefetchUserFollowCounts } from '@/entities/user';
+import type { CustomFetchInit } from '@/shared/api/custom-fetch';
+import { getUserProfileImagesApi } from '@/shared/api/generated';
 import { isUuid } from '@/shared/lib/is-uuid';
-import { UserDetailView } from '@/views/user-detail';
+import { buildUserDetailMetadata, UserDetailView } from '@/views/user-detail';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,6 +16,20 @@ type Props = {
   params: Promise<{ userId: string }>;
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
+
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+  const { userId } = await params;
+  const filters = parsePostListFilters(await searchParams);
+  const options: CustomFetchInit = { cache: 'no-store', cookieHeader: (await cookies()).toString() };
+
+  try {
+    const response = await getUserProfileImagesApi({ userIds: [userId] }, options);
+
+    return buildUserDetailMetadata(response.data?.[0], filters);
+  } catch {
+    return buildUserDetailMetadata(undefined, filters);
+  }
+}
 
 export default async function Page({ params, searchParams }: Props) {
   const queryClient = new QueryClient();

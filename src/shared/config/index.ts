@@ -13,3 +13,11 @@ export const ENVIRONMENT = (() => {
   }
   return process.env.NEXT_PUBLIC_ENV as 'local' | 'development' | 'production';
 })();
+
+export const IS_PRODUCTION = ENVIRONMENT === 'production';
+
+export const SITE_URL = IS_PRODUCTION ? 'https://techtaurant.com' : 'https://dev.preview.techtaurant.com';
+
+export const SITE_NAME = '테크토랑';
+
+export const DEFAULT_SHARE_IMAGE_URL = `${API_BASE_URL}/static/images/post-thumbnail.png`;

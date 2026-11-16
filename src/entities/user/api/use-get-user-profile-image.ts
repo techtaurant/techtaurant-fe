@@ -3,7 +3,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import type { CustomFetchInit } from '@/shared/api/custom-fetch';
 import {
   getGetUserProfileImagesApiQueryKey,
-  getGetUserProfileImagesApiQueryOptions,
+  getUserProfileImagesApi,
   useGetUserProfileImagesApi,
 } from '@/shared/api/generated';
 
@@ -13,9 +13,10 @@ type Params = {
 };
 
 export const fetchUserProfileImage = async (queryClient: QueryClient, { userId, options }: Params) => {
-  const response = await queryClient.fetchQuery(
-    getGetUserProfileImagesApiQueryOptions(toUserProfileImageParams(userId), { request: options }),
-  );
+  const response = await queryClient.fetchQuery({
+    queryKey: getUserProfileImageQueryKey(userId),
+    queryFn: () => getUserProfileImagesApi(toUserProfileImageParams(userId), options),
+  });
   return response.data?.[0];
 };
 
