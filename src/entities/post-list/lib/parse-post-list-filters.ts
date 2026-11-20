@@ -26,12 +26,14 @@ const getPostListFilterIds = (values: string[]) => {
 
 export const parsePostListFilters = (searchParams?: SearchParamsLike): PostListFilters => {
   const authorId = getSearchParamValue(searchParams, POST_LIST_FILTER_SEARCH_PARAM_KEYS.authorId)?.trim();
+  const categoryId = getSearchParamValue(searchParams, POST_LIST_FILTER_SEARCH_PARAM_KEYS.categoryId)?.trim();
   const period = getSearchParamValue(searchParams, POST_LIST_FILTER_SEARCH_PARAM_KEYS.period);
   const sort = getSearchParamValue(searchParams, POST_LIST_FILTER_SEARCH_PARAM_KEYS.sort);
   const tagIds = getPostListFilterIds(getSearchParamValues(searchParams, POST_LIST_FILTER_SEARCH_PARAM_KEYS.tagIds));
 
   return {
     ...(!!authorId && { authorId }),
+    ...(!!categoryId && { categoryId }),
     period: isValidPeriodValue(period) ? period : GetPostsApiPeriod.ALL,
     sort: isValidSortValue(sort) ? sort : GetPostsApiSort.LATEST,
     tagIds,

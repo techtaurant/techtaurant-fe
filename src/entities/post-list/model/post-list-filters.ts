@@ -3,6 +3,7 @@ import { GetPostsApiPeriod, GetPostsApiSort } from '@/shared/api/generated';
 
 export const POST_LIST_FILTER_SEARCH_PARAM_KEYS = {
   authorId: 'authorId',
+  categoryId: 'categoryId',
   period: 'period',
   sort: 'sort',
   tagIds: 'tagIds',
@@ -13,6 +14,7 @@ export type PostListSortFilter = (typeof GetPostsApiSort)[keyof typeof GetPostsA
 
 export type PostListFilters = {
   authorId?: string;
+  categoryId?: string;
   period: PostListPeriodFilter;
   sort: PostListSortFilter;
   tagIds: string[];

@@ -17,7 +17,7 @@ type Params = {
 
 export const useUserPostList = ({ userId, categoryId }: Params) => {
   const filters = parsePostListFilters(useSearchParams());
-  const { data: categories = [] } = useSearchCategories({ userId, path: '' });
+  const { data: categories = [], isPending: isCategoriesPending } = useSearchCategories({ userId, path: '' });
   const selectedCategory = categories.find((category) => category.id === categoryId);
   const categoryIds = selectedCategory
     ? categories
@@ -25,18 +25,19 @@ export const useUserPostList = ({ userId, categoryId }: Params) => {
         .map(({ id }) => id)
     : [];
   const hasDescendants = categoryIds.length > 1;
+  const isWaitingForCategories = !!categoryId && isCategoriesPending;
   const params = { ...toPostListApiParams(filters), authorId: userId };
 
   const postList = useGetPostList({
     params: { ...params, categoryId },
-    enabled: !hasDescendants,
+    enabled: !hasDescendants && !isWaitingForCategories,
   });
   const categoryPostList = useGetCategoryPostList({ params, categoryIds, enabled: hasDescendants });
   const query = hasDescendants ? categoryPostList : postList;
 
   return {
     data: query.data,
-    isFetching: query.isFetching,
+    isFetching: query.isFetching || isWaitingForCategories,
     hasNextPage: !hasDescendants && postList.hasNextPage,
     isFetchingNextPage: !hasDescendants && postList.isFetchingNextPage,
     fetchNextPage: postList.fetchNextPage,
