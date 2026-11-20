@@ -46,7 +46,7 @@ export function PostCategoryFilterList({ categories, categoryId, onChange }: Pro
       >
         전체 글
       </button>
-      <ul key={categoryId} className="mt-2 space-y-1">
+      <ul className="mt-2 space-y-1">
         {toCategoryTree(categories).map((category) => (
           <PostCategoryFilterItem
             key={category.id}
