@@ -14,6 +14,7 @@ export type PostListSortFilter = (typeof GetPostsApiSort)[keyof typeof GetPostsA
 
 export type PostListFilters = {
   authorId?: string;
+  categoryId?: string;
   period: PostListPeriodFilter;
   sort: PostListSortFilter;
   tagIds: string[];

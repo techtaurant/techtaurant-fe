@@ -9,10 +9,7 @@ export const usePostListFilters = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const filters = {
-    ...parsePostListFilters(searchParams),
-    categoryId: searchParams.get(POST_LIST_FILTER_SEARCH_PARAM_KEYS.categoryId) || undefined,
-  };
+  const filters = parsePostListFilters(searchParams);
 
   const pushSearchParams = (nextSearchParams: URLSearchParams) => {
     const queryString = nextSearchParams.toString();
