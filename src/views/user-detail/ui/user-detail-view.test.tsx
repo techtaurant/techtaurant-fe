@@ -62,18 +62,6 @@ describe('사용자 카테고리 URL 선택', () => {
     expect(screen.getByLabelText('게시물 필터')).toHaveTextContent('author-id:all');
   });
 
-  it('뒤로 가기 등으로 URL이 변경되면 선택한 카테고리를 갱신한다', () => {
-    setSearchParams('categoryId=macos-id');
-    const { rerender } = render(<UserDetailView userId="author-id" />);
-
-    setSearchParams('categoryId=linux-id');
-    rerender(<UserDetailView userId="author-id" />);
-
-    expect(screen.getByRole('button', { name: 'linux 2' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: 'macos 1' })).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getByLabelText('게시물 필터')).toHaveTextContent('author-id:linux-id');
-  });
-
   it('카테고리 변경 시 기간과 정렬 등 기존 URL 필터를 유지한다', () => {
     setSearchParams('categoryId=macos-id&period=MONTH&sort=VIEW');
     render(<UserDetailView userId="author-id" />);

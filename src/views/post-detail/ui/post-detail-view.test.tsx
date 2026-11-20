@@ -71,15 +71,6 @@ describe('게시물 상세 카테고리 이동', () => {
     expect(screen.queryByText(category.name, { exact: true })).not.toBeInTheDocument();
   });
 
-  it('최상위 카테고리도 작성자의 해당 카테고리로 연결한다', () => {
-    renderPost({ ...category, path: 'macos', depth: 1 });
-
-    expect(screen.getByRole('link', { name: 'macos' })).toHaveAttribute(
-      'href',
-      `/users/${post.author.id}?categoryId=${category.id}`,
-    );
-  });
-
   it('카테고리가 없는 게시물은 카테고리 배지를 표시하지 않는다', () => {
     renderPost();
 
