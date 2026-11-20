@@ -49,10 +49,12 @@ export default async function Page({ params, searchParams }: Props) {
   // 조회 결과에 사용자가 없는 경우 404 처리
   if (!profile) notFound();
 
-  await prefetchGetPostList(queryClient, {
-    params: { ...toPostListApiParams(filters), authorId: userId },
-    options,
-  });
+  if (!filters.categoryId) {
+    await prefetchGetPostList(queryClient, {
+      params: { ...toPostListApiParams(filters), authorId: userId },
+      options,
+    });
+  }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
