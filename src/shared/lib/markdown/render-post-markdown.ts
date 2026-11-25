@@ -160,7 +160,7 @@ const readHeadingTexts = (html: string) => {
   return texts;
 };
 
-const sanitizePostHtml = (renderedHtml: string) => {
+const sanitizePostHtml = (renderedHtml: string, headingPrefix = '') => {
   const headingTexts = readHeadingTexts(renderedHtml);
   const headings: PostHeading[] = [];
   const usedIds = new Set<string>();
@@ -173,12 +173,11 @@ const sanitizePostHtml = (renderedHtml: string) => {
 
     if (!text) return { tagName, attribs: attributes };
 
-    const slug = slugifyHeadingText(text);
+    const slug = headingPrefix + slugifyHeadingText(text);
     let id = slug;
     let suffix = 2;
     while (usedIds.has(id)) id = `${slug}-${suffix++}`;
     usedIds.add(id);
-
     headings.push({ id, text, level: Number(tagName.slice(1)) });
 
     return { tagName, attribs: { ...attributes, id } };
@@ -197,15 +196,15 @@ const sanitizePostHtml = (renderedHtml: string) => {
 
 /**
  * 신뢰할 수 없는 게시물 마크다운을 안전하게 렌더링할 수 있는 HTML과 목차 데이터로 변환합니다.
- * `comment`는 같은 문법을 지원하되 원문 HTML을 표시하지 않습니다.
+ * 댓글은 원문 HTML을 이스케이프하고 제목 ID 앞에 댓글 ID를 붙입니다.
  */
 export function renderPostMarkdown(
   markdownSource: string,
   attachmentPresignedUrls: PostDetailAttachmentPresignedUrlResponse[],
   highlight?: Options['highlight'],
-  variant: 'post' | 'comment' = 'post',
+  commentId?: string,
 ) {
-  const markdownRenderer = variant === 'comment' ? commentMarkdown : markdown;
+  const markdownRenderer = commentId ? commentMarkdown : markdown;
   const presignedUrlByAttachmentId = new Map(
     attachmentPresignedUrls.map(({ attachmentId, presignedUrl }) => [attachmentId, presignedUrl]),
   );
@@ -217,8 +216,9 @@ export function renderPostMarkdown(
   replaceAttachmentImageSources(tokens, presignedUrlByAttachmentId);
 
   const renderedHtml = markdownRenderer.renderer.render(tokens, { ...markdownRenderer.options, highlight }, env);
+  const headingPrefix = commentId ? `${commentId}-` : '';
 
-  return sanitizePostHtml(renderedHtml);
+  return sanitizePostHtml(renderedHtml, headingPrefix);
 }
 
 // 본문은 이미지를 `![alt](attachmentId)`로 참조한다. attachmentId는 URI 형태가 아니라

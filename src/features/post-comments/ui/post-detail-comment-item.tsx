@@ -55,7 +55,10 @@ export function PostDetailCommentItem({
   const authorName = isBanned ? BANNED_COMMENT_AUTHOR_NAME : comment.authorName;
   const profileImageUrl = isBanned ? '' : (comment.authorProfileImageUrl ?? '');
   const commentContent = getCommentContent(comment);
-  const { html } = useMemo(() => renderPostMarkdown(commentContent, [], highlightCode, 'comment'), [commentContent]);
+  const { html } = useMemo(
+    () => renderPostMarkdown(commentContent, [], highlightCode, comment.id),
+    [commentContent, comment.id],
+  );
   const isCompact = variant === 'compact';
 
   const handleEditComment = () => {

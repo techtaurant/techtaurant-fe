@@ -366,7 +366,7 @@ describe('게시물 마크다운 렌더러', () => {
   describe('댓글 모드', () => {
     const renderCommentHtml = (markdown: string) => {
       const container = document.createElement('div');
-      container.innerHTML = renderPostMarkdown(markdown, [], undefined, 'comment').html;
+      container.innerHTML = renderPostMarkdown(markdown, [], undefined, '1').html;
       document.body.append(container);
 
       return container;

@@ -78,6 +78,14 @@ describe('댓글과 답글 문법 렌더링', () => {
     },
   );
 
+  it('댓글 제목 ID에 댓글 ID를 붙이고 작성자가 입력한 앵커를 유지한다', () => {
+    renderComment({ id: '42', content: '# 설치\n\n[본문](#설치) [댓글](#42-설치)' });
+
+    expect(screen.getByRole('heading', { name: '설치' })).toHaveAttribute('id', '42-설치');
+    expect(screen.getByRole('link', { name: '본문' })).toHaveAttribute('href', encodeURI('#설치'));
+    expect(screen.getByRole('link', { name: '댓글' })).toHaveAttribute('href', encodeURI('#42-설치'));
+  });
+
   it('여러 댓글의 Mermaid를 서로 다른 다이어그램으로 표시한다', async () => {
     renderComment({ content: diagramSource });
     renderComment({ id: 'reply-1', parentId: comment.id, depth: 1, content: diagramSource }, 'compact');
