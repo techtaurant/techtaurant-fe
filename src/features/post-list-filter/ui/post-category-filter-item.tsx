@@ -15,11 +15,18 @@ type Props = {
 
 export function PostCategoryFilterItem({ category, selectedCategory, onChange }: Props) {
   const isSelected = selectedCategory?.id === category.id;
-  const isOnSelectedPath = isSelected || !!selectedCategory?.path.startsWith(`${category.path}/`);
-  const [isExpanded, setIsExpanded] = useState(isOnSelectedPath);
+  const selectedDescendantId = selectedCategory?.path.startsWith(`${category.path}/`) ? selectedCategory.id : undefined;
+  const [previousDescendantId, setPreviousDescendantId] = useState(selectedDescendantId);
+  const [isExpanded, setIsExpanded] = useState(isSelected || !!selectedDescendantId);
   const hasChildren = category.children.length > 0;
+
   const FolderIcon = isExpanded || isSelected ? FolderOpen : Folder;
   const ChevronIcon = isExpanded ? ChevronUp : ChevronDown;
+
+  if (selectedDescendantId !== previousDescendantId) {
+    setPreviousDescendantId(selectedDescendantId);
+    if (selectedDescendantId) setIsExpanded(true);
+  }
 
   return (
     <li>

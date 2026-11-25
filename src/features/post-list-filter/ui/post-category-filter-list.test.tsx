@@ -78,14 +78,20 @@ describe('선택한 카테고리 펼침과 포커스', () => {
     expect(screen.getByRole('button', { name: '운영체제 2' })).toHaveFocus();
   });
 
-  it('선택이 바뀌어도 사용자가 직접 펼친 다른 가지는 유지한다', () => {
+  it('전체 글에서 하위 카테고리 선택을 복원하면 접힌 경로만 펼치고 선택 항목에 포커스한다', () => {
     const { rerender } = render(
       <PostCategoryFilterList categories={categories} categoryId="macos" onChange={jest.fn()} />,
     );
     fireEvent.click(screen.getByRole('button', { name: '개발도구 하위 카테고리 펼치기' }));
 
-    rerender(<PostCategoryFilterList categories={categories} categoryId="dev" onChange={jest.fn()} />);
+    rerender(<PostCategoryFilterList categories={categories} onChange={jest.fn()} />);
+    fireEvent.click(screen.getByRole('button', { name: '개발 하위 카테고리 접기' }));
+    expect(screen.queryByRole('button', { name: 'macos 1' })).not.toBeInTheDocument();
 
+    rerender(<PostCategoryFilterList categories={categories} categoryId="macos" onChange={jest.fn()} />);
+    act(() => jest.runOnlyPendingTimers());
+
+    expect(screen.getByRole('button', { name: 'macos 1' })).toHaveFocus();
     expect(screen.getByRole('button', { name: '에디터 1' })).toBeVisible();
   });
 
