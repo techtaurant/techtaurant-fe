@@ -363,6 +363,23 @@ describe('게시물 마크다운 렌더러', () => {
     });
   });
 
+  describe('댓글 모드', () => {
+    const renderCommentHtml = (markdown: string) => {
+      const container = document.createElement('div');
+      container.innerHTML = renderPostMarkdown(markdown, [], undefined, 'comment').html;
+      document.body.append(container);
+
+      return container;
+    };
+
+    it('꺾쇠 표기와 HTML 태그를 해석하지 않고 입력한 글자 그대로 표시한다', () => {
+      const container = renderCommentHtml('Array<string> 과 <div class="fixed inset-0">덮개</div>');
+
+      expect(container).toHaveTextContent('Array<string> 과 <div class="fixed inset-0">덮개</div>');
+      expect(container.querySelector('[class~="fixed"]')).not.toBeInTheDocument();
+    });
+  });
+
   describe('실데이터 렌더링', () => {
     it('다양한 마크다운 서식을 HTML로 변환한다', () => {
       const container = renderHtml(markdownRenderingContent);

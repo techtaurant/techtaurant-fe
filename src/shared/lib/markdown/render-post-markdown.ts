@@ -20,15 +20,25 @@ const markdown = new MarkdownIt({
   linkify: true,
 });
 
-markdown.use(tex, {
-  delimiters: 'all',
-  render: (content: string, displayMode: boolean) => {
-    const tag = displayMode ? 'div' : 'span';
-    const className = displayMode ? 'math-block' : 'math-inline';
+const renderTex = (content: string, displayMode: boolean) => {
+  const tag = displayMode ? 'div' : 'span';
+  const className = displayMode ? 'math-block' : 'math-inline';
 
-    return `<${tag} class="${className}">${markdown.utils.escapeHtml(content)}</${tag}>`;
-  },
+  return `<${tag} class="${className}">${markdown.utils.escapeHtml(content)}</${tag}>`;
+};
+
+markdown.use(tex, { delimiters: 'all', render: renderTex });
+
+// 댓글은 원문 HTML을 허용하지 않는다. `<string>` 같은 표기가 태그로 사라지지 않고,
+// 작성자가 `class`를 직접 넣을 수 없다.
+const commentMarkdown = new MarkdownIt({
+  breaks: true,
+  html: false,
+  langPrefix: 'language-',
+  linkify: true,
 });
+
+commentMarkdown.use(tex, { delimiters: 'all', render: renderTex });
 
 const ALLOWED_TAGS = [
   'a',
@@ -187,23 +197,26 @@ const sanitizePostHtml = (renderedHtml: string) => {
 
 /**
  * 신뢰할 수 없는 게시물 마크다운을 안전하게 렌더링할 수 있는 HTML과 목차 데이터로 변환합니다.
+ * `comment`는 같은 문법을 지원하되 원문 HTML을 표시하지 않습니다.
  */
 export function renderPostMarkdown(
   markdownSource: string,
   attachmentPresignedUrls: PostDetailAttachmentPresignedUrlResponse[],
   highlight?: Options['highlight'],
+  variant: 'post' | 'comment' = 'post',
 ) {
+  const markdownRenderer = variant === 'comment' ? commentMarkdown : markdown;
   const presignedUrlByAttachmentId = new Map(
     attachmentPresignedUrls.map(({ attachmentId, presignedUrl }) => [attachmentId, presignedUrl]),
   );
 
   // parse와 render는 같은 env를 공유해야 참조 링크 정의가 유지된다.
   const env = {};
-  const tokens = markdown.parse(markdownSource, env);
+  const tokens = markdownRenderer.parse(markdownSource, env);
 
   replaceAttachmentImageSources(tokens, presignedUrlByAttachmentId);
 
-  const renderedHtml = markdown.renderer.render(tokens, { ...markdown.options, highlight }, env);
+  const renderedHtml = markdownRenderer.renderer.render(tokens, { ...markdownRenderer.options, highlight }, env);
 
   return sanitizePostHtml(renderedHtml);
 }
