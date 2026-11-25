@@ -185,6 +185,35 @@ describe('게시물 마크다운 렌더러', () => {
     });
   });
 
+  describe('수식', () => {
+    it.each([
+      ['$x_1 * x_2$', 'span.math-inline', 'x_1 * x_2'],
+      ['$$\n\\frac{a}{b}\n$$', 'div.math-block', '\\frac{a}{b}'],
+      ['\\(x^2\\)', 'span.math-inline', 'x^2'],
+      ['\\[x^2\\]', 'div.math-block', 'x^2'],
+    ])('%s 수식 원문을 Markdown 서식으로 해석하지 않는다', (source, selector, formula) => {
+      const container = renderHtml(source);
+
+      expect(container.querySelector(selector)?.textContent?.trim()).toBe(formula);
+      expect(container.querySelector('em')).not.toBeInTheDocument();
+    });
+
+    it('코드 안 달러와 이스케이프한 통화는 수식으로 변환하지 않는다', () => {
+      const container = renderHtml('`$x$`\n\n```text\n$$x$$\n```\n\n가격은 \\$10입니다.');
+
+      expect(container.querySelector('.math-inline, .math-block')).not.toBeInTheDocument();
+      expect(container).toHaveTextContent('$x$');
+      expect(container).toHaveTextContent('가격은 $10입니다.');
+    });
+
+    it('수식 안 HTML을 실행하지 않고 원문으로 유지한다', () => {
+      const container = renderHtml('$<img src=x onerror=alert(1)>$');
+
+      expect(container.querySelector('.math-inline')).toHaveTextContent('<img src=x onerror=alert(1)>');
+      expect(container.querySelector('img, [onerror]')).not.toBeInTheDocument();
+    });
+  });
+
   describe('코드 강조 함수 주입', () => {
     const code = 'const count = 1;\n';
     const source = `\`\`\`typescript\n${code}\`\`\``;

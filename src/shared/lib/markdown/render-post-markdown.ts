@@ -1,3 +1,4 @@
+import { tex } from '@mdit/plugin-tex';
 import type { Options } from 'markdown-it';
 import MarkdownIt from 'markdown-it';
 import type Token from 'markdown-it/lib/token.mjs';
@@ -17,6 +18,16 @@ const markdown = new MarkdownIt({
   html: true,
   langPrefix: 'language-',
   linkify: true,
+});
+
+markdown.use(tex, {
+  delimiters: 'all',
+  render: (content: string, displayMode: boolean) => {
+    const tag = displayMode ? 'div' : 'span';
+    const className = displayMode ? 'math-block' : 'math-inline';
+
+    return `<${tag} class="${className}">${markdown.utils.escapeHtml(content)}</${tag}>`;
+  },
 });
 
 const ALLOWED_TAGS = [

@@ -6,7 +6,16 @@ const SITEMAP_BUCKET = IS_PRODUCTION ? 'prod' : 'dev';
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
-  transpilePackages: ['dom-serializer', 'domelementtype', 'domhandler', 'domutils', 'entities', 'htmlparser2'],
+  transpilePackages: [
+    '@mdit/helper',
+    '@mdit/plugin-tex',
+    'dom-serializer',
+    'domelementtype',
+    'domhandler',
+    'domutils',
+    'entities',
+    'htmlparser2',
+  ],
   images: {
     remotePatterns: [
       {
