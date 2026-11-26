@@ -45,6 +45,17 @@ export const usePostListFilters = () => {
     });
   };
 
+  const setCategoryFilter = (categoryId?: string) => {
+    updateSearchParams((nextSearchParams) => {
+      if (!categoryId) {
+        nextSearchParams.delete(POST_LIST_FILTER_SEARCH_PARAM_KEYS.categoryId);
+        return;
+      }
+
+      nextSearchParams.set(POST_LIST_FILTER_SEARCH_PARAM_KEYS.categoryId, categoryId);
+    });
+  };
+
   const toggleTagFilter = (tagId: string) => {
     updateSearchParams((nextSearchParams) => {
       const nextTagIds = filters.tagIds.includes(tagId)
@@ -61,6 +72,7 @@ export const usePostListFilters = () => {
   return {
     filters,
     setAuthorFilter,
+    setCategoryFilter,
     setPeriodFilter,
     setSortFilter,
     toggleTagFilter,

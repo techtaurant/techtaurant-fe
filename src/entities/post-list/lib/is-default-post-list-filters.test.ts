@@ -10,6 +10,7 @@ describe('isDefaultPostListFilters', () => {
 
   it.each<[string, Partial<PostListFilters>]>([
     ['authorId', { authorId: 'u1' }],
+    ['categoryId', { categoryId: 'c1' }],
     ['tagIds', { tagIds: ['t1'] }],
     ['period', { period: 'WEEK' }],
     ['sort', { sort: 'VIEW' }],
