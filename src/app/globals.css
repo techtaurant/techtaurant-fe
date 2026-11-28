@@ -1,4 +1,28 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:where([data-mode='dark'], [data-mode='dark'] *));
+
+@custom-variant data-open {
+  &:where([data-state='open']),
+  &:where([data-open]:not([data-open='false'])) {
+    @slot;
+  }
+}
+
+@custom-variant data-closed {
+  &:where([data-state='closed']),
+  &:where([data-closed]:not([data-closed='false'])) {
+    @slot;
+  }
+}
+
+@custom-variant data-active {
+  &:where([data-state='active']),
+  &:where([data-active]:not([data-active='false'])) {
+    @slot;
+  }
+}
 
 @theme inline {
   --font-brand: var(--font-montserrat);
@@ -10,6 +34,9 @@
   --color-post-write-preview-surface: var(--post-write-preview-surface);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-ring: var(--ring);
   --color-button-primary: var(--button-primary);
   --color-button-primary-hover: var(--button-primary-hover);
   --color-button-primary-surface: var(--button-primary-surface);
@@ -57,6 +84,9 @@
   --muted: #f3f4f5;
   --muted-foreground: #5f6368;
   --border: #dadce0;
+  --popover: var(--background);
+  --popover-foreground: var(--foreground);
+  --ring: var(--muted-foreground);
   --button-primary: #111827;
   --button-primary-hover: #1f2937;
   --button-primary-surface: rgb(43, 124, 235);
