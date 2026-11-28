@@ -49,7 +49,7 @@ export function AvatarStack({
         const fallbackText = avatar.name.charAt(0).toUpperCase() || '?';
 
         return (
-          <Avatar key={avatar.id} size={size} className={shapeClassNames.avatar}>
+          <Avatar key={avatar.id} role="img" aria-label={avatar.name} size={size} className={shapeClassNames.avatar}>
             {hasImageUrl && <AvatarImage src={avatar.imageUrl} alt={avatar.name} className={shapeClassNames.image} />}
             <AvatarFallback className={shapeClassNames.fallback}>{fallbackText}</AvatarFallback>
           </Avatar>

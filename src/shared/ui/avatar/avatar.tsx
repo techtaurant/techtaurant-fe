@@ -1,7 +1,9 @@
 'use client';
 
+import Image from 'next/image';
 import { Avatar as AvatarPrimitive } from 'radix-ui';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ReactEventHandler } from 'react';
+import { useState } from 'react';
 
 import { cn } from '@/shared/lib/cn';
 
@@ -25,11 +27,25 @@ function Avatar({
   );
 }
 
-function AvatarImage({ className, ...props }: ComponentProps<typeof AvatarPrimitive.Image>) {
+function AvatarImage({ className, alt, src, onError, ...props }: ComponentProps<typeof Image>) {
+  const [failedSrc, setFailedSrc] = useState<typeof src>();
+
+  const handleImageError: ReactEventHandler<HTMLImageElement> = (event) => {
+    setFailedSrc(src);
+    onError?.(event);
+  };
+
+  if (failedSrc === src) return null;
+
   return (
-    <AvatarPrimitive.Image
+    <Image
       data-slot="avatar-image"
-      className={cn('aspect-square size-full rounded-full object-cover', className)}
+      src={src}
+      alt={alt}
+      fill
+      sizes="32px"
+      className={cn('rounded-full object-cover', className)}
+      onError={handleImageError}
       {...props}
     />
   );
